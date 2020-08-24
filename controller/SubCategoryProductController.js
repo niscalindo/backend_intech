@@ -117,23 +117,26 @@ exports.find = function(req, res){
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            if(typeof param.id === 'undefined' || typeof param.id === null){
-                subCategoryProduct.find(security,param, function(message, status, data){
-                    if(status == 200 || status == 201){
-                        if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
-                        }else{
-                            response.ok(message, status, data, res);                    
-                        }
-                    }else{
-                        response.ok(message, status, null, res);            
-                    }
-                });
-            }else{
-                let encryptedData = [param.id];
+            let encryptedData = new Array();
+            let index = 0;
+            if(typeof param.id != 'undefined' && typeof param.id != null){
+                encryptedData[index]= param.id;
+                index++;
+            }
+            if(typeof param.idCategory != 'undefined' && typeof param.idCategory != null){
+                encryptedData[index]= param.idCategory
+            }
+            if(encryptedData.length > 0){
                 security.decrypt(encryptedData)
                 .then(function(data){
-                    param.id = data;
+                    index = 0;
+                    if(typeof param.id != 'undefined' && typeof param.id != null){
+                        param.id = data[index];
+                        index++;
+                    }
+                    if(typeof param.idCategory != 'undefined' && typeof param.idCategory != null){
+                        param.idCategory = data[index];
+                    }
                     subCategoryProduct.find(security,param, function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
@@ -147,6 +150,18 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                     response.ok(error, 400, null, res); 
+                });                
+            }else{
+                subCategoryProduct.find(security,param, function(message, status, data){
+                    if(status == 200 || status == 201){
+                        if(data == null || data == ""){
+                            response.ok('empty result', status, data, res); 
+                        }else{
+                            response.ok(message, status, data, res);                    
+                        }
+                    }else{
+                        response.ok(message, status, null, res);            
+                    }
                 });
             }
         }

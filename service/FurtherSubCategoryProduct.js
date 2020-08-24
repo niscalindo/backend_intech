@@ -5,6 +5,7 @@
  */
 const db = require("../model");
 const furtherSubCategoryProduct = db.further_sub_category_product;
+const subCategoryProduct = db.sub_category_product;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
@@ -55,8 +56,14 @@ exports.find = function(security,field, result){
     
     furtherSubCategoryProduct.findAll({
         attributes:{
-            exclude: ['createdBy']
+            exclude: ['createdBy', 'idSubCategory','subCategoryName']
         },
+        include: [
+            { model: subCategoryProduct,
+                as: 'subCategory',
+                exclude: ['createdBy','dateCreated','status']
+            }
+        ],
         where: [conditionKey]
     }).then(data=>{
         if(data == null){
@@ -96,7 +103,7 @@ exports.update= function(newData, result){
     furtherSubCategoryProduct.update(
         newData,
         {
-            where: {id_sub_category: parseInt(newData.id)}
+            where: {id_further_sub_category: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);

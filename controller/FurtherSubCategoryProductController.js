@@ -85,12 +85,17 @@ exports.update = function(req, res){
         if(typeof newFurtherSubCategory === 'undefined' || typeof newFurtherSubCategory === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newFurtherSubCategory.id, userToken.id, newFurtherSubCategory.idSubCategory];
+            let encryptedData = [newFurtherSubCategory.id, userToken.id];
+            if(typeof newFurtherSubCategory.idSubCategory != 'undefined' && typeof newFurtherSubCategory.idSubCategory != null){
+                encryptedData[2]= newFurtherSubCategory.idSubCategory;
+            }
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
                         newFurtherSubCategory.id = decryptedId[0];
                         newFurtherSubCategory.createdBy = decryptedId[1];
-                        newFurtherSubCategory.idSubCategory = decryptedId[2];
+                        if(typeof newFurtherSubCategory.idSubCategory != 'undefined' && typeof newFurtherSubCategory.idSubCategory != null){
+                            newFurtherSubCategory.idSubCategory = decryptedId[2];
+                        }
                         furtherSubCategoryProduct.update(newFurtherSubCategory, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
