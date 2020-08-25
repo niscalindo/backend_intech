@@ -76,7 +76,7 @@ exports.find = function(security,field, result){
 
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
-    newData['date_created'] = new Date();   
+    newData['dateCreated'] = new Date();   
     categoryProduct.create(newData).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){

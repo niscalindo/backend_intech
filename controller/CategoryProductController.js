@@ -52,7 +52,7 @@ exports.create = function(req, res){
                         security.decrypt(encryptedData)
                             .then(function(decryptedLastNumerator){
                                 newCategory.categoryCode = generateCode(numerator.dataValues.numerator);
-                                newCategory['created_by'] = decryptedLastNumerator[0];
+                                newCategory['createdBy'] = decryptedLastNumerator[0];
                                 categoryProduct.create(newCategory,security, function(message,status,data){
                                     if(status == 200 || status == 201){
                                         if(data == null || data == ""){
