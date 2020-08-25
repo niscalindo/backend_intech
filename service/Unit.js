@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 const db = require("../model");
-const categoryProduct = db.category_product;
+const unit = db.unit;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
 exports.getAll = function(security,order, result){
-    categoryProduct.findAll({
+    unit.findAll({
         attributes:{
-            exclude: ['created_by', 'date_created']
+            exclude: ['createdBy', 'dateCreated']
         },
         where: {
             status:{
@@ -19,7 +19,7 @@ exports.getAll = function(security,order, result){
             }
         },
         order: [
-            ['id_category', order]
+            ['id_unit', order]
         ],
     }).then(data=>{
         security.encrypt(data)
@@ -38,7 +38,7 @@ exports.find = function(security,field, result){
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
-        if(key === "categoryName"){
+        if(key === "name"){
             op = operator.substring;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
@@ -53,9 +53,9 @@ exports.find = function(security,field, result){
     condition[operator.eq] = '1';
     conditionKey['status'] = condition;
     
-    categoryProduct.findAll({
+    unit.findAll({
         attributes:{
-            exclude: ['created_by']
+            exclude: ['createdBy','dateCreated']
         },
         where: [conditionKey]
     }).then(data=>{
@@ -76,8 +76,8 @@ exports.find = function(security,field, result){
 
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
-    newData['date_created'] = new Date();   
-    categoryProduct.create(newData).then(data=>{
+    newData['dateCreated'] = new Date();   
+    unit.create(newData).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             let newInsertedId = encryptedData.dataValues.id;
@@ -93,10 +93,10 @@ exports.create = function(newData,security, result){
 };
 
 exports.update= function(newData, result){
-    categoryProduct.update(
+    unit.update(
         newData,
         {
-            where: {id_category: parseInt(newData.id)}
+            where: {id_unit: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);
@@ -108,27 +108,12 @@ exports.update= function(newData, result){
         result(err.message, 500, null);
     });
 };
-exports.findMaxNumerator= function( result){
-    categoryProduct.findOne({
-        attributes:[
-            [sequelize.fn('max', sequelize.col('id_category')), 'numerator']
-        ],
-        order: [
-            ['id_category', 'desc']
-        ]
-    }).then(data=>{
-        result("success", 200, data);
-    }).catch(err=>{
-        result(err.message, 500, null);
-    });
-}
+
 function columnDictionary(key){
     if(key === 'id'){
-        return 'id_category';
-    }else if(key === 'categoryName'){
-        return 'category_name';
-    }else if(key === 'categoryCode'){
-        return 'category_code';
+        return 'id_unit';
+    }else if(key === 'name'){
+        return 'unit_name';
     }else{
         return key;
     }

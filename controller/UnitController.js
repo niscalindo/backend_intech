@@ -6,7 +6,7 @@
 "use strict"
 const response = require("../model/response");
 const security = require("../utils/Security");
-const categoryProduct = require("../service/CategoryProduct");
+const unit = require("../service/Unit");
 
 exports.getAll = function(req, res){
     try{
@@ -18,7 +18,7 @@ exports.getAll = function(req, res){
                 order = 'desc';
             }
         }
-        categoryProduct.getAll(security,order,function(message, status,data){
+        unit.getAll(security,order,function(message, status,data){
             if(status == 200 || status == 201){
                 if(data == null || data == ""){
                     response.ok('empty result', status, data, res); 
@@ -37,39 +37,27 @@ exports.getAll = function(req, res){
 exports.create = function(req, res){
     try{
         let userToken = req.user;
-        let newCategory = req.body.category;
-        if(typeof newCategory === 'undefined' || typeof newCategory === null){
+        let newUnit = req.body.unit;
+        if(typeof newUnit === 'undefined' || typeof newUnit === null){
             response.ok('Bad Request', 401, null, res);
         }else{
             let encryptedData = [userToken.id];
-            categoryProduct.findMaxNumerator(function(message, status, numerator){
-                if(status == 400){
-                    response.ok(message, 400, null, res);
-                }else if(status == 200){
-                    if(numerator == null || numerator == ""){
-                        response.ok('failed to generate code', 400, numerator, res); 
-                    }else{
-                        security.decrypt(encryptedData)
-                            .then(function(decryptedLastNumerator){
-                                newCategory.categoryCode = generateCode(numerator.dataValues.numerator);
-                                newCategory['created_by'] = decryptedLastNumerator[0];
-                                categoryProduct.create(newCategory,security, function(message,status,data){
-                                    if(status == 200 || status == 201){
-                                        if(data == null || data == ""){
-                                            response.ok('empty result', status, data, res); 
-                                        }else{
-                                            response.ok(message, status, data, res);                    
-                                        }
-                                    }else{
-                                        response.ok(message, status, null, res);            
-                                    }
-                                });
-                        }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
-                        });
-                        
-                    }
-                }
+            security.decrypt(encryptedData)
+                .then(function(decryptedLastNumerator){
+                    newUnit['createdBy'] = decryptedLastNumerator[0];
+                    unit.create(newUnit,security, function(message,status,data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+            }).catch(function(err){
+                response.ok('failed to generate code :'+err, 500, null, res); 
             });
         }
     }catch(exception){
@@ -79,16 +67,17 @@ exports.create = function(req, res){
 
 exports.update = function(req, res){
     try{
-        let newCategory = req.body.category;
-        if(typeof newCategory === 'undefined' || typeof newCategory === null){
+        let userToken = req.user;
+        let newUnit = req.body.unit;
+        if(typeof newUnit === 'undefined' || typeof newUnit === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newCategory.id, newCategory.createdBy];
+            let encryptedData = [newUnit.id, userToken.id];
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
-                        newCategory.id = decryptedId[0];
-                        newCategory.createdBy = decryptedId[1];
-                        categoryProduct.update(newCategory, function(message,status,data){
+                        newUnit.id = decryptedId[0];
+                        newUnit.createdBy = decryptedId[1];
+                        unit.update(newUnit, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
                                     response.ok('empty result', status, data, res); 
@@ -115,7 +104,7 @@ exports.find = function(req, res){
             response.ok('Bad Request', 401, null, res);
         }else{
             if(typeof param.id === 'undefined' || typeof param.id === null){
-                categoryProduct.find(security,param, function(message, status, data){
+                unit.find(security,param, function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 
@@ -131,7 +120,7 @@ exports.find = function(req, res){
                 security.decrypt(encryptedData)
                 .then(function(data){
                     param.id = data;
-                    categoryProduct.find(security,param, function(message, status, data){
+                    unit.find(security,param, function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
@@ -150,21 +139,4 @@ exports.find = function(req, res){
     }catch(exception){
         response.ok(exception.message, 500, null, res);
     }
-}
-
-function generateCode(lastNumerator){
-    if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {
-        lastNumerator = 0;
-    }
-    lastNumerator++;
-    if (lastNumerator < 10) {
-        lastNumerator = "000" + lastNumerator;
-    } else if (lastNumerator >= 10 && lastNumerator < 100) {
-        lastNumerator = "00" + lastNumerator;
-    } else if (lastNumerator >= 100 && lastNumerator < 1000) {
-        lastNumerator = "0" + lastNumerator;
-    } else if (lastNumerator >= 1000 && lastNumerator < 10000) {
-        lastNumerator = "" +lastNumerator;
-    }
-    return "CAT-" + lastNumerator;
 }
