@@ -6,7 +6,7 @@
 "use strict"
 const response = require("../model/response");
 const security = require("../utils/Security");
-const furtherSubCategoryProduct = require("../service/FurtherSubCategoryProduct");
+const brand = require("../service/Brand");
 
 exports.getAll = function(req, res){
     try{
@@ -18,7 +18,7 @@ exports.getAll = function(req, res){
                 order = 'desc';
             }
         }
-        furtherSubCategoryProduct.getAll(security,order,function(message, status,data){
+        brand.getAll(security,order,function(message, status,data){
             if(status == 200 || status == 201){
                 if(data == null || data == ""){
                     response.ok('empty result', status, data, res); 
@@ -37,12 +37,12 @@ exports.getAll = function(req, res){
 exports.create = function(req, res){
     try{
         let userToken = req.user;
-        let newFurtherSubCategory = req.body.furtherSubCategory;
-        if(typeof newFurtherSubCategory === 'undefined' || typeof newFurtherSubCategory === null){
+        let newBrand = req.body.brand;
+        if((typeof newBrand === 'undefined' || typeof newBrand === null) || (typeof newBrand.idParent === 'undefined' || typeof newBrand.idParent === null)){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [userToken.id, newFurtherSubCategory.idSubCategory];
-            furtherSubCategoryProduct.findMaxNumerator(function(message, status, numerator){
+            let encryptedData = [userToken.id, newBrand.idParent];
+            brand.findMaxNumerator(function(message, status, numerator){
                 if(status == 400){
                     response.ok(message, 400, null, res);
                 }else if(status == 200){
@@ -51,10 +51,10 @@ exports.create = function(req, res){
                     }else{
                         security.decrypt(encryptedData)
                             .then(function(decryptedLastNumerator){
-                                newFurtherSubCategory.furtherSubCategoryCode = generateCode(numerator.dataValues.numerator);
-                                newFurtherSubCategory['createdBy'] = decryptedLastNumerator[0];
-                                newFurtherSubCategory['idSubCategory'] = decryptedLastNumerator[1];
-                                furtherSubCategoryProduct.create(newFurtherSubCategory,security, function(message,status,data){
+                                newBrand.code = generateCode(numerator.dataValues.numerator);
+                                newBrand.createdBy = decryptedLastNumerator[0];
+                                newBrand.idParent = decryptedLastNumerator[1];
+                                brand.create(newBrand,security, function(message,status,data){
                                     if(status == 200 || status == 201){
                                         if(data == null || data == ""){
                                             response.ok('empty result', status, data, res); 
@@ -81,22 +81,17 @@ exports.create = function(req, res){
 exports.update = function(req, res){
     try{
         let userToken = req.user;
-        let newFurtherSubCategory = req.body.furtherSubCategory;
-        if(typeof newFurtherSubCategory === 'undefined' || typeof newFurtherSubCategory === null){
+        let newBrand = req.body.brand;
+        if(typeof newBrand === 'undefined' || typeof newBrand === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newFurtherSubCategory.id, userToken.id];
-            if(typeof newFurtherSubCategory.idSubCategory != 'undefined' && typeof newFurtherSubCategory.idSubCategory != null){
-                encryptedData[2]= newFurtherSubCategory.idSubCategory;
-            }
+            let encryptedData = [newBrand.id, userToken.id, newBrand.idParent];
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
-                        newFurtherSubCategory.id = decryptedId[0];
-                        newFurtherSubCategory.createdBy = decryptedId[1];
-                        if(typeof newFurtherSubCategory.idSubCategory != 'undefined' && typeof newFurtherSubCategory.idSubCategory != null){
-                            newFurtherSubCategory.idSubCategory = decryptedId[2];
-                        }
-                        furtherSubCategoryProduct.update(newFurtherSubCategory, function(message,status,data){
+                        newBrand.id = decryptedId[0];
+                        newBrand.createdBy = decryptedId[1];
+                        newBrand.idParent = decryptedId[2];
+                        brand.update(newBrand, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
                                     response.ok('empty result', status, data, res); 
@@ -119,11 +114,12 @@ exports.update = function(req, res){
 exports.find = function(req, res){
     try{
         let param = req.query;
-        if(typeof param === 'undefined' || typeof param === null){
+        console.log(param);
+        if((typeof param === 'undefined' || typeof param === null) || (typeof param.parent === 'undefined' || typeof param.parent === null)) {
             response.ok('Bad Request', 401, null, res);
         }else{
-            if((typeof param.id === 'undefined' || typeof param.id === null) && (typeof param.idSubCategory === 'undefined' || typeof param.idSubCategory === null)){
-                furtherSubCategoryProduct.find(security,param, function(message, status, data){
+            if((typeof param.id === 'undefined' || typeof param.id === null) && (typeof param.idParent === 'undefined' || typeof param.idParent === null)){
+                brand.find(security,param, function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 
@@ -135,14 +131,14 @@ exports.find = function(req, res){
                     }
                 });
             }else{
-                let index = 0;
                 let encryptedData = new Array();
+                let index = 0;
                 if(typeof param.id != 'undefined' && typeof param.id != null){
                     encryptedData[index] = param.id;
                     index++;
                 }
-                if(typeof param.idSubCategory != 'undefined' && typeof param.idSubCategory != null){
-                    encryptedData[index] = param.idSubCategory;
+                if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
+                    encryptedData[index] = param.idParent;
                 }
                 security.decrypt(encryptedData)
                 .then(function(data){
@@ -151,10 +147,10 @@ exports.find = function(req, res){
                         param.id = data[index];
                         index++;
                     }
-                    if(typeof param.idSubCategory != 'undefined' && typeof param.idSubCategory != null){
-                        param.idSubCategory = data[index];
+                    if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
+                        param.idParent = data[index];
                     }
-                    furtherSubCategoryProduct.find(security,param, function(message, status, data){
+                    brand.find(security,param, function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
@@ -189,5 +185,5 @@ function generateCode(lastNumerator){
     } else if (lastNumerator >= 1000 && lastNumerator < 10000) {
         lastNumerator = "" +lastNumerator;
     }
-    return "FUB-" + lastNumerator;
+    return "BRN-" + lastNumerator;
 }

@@ -26,10 +26,13 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.tm_users = require("./tm_users.model.js")(sequelize, Sequelize);
 db.unit = require("./unit.model.js")(sequelize, Sequelize);
+db.brand = require("./brand.model.js")(sequelize, Sequelize);
 db.category_product = require("./category_product.model.js")(sequelize, Sequelize);
 db.sub_category_product = require("./sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product = require("./further_sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product.belongsTo(db.sub_category_product,{as: 'subCategory', foreignKey: 'id_sub_category'});
+db.brand.belongsTo(db.sub_category_product,{as: 'subCategory', foreignKey: 'id_parent'});
+db.brand.belongsTo(db.further_sub_category_product,{as: 'furtherSubCategory', foreignKey: 'id_parent'});
 
 module.exports = db;
 

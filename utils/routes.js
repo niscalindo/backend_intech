@@ -9,6 +9,7 @@ module.exports = function(app){
     var userController = require('../controller/UserController');
     var categoryController = require('../controller/CategoryProductController');
     var unitController = require('../controller/UnitController');
+    var brandController = require('../controller/BrandController');
     var subCategoryController = require('../controller/SubCategoryProductController');
     var furtherSubCategoryController = require('../controller/FurtherSubCategoryProductController');
     
@@ -31,5 +32,9 @@ module.exports = function(app){
     app.route('/units').post(auth.isAunthenticated,unitController.create);
     app.route('/units').put(auth.isAunthenticated,unitController.update);
     app.route('/units/find').get(auth.isAunthenticated,unitController.find);
+    app.route('/brands').get(auth.isAunthenticated,brandController.getAll);
+    app.route('/brands').post(auth.isAunthenticated,brandController.create);
+    app.route('/brands').put(auth.isAunthenticated,brandController.update);
+    app.route('/brands/find').get(auth.isAunthenticated,brandController.find);
 }
 

@@ -5,12 +5,22 @@
         <group>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/sub_category_product.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/further_sub_category_product.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/SubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UnitController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/Security.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/BrandController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/unit.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Unit.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/category_product.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/CategoryProductController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/SubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/brand.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Brand.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/SubCategoryProductController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/CategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UserController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/FurtherSubCategoryProductController.js</file>
         </group>
     </open-files>
