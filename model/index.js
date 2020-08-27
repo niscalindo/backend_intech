@@ -27,6 +27,7 @@ db.sequelize = sequelize;
 db.tm_users = require("./tm_users.model.js")(sequelize, Sequelize);
 db.unit = require("./unit.model.js")(sequelize, Sequelize);
 db.brand = require("./brand.model.js")(sequelize, Sequelize);
+db.captcha = require("./captcha.model.js")(sequelize, Sequelize);
 db.category_product = require("./category_product.model.js")(sequelize, Sequelize);
 db.sub_category_product = require("./sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product = require("./further_sub_category_product.model.js")(sequelize, Sequelize);

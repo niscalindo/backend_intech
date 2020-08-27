@@ -10,6 +10,7 @@ module.exports = function(app){
     var categoryController = require('../controller/CategoryProductController');
     var unitController = require('../controller/UnitController');
     var brandController = require('../controller/BrandController');
+    var captchaController = require('../controller/CaptchaController');
     var subCategoryController = require('../controller/SubCategoryProductController');
     var furtherSubCategoryController = require('../controller/FurtherSubCategoryProductController');
     
@@ -36,5 +37,8 @@ module.exports = function(app){
     app.route('/brands').post(auth.isAunthenticated,brandController.create);
     app.route('/brands').put(auth.isAunthenticated,brandController.update);
     app.route('/brands/find').get(auth.isAunthenticated,brandController.find);
+    
+    app.route('/captcha').post(captchaController.create);
+    app.route('/captcha/compare').get(captchaController.find);
 }
 
