@@ -5,12 +5,14 @@
  */
 const db = require("../model");
 const subCategoryProduct = db.sub_category_product;
+const furtherSubCategoryProduct = db.further_sub_category_product;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
 exports.getAll = function(security,order, result){
     subCategoryProduct.findAll({
         attributes:{
+            include: [[sequelize.fn('COUNT', sequelize.col('furtherSubCategories.id_sub_category')), 'totalChild']],
             exclude: ['createdBy', 'dateCreated']
         },
         where: {
@@ -18,9 +20,22 @@ exports.getAll = function(security,order, result){
                 [operator.eq]: '1'
             }
         },
+        include:[{
+                model: furtherSubCategoryProduct,
+                as: 'furtherSubCategories',
+                attributes:[],
+                where: {
+                    status:{
+                        [operator.eq]: '1'
+                    }
+                },
+                required:false
+            }
+        ],
+        group: 'tm_sub_category_product.id_sub_category',
         order: [
             ['id_sub_category', order]
-        ],
+        ]
     }).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
@@ -55,8 +70,22 @@ exports.find = function(security,field, result){
     
     subCategoryProduct.findAll({
         attributes:{
+            include: [[sequelize.fn('COUNT', sequelize.col('furtherSubCategories.id_sub_category')), 'totalChild']],
             exclude: ['created_by']
         },
+        include:[{
+                model: furtherSubCategoryProduct,
+                as: 'furtherSubCategories',
+                attributes:[],
+                where: {
+                    status:{
+                        [operator.eq]: '1'
+                    }
+                },
+                required:false
+            }
+        ],
+        group: 'tm_sub_category_product.id_sub_category',
         where: [conditionKey]
     }).then(data=>{
         if(data == null){

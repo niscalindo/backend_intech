@@ -110,12 +110,17 @@ exports.update = function(req, res){
 
 exports.find = function(req, res){
     try{
+        let scope = req.headers.scope_all;
+        console.log(scope);
+        if(typeof scope === 'undefined' || typeof scope === null){
+            scope = false;
+        }
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
         }else{
             if(typeof param.id === 'undefined' || typeof param.id === null){
-                categoryProduct.find(security,param, function(message, status, data){
+                categoryProduct.find(security,param,scope, function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 

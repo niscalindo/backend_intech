@@ -5,12 +5,16 @@
  */
 const db = require("../model");
 const categoryProduct = db.category_product;
-const operator = db.Sequelize.Op;
+const subCategoryProduct = db.sub_category_product;
+const furtherSubCategoryProduct = db.further_sub_category_product;
+const Sequelize = db.Sequelize;
+const operator =  Sequelize.Op;
 const sequelize = db.sequelize;
 
 exports.getAll = function(security,order, result){
     categoryProduct.findAll({
         attributes:{
+            include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
             exclude: ['created_by', 'date_created']
         },
         where: {
@@ -18,9 +22,22 @@ exports.getAll = function(security,order, result){
                 [operator.eq]: '1'
             }
         },
+        include:[{
+                model: subCategoryProduct,
+                as: 'subCategories',
+                attributes:[],
+                where: {
+                    status:{
+                        [operator.eq]: '1'
+                    }
+                }
+            }
+        ],
+        group: 'tm_category_product.id_category',
         order: [
             ['id_category', order]
-        ],
+        ]
+        
     }).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
@@ -33,15 +50,39 @@ exports.getAll = function(security,order, result){
     });
 };
 
-exports.find = function(security,field, result){
+exports.find = function(security,field, scopeAll, result){
     let op = null;
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
         if(key === "categoryName"){
-            op = operator.substring;
-            condition[op] = value;
-            conditionKey[columnDictionary(key)] = condition;
+            if(scopeAll){
+                op = operator.or;
+                conditionKey = 
+                    {
+                        [operator.or]:[
+                            {
+                                category_name: {
+                                  [operator.substring]: value
+                                }
+                            },
+                            {
+                              '$subCategories.sub_category_name$': {
+                                [operator.substring]:value
+                              }
+                            },
+                            {
+                              '$subCategories.furtherSubCategories.further_sub_category_name$': {
+                                [operator.substring]:value
+                              }
+                            }
+                        ]
+                    };
+            }else{
+                op = operator.substring;
+                condition[op] = value;
+                conditionKey[columnDictionary(key)] = condition;
+            }
         }else{
             op = operator.eq;
             condition[op] = value;
@@ -53,12 +94,48 @@ exports.find = function(security,field, result){
     condition[operator.eq] = '1';
     conditionKey['status'] = condition;
     
-    categoryProduct.findAll({
-        attributes:{
-            exclude: ['created_by']
-        },
-        where: [conditionKey]
-    }).then(data=>{
+    let objectSearch = new Object();
+    if(scopeAll){
+        objectSearch = {
+            attributes:{
+                include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
+                exclude: ['created_by']
+            },
+            include:[{
+                    model: subCategoryProduct,
+                    as: 'subCategories',
+                    attributes:[],
+                    include:[{
+                            model: furtherSubCategoryProduct,
+                            as: 'furtherSubCategories',
+                            attributes:[],
+                            where: {
+                                status:{
+                                    [operator.eq]: '1'
+                                }
+                            },
+                            required:false
+                        }
+                    ],
+                    where: {
+                        status:{
+                            [operator.eq]: '1'
+                        }
+                    }
+                }
+            ],
+            group: 'tm_category_product.id_category',
+            where: [conditionKey]
+        }
+    }else{
+        objectSearch = {
+            attributes:{
+                exclude: ['created_by']
+            },
+            where: [conditionKey]
+        }
+    }
+    categoryProduct.findAll(objectSearch).then(data=>{
         if(data == null){
             result("Not Found", 404, null);
         }else{

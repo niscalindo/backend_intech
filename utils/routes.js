@@ -7,6 +7,7 @@
 
 module.exports = function(app){
     var userController = require('../controller/UserController');
+    var usersController = require('../controller/UsersController');
     var categoryController = require('../controller/CategoryProductController');
     var unitController = require('../controller/UnitController');
     var brandController = require('../controller/BrandController');
@@ -17,6 +18,12 @@ module.exports = function(app){
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
     app.route('/users/admin/find').get(auth.isAunthenticated,userController.find);
+    app.route('/users/customer/login').post(usersController.login);
+    app.route('/users/customer/find').get(auth.isAunthenticated,usersController.find);
+    app.route('/users/customer').put(auth.isAunthenticated,usersController.update);
+    app.route('/users/customer/verification-code').put(usersController.addVerificationCode);
+    app.route('/users/customer/verification-code/find').get(usersController.findVerificationCode);
+    
     app.route('/categories-product').get(auth.isAunthenticated,categoryController.getAll);
     app.route('/categories-product').post(auth.isAunthenticated,categoryController.create);
     app.route('/categories-product').put(auth.isAunthenticated,categoryController.update);
