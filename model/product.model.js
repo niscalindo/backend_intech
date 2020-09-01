@@ -51,7 +51,7 @@ module.exports = (sequelize, Sequelize)=>{
         },
         idFurtherSubCategory:{
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'id_further_sub_category'
         },
         furtherSubCategoryName:{

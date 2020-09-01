@@ -45,10 +45,10 @@ module.exports = function(app){
     app.route('/brands').post(auth.isAunthenticated,brandController.create);
     app.route('/brands').put(auth.isAunthenticated,brandController.update);
     app.route('/brands/find').get(auth.isAunthenticated,brandController.find);
-//    app.route('/products').get(auth.isAunthenticated,productController.getAll);
+    app.route('/products').get(auth.isAunthenticated,productController.getAll);
     app.route('/products').post(auth.isAunthenticated,productController.create);
 //    app.route('/products').put(auth.isAunthenticated,productController.update);
-//    app.route('/products/find').get(auth.isAunthenticated,productController.find);
+    app.route('/products/find').get(auth.isAunthenticated,productController.find);
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);

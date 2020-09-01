@@ -50,106 +50,134 @@ const sequelize = db.sequelize;
 //    });
 //};
 //
-//exports.find = function(security,field, scopeAll, result){
-//    let op = null;
-//    let conditionKey = new Object();
-//    for (let [key, value] of Object.entries(field)) {
-//        let condition = new Object();
-//        if(key === "categoryName"){
-//            if(scopeAll){
-//                op = operator.or;
-//                conditionKey = 
-//                    {
-//                        [operator.or]:[
-//                            {
-//                                category_name: {
-//                                  [operator.substring]: value
-//                                }
-//                            },
-//                            {
-//                              '$subCategories.sub_category_name$': {
-//                                [operator.substring]:value
-//                              }
-//                            },
-//                            {
-//                              '$subCategories.furtherSubCategories.further_sub_category_name$': {
-//                                [operator.substring]:value
-//                              }
-//                            }
-//                        ]
-//                    };
-//            }else{
-//                op = operator.substring;
-//                condition[op] = value;
-//                conditionKey[columnDictionary(key)] = condition;
+
+exports.countRecords = function (param, result) {
+    let conditionKey = new Object();
+    let conditionKeyVarian = new Object();
+    if(param.countAll == 'undefined' || param.countAll == null){
+        if (typeof param.name != 'undefined' && typeof param.name != null) {
+            if (param.name != "") {
+                conditionKey[operator.or] = [Sequelize.where(Sequelize.fn('concat', Sequelize.col('product.product_name'), ' ', Sequelize.col('varian.varian_title')), {
+                        [operator.substring]: param.name
+                    }), Sequelize.where(Sequelize.fn('concat', Sequelize.col('product.product_name'), ' ', Sequelize.col('varian.color')), {
+                        [operator.substring]: param.name
+                    })];
+            }
+    }
+    }
+    let condition2 = new Object();
+    condition2[operator.ne] = '0';
+    conditionKey['status'] = condition2;
+
+//    let conditionVarian = new Object();
+//    conditionVarian[operator.eq] = '1';
+//    conditionKeyVarian['status'] = conditionVarian;
+
+    productModel.count({
+        where: [conditionKey],
+//        include: [
+//            {
+//                model: productVarianModel,
+//                as: 'varian',
+//                attributes: [],
+//                required: false,
+//                where: [conditionKeyVarian]
 //            }
-//        }else{
-//            op = operator.eq;
-//            condition[op] = value;
-//            conditionKey[columnDictionary(key)] = condition;
-//        }
-//        
-//    }
-//    let condition = new Object();
-//    condition[operator.eq] = '1';
-//    conditionKey['status'] = condition;
-//    
-//    let objectSearch = new Object();
-//    if(scopeAll){
-//        objectSearch = {
-//            attributes:{
-//                include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
-//                exclude: ['created_by']
+//        ],
+//        distinct: true,
+//        col: 'id_product'
+    }).then(data => {
+        result("success", 200, data);
+    }).catch(err => {
+        result(err.message, 500, null);
+    });
+}
+exports.find = function (security, order, orderBy, offset, limit, field, result) {
+    let op = null;
+    let conditionKey = new Object();
+    for (let [key, value] of Object.entries(field)) {
+        let condition = new Object();
+        if(key === "name"){
+            op = operator.substring;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }else{
+            op = operator.eq;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }
+        
+    }
+    let condition = new Object();
+    condition[operator.eq] = '1';
+    conditionKey['status'] = condition;
+    
+    let orderOption = Array();
+    orderOption[0] = [columnDictionary(orderBy), order];
+    
+    productModel.findAll({
+        attributes:{
+            exclude: ['createdBy','idSubCategory']
+        },
+        order: orderOption,
+        offset: parseInt(offset),
+        limit: parseInt(limit), 
+        where: [conditionKey]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            security.encrypt(data)
+            .then(function(encryptedData){
+                result("success", 200, encryptedData);
+            }).catch(function(error){
+                result(error, 500, null);
+            });            
+        }
+    }).catch(err=>{
+       result(err.message, 500, null);
+    });
+}
+exports.getAll = function (security, order, offset, limit, id, result) {
+    productModel.findAll({
+        attributes: {
+            exclude: ['createdBy', 'dateCreated']
+        },
+        where: {
+            status: {
+                [operator.eq]: '1'
+            },
+            created_by: {
+                [operator.eq]: id
+            }
+        },
+        offset: parseInt(offset),
+        limit: limit,
+        order: [
+            ['id_product', order]
+        ],
+//        include: [
+//            {model: supPubModel,
+//                as: 'suplierPublisher',
+//                attributes: {exclude: ['created_by', 'date_created', 'idDistributor']}
 //            },
-//            include:[{
-//                    model: subCategoryProduct,
-//                    as: 'subCategories',
-//                    attributes:[],
-//                    include:[{
-//                            model: furtherSubCategoryProduct,
-//                            as: 'furtherSubCategories',
-//                            attributes:[],
-//                            where: {
-//                                status:{
-//                                    [operator.eq]: '1'
-//                                }
-//                            },
-//                            required:false
-//                        }
-//                    ],
-//                    where: {
-//                        status:{
-//                            [operator.eq]: '1'
-//                        }
-//                    }
-//                }
-//            ],
-//            group: 'tm_category_product.id_category',
-//            where: [conditionKey]
-//        }
-//    }else{
-//        objectSearch = {
-//            attributes:{
-//                exclude: ['created_by']
-//            },
-//            where: [conditionKey]
-//        }
-//    }
-//    categoryProduct.findAll(objectSearch).then(data=>{
-//        if(data == null){
-//            result("Not Found", 404, null);
-//        }else{
-//            security.encrypt(data)
-//            .then(function(encryptedData){
-//                result("success", 200, encryptedData);
-//            }).catch(function(error){
-//                result(error, 500, null);
-//            });            
-//        }
-//    }).catch(err=>{
-//       result(err.message, 500, null);
-//    });
-//}
+//            {
+//                model: productVarianModel,
+//                as: 'varian',
+//                attributes: []
+//            }
+//        ]
+    }).then(data => {
+        security.encrypt(data)
+                .then(function (encryptedData) {
+                    result("success", 200, encryptedData);
+                }).catch(function (error) {
+            result(error, 500, null);
+        });
+    }).catch(err => {
+        result(err.message, 500, null);
+    });
+}
 
 exports.create = function (newData, security, result) {
     newData.status = '1';

@@ -25,6 +25,7 @@ exports.getAll = function(security,order, result){
         include:[{
                 model: subCategoryProduct,
                 as: 'subCategories',
+                required:false,
                 attributes:[],
                 where: {
                     status:{

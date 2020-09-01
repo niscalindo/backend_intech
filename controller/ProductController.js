@@ -41,3 +41,141 @@ exports.create = function(req, res){
         response.ok('failed to decrypt code:'+err, 500, null, res); 
     });        
 }
+
+exports.find = function (req,res){
+    try{
+        let order = req.headers.order;
+        let limit = req.headers.total_data;
+        let offset = req.headers.page;
+        let orderBy = req.headers.order_by;
+        
+        if(typeof order === 'undefined' || typeof order === null){
+            order = 'desc';
+        }
+        if(typeof limit === 'undefined' || typeof limit === null){
+            limit = 500;
+        }
+        
+        if(typeof offset === 'undefined' || typeof offset === null){
+            offset = 0;
+        }
+        if(typeof limit === 'undefined' || typeof limit === null){
+            limit = 500;
+        }
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'id_product';
+        }
+        
+        let param = req.query;
+        if(typeof param === 'undefined' || typeof param === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = new Array();
+            let index = 0;
+            if(typeof param.countRecords != 'undefined' && typeof param.countRecords != null){
+                productService.countRecords(param,function(message, status,data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+            }else{
+                if(typeof param.id != 'undefined' && typeof param.id != null){
+                    encryptedData[index] = param.id;
+                    index++
+                }
+
+                if(typeof param.idVarian != 'undefined' && typeof param.idVarian != null){
+                    encryptedData[index] = param.idVarian;
+                    index++
+                }
+
+                if(typeof param.idSubCategory != 'undefined' && typeof param.idSubCategory != null){
+                    encryptedData[index] = param.idSubCategory;
+                    index++
+                }
+                security.decrypt(encryptedData)
+                    .then(function(decryptedData){
+                    index = 0;
+                    if(typeof param.id != 'undefined' && typeof param.id != null){
+                        param.id = decryptedData[index];
+                        index++
+                    }
+
+                    if(typeof param.idVarian != 'undefined' && typeof param.idVarian != null){
+                        param.idVarian = decryptedData[index];
+                        index++
+                    }
+
+                    if(typeof param.idSubCategory != 'undefined' && typeof param.idSubCategory != null){
+                        param.idSubCategory = decryptedData[index];
+                        index++
+                    }
+                    productService.find(security,order,orderBy,parseInt(offset), parseInt(limit), param,function(message, status,data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+
+                }).catch(function(error){
+                    response.ok(error, 400, null, res); 
+                });
+            }
+        }
+    }catch(exception){
+        response.ok(exception.message,500, null, res);
+    }
+}
+
+exports.getAll = function (req,res){
+    try{
+        let userToken = req.user;
+        let order = req.headers.order;
+        let limit = req.headers.total_data;
+        let offset = req.headers.page;
+        if(typeof order === 'undefined' || typeof order === null){
+            order = 'desc';
+        }
+        if(typeof limit === 'undefined' || typeof limit === null){
+            limit = 500;
+        }
+        
+        if(typeof offset === 'undefined' || typeof offset === null){
+            offset = 0;
+        }else{
+            if(offset >= 1){
+                offset = limit * (offset-1);
+            }else{
+                offset = 0;
+            }
+        }
+        let encryptedData = [userToken.id];
+        security.decrypt(encryptedData).then(function(decryptedData){
+            productService.getAll(security,order,parseInt(offset), parseInt(limit),decryptedData[0],function(message, status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });
+            
+        });
+    }catch(exception){
+        response.ok(exception.message,500, null, res);
+    }
+}
