@@ -179,3 +179,37 @@ exports.getAll = function (req,res){
         response.ok(exception.message,500, null, res);
     }
 }
+exports.update = function(req, res){
+    let data = req.body.product;
+    let userToken = req.user;
+    if((typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null)
+            || (typeof data.id === 'undefined' || data.id === null)){
+        response.ok('Bad Request', 401, null, res);
+    }
+    let encryptedData = [data.idSubCategory, userToken.id, data.id ];
+    if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+        encryptedData[3] = data.idFurtherSubCategory;
+    }
+    security.decrypt(encryptedData)
+    .then(function(decryptedData){
+        data.idSubCategory = decryptedData[0];
+        data.createdBy = decryptedData[1];
+        data.id = decryptedData[2];
+        if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+           data.idFurtherSubCategory = decryptedData[3];
+        }
+        productService.update(data,security, function(message,status,data){
+            if(status == 200 || status == 201){
+                if(data == null || data == ""){
+                    response.ok('empty result', status, data, res); 
+                }else{
+                    response.ok(message, status, data, res);                    
+                }
+            }else{
+                response.ok(message, status, null, res);            
+            }
+        });
+    }).catch(function(err){
+        response.ok('failed to decrypt code:'+err, 500, null, res); 
+    });        
+}

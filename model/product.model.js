@@ -11,7 +11,8 @@ module.exports = (sequelize, Sequelize)=>{
             field: 'date_created'
         },
         status:{
-            type: Sequelize.ENUM('0','1'),
+            type: Sequelize.ENUM('0','1','2'),
+            allowNull: false,
             defaultValue: '1'
         },
         createdBy:{

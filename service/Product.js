@@ -10,46 +10,7 @@ const pictures = db.pictures;
 const Sequelize = db.Sequelize;
 const operator =  Sequelize.Op;
 const sequelize = db.sequelize;
-
-//exports.getAll = function(security,order, result){
-//    categoryProduct.findAll({
-//        attributes:{
-//            include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
-//            exclude: ['created_by', 'date_created']
-//        },
-//        where: {
-//            status:{
-//                [operator.eq]: '1'
-//            }
-//        },
-//        include:[{
-//                model: subCategoryProduct,
-//                as: 'subCategories',
-//                attributes:[],
-//                where: {
-//                    status:{
-//                        [operator.eq]: '1'
-//                    }
-//                }
-//            }
-//        ],
-//        group: 'tm_category_product.id_category',
-//        order: [
-//            ['id_category', order]
-//        ]
-//        
-//    }).then(data=>{
-//        security.encrypt(data)
-//        .then(function(encryptedData){
-//            result("success", 200, encryptedData);
-//        }).catch(function(error){
-//            result(error, 500, null);
-//        });
-//    }).catch(err=>{
-//       result(err.message, 500, null);
-//    });
-//};
-//
+const transaction = sequelize.transaction;
 
 exports.countRecords = function (param, result) {
     let conditionKey = new Object();
@@ -205,7 +166,6 @@ exports.create = function (newData, security, result) {
         picturesObject.association = productModel.associations.pictures;
         associationArray[index] = picturesObject;
     }
-    console.log("saving data product..");
     let action = null;
     if(associationArray.length > 0){
         action = productModel.create(newData, {include: associationArray});
@@ -224,37 +184,79 @@ exports.create = function (newData, security, result) {
         result(err.message, 500, null);
     });
 }
-
-exports.update= function(newData, result){
-    categoryProduct.update(
-        newData,
-        {
-            where: {id_category: parseInt(newData.id)}
-        }).then(function(data){
-        if(data[0] == 1){
-            result("success", 200, data[0]);
-        }else{
-            result("no changes", 200, data[0]);
-        }
-    })
-    .catch(err=>{
-        result(err.message, 500, null);
-    });
-};
-exports.findMaxNumerator= function( result){
-    categoryProduct.findOne({
-        attributes:[
-            [sequelize.fn('max', sequelize.col('id_category')), 'numerator']
-        ],
-        order: [
-            ['id_category', 'desc']
-        ]
-    }).then(data=>{
-        result("success", 200, data);
-    }).catch(err=>{
-        result(err.message, 500, null);
-    });
+exports.update = function (newData, type, result) {
+    if (type === "product") {
+        productModel.update(
+                newData,
+                {
+                    where: {id_product: parseInt(newData.id)}
+                }).then(function (data) {
+            if (data[0] == 1) {
+                result("success", 200, data[0]);
+            } else {
+                result("no changes", 200, data[0]);
+            }
+            
+//            categoryProductModel.destroy({
+//                where: {id_product: parseInt(newData.id)}
+//            }).then(function (dataDelete) {
+//                if (data[0] == 1) {
+//                    console.log("deleted");
+//                }
+//                let arrayCategories = new Array();
+//                let newCategories = newData.categories;
+//
+//                for (var i = 0; i < newCategories.length; i++) {
+//                    let categories = new Object();
+//                    categories['idCategory'] = newCategories[i].id;
+//                    categories['id_product'] = newData.id;
+//                    categories['dateCreated'] = new Date();
+//                    categories['createdBy'] = newData['createdBy'];
+//                    arrayCategories[i] = categories;
+//                }
+//                categoryProductModel.bulkCreate(arrayCategories).then(dataCategories => {
+//                    result("success", 200, null);
+//                }).catch(err => {
+//                    result("failed to update category : " + err.message, 500, null);
+//                })
+//            }).catch(err => {
+//                console.log(err);
+//                result("failed to delete category : " + err.message, 500, null);
+//            })
+        }).catch(err => {
+            result(err.message, 500, null);
+        });
+    } else if (type === "varian") {
+        productVarianModel.update(
+                newData,
+                {
+                    where: {id_product_varian: parseInt(newData.id)}
+                }).then(function (data) {
+            if (data[0] == 1) {
+                result("success", 200, null);
+            } else {
+                result("success, nothing to change", 200, null);
+            }
+        }).catch(err => {
+            result(err.message, 500, null);
+        });
+    }
 }
+//
+//exports.findMaxNumerator= function( result){
+//    categoryProduct.findOne({
+//        attributes:[
+//            [sequelize.fn('max', sequelize.col('id_category')), 'numerator']
+//        ],
+//        order: [
+//            ['id_category', 'desc']
+//        ]
+//    }).then(data=>{
+//        result("success", 200, data);
+//    }).catch(err=>{
+//        result(err.message, 500, null);
+//    });
+//}
 function columnDictionary(key){
     if(key === 'id'){
         return 'id_product';
