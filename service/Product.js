@@ -53,7 +53,7 @@ exports.countRecords = function (param, result) {
         result(err.message, 500, null);
     });
 }
-exports.find = function (security, order, orderBy, offset, limit, field, result) {
+exports.find = function (security, order, orderBy, offset, limit, field,scope, result) {
     let op = null;
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
@@ -75,16 +75,41 @@ exports.find = function (security, order, orderBy, offset, limit, field, result)
     
     let orderOption = Array();
     orderOption[0] = [columnDictionary(orderBy), order];
-    
-    productModel.findAll({
-        attributes:{
-            exclude: ['createdBy','idSubCategory']
-        },
-        order: orderOption,
-        offset: parseInt(offset),
-        limit: parseInt(limit), 
-        where: [conditionKey]
-    }).then(data=>{
+    let options = null;
+    if(scope === 'all'){
+        options = {
+            attributes:{
+                exclude: ['createdBy']
+            },
+            order: orderOption,
+            offset: parseInt(offset),
+            limit: parseInt(limit), 
+            where: [conditionKey],
+            include:[
+                {
+                    model: productVarianModel,
+                    as: 'varian',
+                    exclude: ['createdBy','dateCreated','status', 'id_product']
+                },
+                {
+                    model: pictures,
+                    as: 'pictures',
+                    exclude: ['createdBy','dateCreated','status', 'id_product']
+                },
+            ]
+        }        
+    }else{
+        options = {
+            attributes:{
+                exclude: ['createdBy','idSubCategory']
+            },
+            order: orderOption,
+            offset: parseInt(offset),
+            limit: parseInt(limit), 
+            where: [conditionKey]
+        }
+    }
+    productModel.findAll(options).then(data=>{
         if(data == null){
             result("Not Found", 404, null);
         }else{

@@ -14,32 +14,37 @@ exports.create = function(req, res){
     let userToken = req.user;
     if(typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null){
         response.ok('Bad Request', 401, null, res);
-    }
-    let encryptedData = [data.idSubCategory, userToken.id];
-    if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-        encryptedData[2] = data.idFurtherSubCategory;
-    }
-    security.decrypt(encryptedData)
-    .then(function(decryptedData){
-        data.idSubCategory = decryptedData[0];
-        data.createdBy = decryptedData[1];
+    }else{
+        let encryptedData = [data.idSubCategory, userToken.id];
         if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-           data.idFurtherSubCategory = decryptedData[2];
+            encryptedData[2] = data.idFurtherSubCategory;
         }
-        productService.create(data,security, function(message,status,data){
-            if(status == 200 || status == 201){
-                if(data == null || data == ""){
-                    response.ok('empty result', status, data, res); 
+        security.decrypt(encryptedData)
+        .then(function(decryptedData){
+            data.idSubCategory = decryptedData[0];
+            data.createdBy = decryptedData[1];
+            if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+                if(decryptedData[2] == null || decryptedData[2] == 'null' ){
+                    data.idFurtherSubCategory = null;
                 }else{
-                    response.ok(message, status, data, res);                    
+                    data.idFurtherSubCategory = decryptedData[2];                    
                 }
-            }else{
-                response.ok(message, status, null, res);            
             }
+            productService.create(data,security, function(message,status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });
+        }).catch(function(err){
+            response.ok('failed to decrypt code:'+err, 500, null, res); 
         });
-    }).catch(function(err){
-        response.ok('failed to decrypt code:'+err, 500, null, res); 
-    });        
+    }        
 }
 
 exports.find = function (req,res){
@@ -48,6 +53,7 @@ exports.find = function (req,res){
         let limit = req.headers.total_data;
         let offset = req.headers.page;
         let orderBy = req.headers.order_by;
+        let scope = req.headers.scope;
         
         if(typeof order === 'undefined' || typeof order === null){
             order = 'desc';
@@ -116,7 +122,7 @@ exports.find = function (req,res){
                         param.idSubCategory = decryptedData[index];
                         index++
                     }
-                    productService.find(security,order,orderBy,parseInt(offset), parseInt(limit), param,function(message, status,data){
+                    productService.find(security,order,orderBy,parseInt(offset), parseInt(limit), param,scope,function(message, status,data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
@@ -182,34 +188,42 @@ exports.getAll = function (req,res){
 exports.update = function(req, res){
     let data = req.body.product;
     let userToken = req.user;
-    if((typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null)
+    if((typeof data.id === 'undefined' || typeof data.id === null)
             || (typeof data.id === 'undefined' || data.id === null)){
         response.ok('Bad Request', 401, null, res);
-    }
-    let encryptedData = [data.idSubCategory, userToken.id, data.id ];
-    if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-        encryptedData[3] = data.idFurtherSubCategory;
-    }
-    security.decrypt(encryptedData)
-    .then(function(decryptedData){
-        data.idSubCategory = decryptedData[0];
-        data.createdBy = decryptedData[1];
-        data.id = decryptedData[2];
-        if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-           data.idFurtherSubCategory = decryptedData[3];
+    }else{
+        let encryptedData = [data.id, userToken.id];
+        if(data.idSubCategory != 'undefined' && data.idSubCategory != null){
+            encryptedData[2] = data.idSubCategory;
         }
-        productService.update(data,security, function(message,status,data){
-            if(status == 200 || status == 201){
-                if(data == null || data == ""){
-                    response.ok('empty result', status, data, res); 
-                }else{
-                    response.ok(message, status, data, res);                    
-                }
-            }else{
-                response.ok(message, status, null, res);            
+        if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+            encryptedData[3] = data.idFurtherSubCategory;
+        }
+        security.decrypt(encryptedData)
+        .then(function(decryptedData){
+            data.createdBy = decryptedData[1];
+            data.id = decryptedData[0];
+            if(data.idSubCategory != 'undefined' && data.idSubCategory != null){
+                data.idSubCategory = decryptedData[2];
             }
-        });
-    }).catch(function(err){
-        response.ok('failed to decrypt code:'+err, 500, null, res); 
-    });        
+            if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+               data.idFurtherSubCategory = decryptedData[3];
+            }
+
+            productService.update(data,'product', function(message,status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });
+        }).catch(function(err){
+            response.ok('failed to decrypt code:'+err, 500, null, res); 
+        }); 
+        
+    }       
 }

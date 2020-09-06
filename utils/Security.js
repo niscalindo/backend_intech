@@ -101,7 +101,7 @@ function proceedToEncrypt(data){
 //                                encrypted += key.final('hex');
 //                                data[index].dataValues.id = encrypted;
 //                            }else
-                            if(key.indexOf(substr) > -1){
+                            if(key.substring(0, 2).indexOf(substr) > -1){
                                 let keyEncrypt = crypto.createCipher('aes-256-cbc', salt);
                                 let encrypted = keyEncrypt.update(String(value), 'utf8', 'hex');
                                 encrypted += keyEncrypt.final('hex');
@@ -129,7 +129,7 @@ function proceedToEncrypt(data){
 //                        encrypted += key.final('hex');
 //                        data.dataValues.id = encrypted;
 //                    }else
-                    if(key.indexOf(substr) > -1){
+                    if(key.substring(0, 2).indexOf(substr) > -1){
                         let keyEncrypt  = crypto.createCipher('aes-256-cbc', salt);
                         let encrypted = keyEncrypt.update(String(value), 'utf8', 'hex');
                         encrypted += keyEncrypt.final('hex');
@@ -170,7 +170,7 @@ function proceedToEncryptRaw(data){
 //                                encrypted += key.final('hex');
 //                                data[index].id = encrypted;
 //                            }else
-                            if(key.indexOf(substr) > -1){
+                            if(key.substring(0, 2).indexOf(substr) > -1){
                                 let keyEncrypt  = crypto.createCipher('aes-256-cbc', salt);
                                 let encrypted = keyEncrypt.update(String(value), 'utf8', 'hex');
                                 encrypted += keyEncrypt.final('hex');
@@ -199,7 +199,7 @@ function proceedToEncryptRaw(data){
 //                        encrypted += key.final('hex');
 //                        data.id = encrypted;
 //                    }else 
-                    if(key.indexOf(substr) > -1){
+                    if(key.substring(0, 2).indexOf(substr) > -1){
                         let keyEncrypt = crypto.createCipher('aes-256-cbc', salt);
                         let encrypted = keyEncrypt.update(String(value), 'utf8', 'hex');
                         encrypted += keyEncrypt.final('hex');
