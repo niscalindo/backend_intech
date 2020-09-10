@@ -84,7 +84,7 @@ exports.update = function(req, res){
     try{
         let newUser = req.body.user;
         let userToken = req.user;
-        if(typeof newUser === 'undefined' || typeof newUser === null){
+        if((typeof newUser === 'undefined' || typeof newUser === null) || (typeof newUser.id === 'undefined' || typeof newUser.id === null)){
             response.ok('Bad Request', 401, null, res);
         }else{
             let encryptedData = [newUser.id, userToken.id];
