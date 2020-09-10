@@ -15,6 +15,7 @@ const transaction = sequelize.transaction;
 exports.countRecords = function (param, result) {
     let conditionKey = new Object();
     let conditionKeyVarian = new Object();
+    let isLookInStatus = false;
     if(param.countAll == 'undefined' || param.countAll == null){
         if (typeof param.name != 'undefined' && typeof param.name != null) {
             if (param.name != "") {
@@ -24,11 +25,20 @@ exports.countRecords = function (param, result) {
                         [operator.substring]: param.name
                     })];
             }
-    }
+        }
+    }else{
+        if(typeof param.status != "undefined" && typeof param.status != null){
+            isLookInStatus = true;      
+        }
     }
     let condition2 = new Object();
-    condition2[operator.ne] = '0';
-    conditionKey['status'] = condition2;
+    if(!isLookInStatus){
+        condition2[operator.ne] = '0';
+        conditionKey['status'] = condition2;
+    }else{
+        condition2[operator.eq] = param.status;
+        conditionKey['status'] = condition2;
+    }
 
 //    let conditionVarian = new Object();
 //    conditionVarian[operator.eq] = '1';
@@ -56,8 +66,10 @@ exports.countRecords = function (param, result) {
 exports.find = function (security, order, orderBy, offset, limit, field,scope, result) {
     let op = null;
     let conditionKey = new Object();
+    let isLookInStatus = false;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
+        if(key === "status") isLookStatus = true;
         if(key === "name"){
             op = operator.substring;
             condition[op] = value;
@@ -69,9 +81,11 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
         }
         
     }
-    let condition = new Object();
-    condition[operator.eq] = '1';
-    conditionKey['status'] = condition;
+    if(!isLookStatus){
+        let condition = new Object();
+        condition[operator.eq] = '1';
+        conditionKey['status'] = condition;
+    }
     
     let orderOption = Array();
     orderOption[0] = [columnDictionary(orderBy), order];
