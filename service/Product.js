@@ -69,7 +69,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
     let isLookInStatus = false;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
-        if(key === "status") isLookStatus = true;
+        if(key === "status") isLookInStatus = true;
         if(key === "name"){
             op = operator.substring;
             condition[op] = value;
