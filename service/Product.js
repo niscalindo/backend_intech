@@ -81,9 +81,9 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
         }
         
     }
-    if(!isLookStatus){
+    if(!isLookInStatus){
         let condition = new Object();
-        condition[operator.eq] = '1';
+        condition[operator.ne] = '0';
         conditionKey['status'] = condition;
     }
     
@@ -145,7 +145,7 @@ exports.getAll = function (security, order, offset, limit, id, result) {
         },
         where: {
             status: {
-                [operator.eq]: '1'
+                [operator.ne]: '0'
             },
             created_by: {
                 [operator.eq]: id
