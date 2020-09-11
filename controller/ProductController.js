@@ -149,7 +149,12 @@ exports.getAll = function (req,res){
         let userToken = req.user;
         let order = req.headers.order;
         let limit = req.headers.total_data;
+        let orderBy = req.headers.order_by;
         let offset = req.headers.page;
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'id_product';
+        }
+        
         if(typeof order === 'undefined' || typeof order === null){
             order = 'desc';
         }
@@ -168,7 +173,7 @@ exports.getAll = function (req,res){
         }
         let encryptedData = [userToken.id];
         security.decrypt(encryptedData).then(function(decryptedData){
-            productService.getAll(security,order,parseInt(offset), parseInt(limit),decryptedData[0],function(message, status,data){
+            productService.getAll(security,orderBy, order,parseInt(offset), parseInt(limit),decryptedData[0],function(message, status,data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
                         response.ok('empty result', status, data, res); 

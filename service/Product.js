@@ -138,7 +138,10 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
        result(err.message, 500, null);
     });
 }
-exports.getAll = function (security, order, offset, limit, id, result) {
+exports.getAll = function (security, orderBy, order, offset, limit, id, result) {
+    let orderOption = Array();
+    orderOption[0] = [columnDictionary(orderBy), order];
+    
     productModel.findAll({
         attributes: {
             exclude: ['createdBy', 'dateCreated']
@@ -153,9 +156,7 @@ exports.getAll = function (security, order, offset, limit, id, result) {
         },
         offset: parseInt(offset),
         limit: limit,
-        order: [
-            ['id_product', order]
-        ],
+        order: orderOption
 //        include: [
 //            {model: supPubModel,
 //                as: 'suplierPublisher',
