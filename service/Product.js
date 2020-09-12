@@ -7,6 +7,7 @@ const db = require("../model");
 const productModel = db.product;
 const productVarianModel = db.product_varian;
 const pictures = db.pictures;
+const brand = db.brand;
 const Sequelize = db.Sequelize;
 const operator =  Sequelize.Op;
 const sequelize = db.sequelize;
@@ -118,12 +119,17 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                     as: 'pictures',
                     exclude: ['createdBy','dateCreated','status', 'id_product']
                 },
+                {
+                    model: brand,
+                    as: 'brand',
+                    exclude: ['createdBy','dateCreated','status', 'id_product']
+                }
             ]
         }        
     }else{
         options = {
             attributes:{
-                exclude: ['createdBy','idSubCategory']
+                exclude: ['createdBy']
             },
             order: orderOption,
             offset: parseInt(offset),

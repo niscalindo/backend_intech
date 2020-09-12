@@ -50,10 +50,25 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'sub_category_name'
         },
+        categoryName:{
+            type: Sequelize.STRING(50),
+            allowNull: false,
+            field: 'category_name'
+        },
         idFurtherSubCategory:{
             type: Sequelize.INTEGER,
             allowNull: true,
             field: 'id_further_sub_category'
+        },
+        idBrand:{
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            field: 'id_brand'
+        },
+        brandName:{
+            type: Sequelize.STRING(25),
+            allowNull: false,
+            field: 'brand_name'
         },
         furtherSubCategoryName:{
             type: Sequelize.STRING(50),

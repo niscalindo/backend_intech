@@ -12,22 +12,24 @@ const productService = require("../service/Product");
 exports.create = function(req, res){
     let data = req.body.product;
     let userToken = req.user;
-    if(typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null){
+    console.log(data);
+    if((typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null) || (typeof data.idBrand === 'undefined' || typeof data.idBrand === null)){
         response.ok('Bad Request', 401, null, res);
     }else{
-        let encryptedData = [data.idSubCategory, userToken.id];
+        let encryptedData = [data.idSubCategory,data.idBrand, userToken.id];
         if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-            encryptedData[2] = data.idFurtherSubCategory;
+            encryptedData[3] = data.idFurtherSubCategory;
         }
         security.decrypt(encryptedData)
         .then(function(decryptedData){
             data.idSubCategory = decryptedData[0];
-            data.createdBy = decryptedData[1];
+            data.idBrand = decryptedData[1];
+            data.createdBy = decryptedData[2];
             if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-                if(decryptedData[2] == null || decryptedData[2] == 'null' ){
+                if(decryptedData[3] == null || decryptedData[3] == 'null' ){
                     data.idFurtherSubCategory = null;
                 }else{
-                    data.idFurtherSubCategory = decryptedData[2];                    
+                    data.idFurtherSubCategory = decryptedData[3];                    
                 }
             }
             productService.create(data,security, function(message,status,data){
@@ -229,6 +231,5 @@ exports.update = function(req, res){
         }).catch(function(err){
             response.ok('failed to decrypt code:'+err, 500, null, res); 
         }); 
-        
     }       
 }

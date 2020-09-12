@@ -3,15 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/sub_category_product.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product_varian.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/ProductController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/further_sub_category_product.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/Security.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/sub_category_product.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UsersController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/users.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product.model.js</file>
         </group>
     </open-files>
 </project-private>
