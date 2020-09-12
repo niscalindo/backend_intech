@@ -60,18 +60,6 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'further_sub_category_name'
         },
-        price:{
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            defaultValue: 0,
-            field: 'price'
-        },
-        stock:{
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            defaultValue: 0,
-            field: 'stock'
-        },
         defaultPicture:{
             type: Sequelize.STRING(100),
             allowNull: false,

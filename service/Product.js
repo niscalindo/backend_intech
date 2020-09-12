@@ -88,7 +88,15 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
     }
     
     let orderOption = Array();
-    orderOption[0] = [columnDictionary(orderBy), order];
+    if(orderBy == "price"){
+        orderOption[0] = [{
+                    model: productVarianModel,
+                    as: 'varian'
+                },columnDictionary(orderBy), order];
+    }else{
+        orderOption[0] = [columnDictionary(orderBy), order];
+    }
+    
     let options = null;
     if(scope === 'all'){
         options = {
@@ -120,7 +128,14 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
             order: orderOption,
             offset: parseInt(offset),
             limit: parseInt(limit), 
-            where: [conditionKey]
+            where: [conditionKey],
+            include:[
+                {
+                    model: productVarianModel,
+                    as: 'varian',
+                    exclude: ['createdBy','dateCreated','status', 'id_product']
+                }
+            ]
         }
     }
     productModel.findAll(options).then(data=>{
@@ -135,6 +150,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
             });            
         }
     }).catch(err=>{
+        console.log(err);
        result(err.message, 500, null);
     });
 }
@@ -156,18 +172,18 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
         },
         offset: parseInt(offset),
         limit: limit,
-        order: orderOption
-//        include: [
+        order: orderOption,
+        include: [
 //            {model: supPubModel,
 //                as: 'suplierPublisher',
 //                attributes: {exclude: ['created_by', 'date_created', 'idDistributor']}
 //            },
-//            {
-//                model: productVarianModel,
-//                as: 'varian',
-//                attributes: []
-//            }
-//        ]
+            {
+                model: productVarianModel,
+                as: 'varian',
+                attributes: {exclude: ['createdBy', 'dateCreated']}
+            }
+        ]
     }).then(data => {
         security.encrypt(data)
                 .then(function (encryptedData) {
@@ -220,7 +236,6 @@ exports.create = function (newData, security, result) {
             result(error, 500, null);
         });
     }).catch(err => {
-        console.log(err);
         result(err.message, 500, null);
     });
 }

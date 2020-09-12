@@ -32,13 +32,15 @@ module.exports = (sequelize, Sequelize)=>{
         },
         optionName:{
             type: Sequelize.STRING(100),
-            allowNull: false,
-            field: 'option_name'
+            allowNull: true,
+            field: 'option_name',
+            defaultValue: null
         },
         varianName:{
             type: Sequelize.STRING(20),
-            allowNull: false,
-            field: 'varian_name'
+            allowNull: true,
+            field: 'varian_name',
+            defaultValue: null
         },
         price:{
             type: Sequelize.INTEGER,
