@@ -194,6 +194,8 @@ exports.getAll = function (req,res){
 }
 exports.update = function(req, res){
     let data = req.body.product;
+    
+            console.log(data);
     let userToken = req.user;
     if((typeof data.id === 'undefined' || typeof data.id === null)
             || (typeof data.id === 'undefined' || data.id === null)){
@@ -205,6 +207,25 @@ exports.update = function(req, res){
         }
         if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
             encryptedData[3] = data.idFurtherSubCategory;
+        }else{
+            data.idFurtherSubCategory = null;
+        }
+        
+        if(data.idBrand != 'undefined' && data.idBrand != null){
+            encryptedData[4] = data.idBrand;
+        }
+        for(let i = 0; i<data.varian.length;i++){
+            if( data.varian[i].id != "undefined" && data.varian[i].id != null){
+                encryptedData[(5+i)] = data.varian[i].id;
+            }
+        }
+        let size = encryptedData.length;
+        if(data.pictures != "undefined" && data.pictures != null){ 
+            for(let i = 0; i<data.pictures.length;i++){
+                if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
+                    encryptedData[(size+i)] = data.pictures[i].id;
+                }
+            }
         }
         security.decrypt(encryptedData)
         .then(function(decryptedData){
@@ -214,9 +235,30 @@ exports.update = function(req, res){
                 data.idSubCategory = decryptedData[2];
             }
             if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-               data.idFurtherSubCategory = decryptedData[3];
+                if(decryptedData[3] === 'null' || decryptedData[3] === null){
+                    data.idFurtherSubCategory = null; 
+                }else{
+                    data.idFurtherSubCategory = decryptedData[3];                    
+                }
             }
-
+            if(data.idBrand != 'undefined' && data.idBrand != null){
+               data.idBrand = decryptedData[4];
+            }
+            
+            for(let i = 0; i<data.varian.length;i++){
+                if( data.varian[i].id != "undefined" && data.varian[i].id != null){
+                    data.varian[i].id = decryptedData[(5+i)];
+                }
+            }
+            let size = 5+(data.varian.length);
+            if(data.pictures != "undefined" && data.pictures != null){ 
+                for(let i = 0; i<data.pictures.length;i++){
+                    if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
+                        data.pictures[i].id = decryptedData[(size+i)];
+                    }
+                }
+            }
+            console.log(data);
             productService.update(data,'product', function(message,status,data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
