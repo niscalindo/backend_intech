@@ -16,21 +16,31 @@ exports.create = function(req, res){
     if((typeof data.idSubCategory === 'undefined' || typeof data.idSubCategory === null) || (typeof data.idBrand === 'undefined' || typeof data.idBrand === null)){
         response.ok('Bad Request', 401, null, res);
     }else{
-        let encryptedData = [data.idSubCategory,data.idBrand, userToken.id];
+        let encryptedData = [data.idSubCategory,userToken.id];
+        let index = 2;
         if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-            encryptedData[3] = data.idFurtherSubCategory;
+            encryptedData[index] = data.idFurtherSubCategory;
+            index++;
+        }
+        if(data.idBrand != 'undefined' && data.idBrand != null){
+            encryptedData[index] = data.idBrand;
         }
         security.decrypt(encryptedData)
         .then(function(decryptedData){
             data.idSubCategory = decryptedData[0];
-            data.idBrand = decryptedData[1];
-            data.createdBy = decryptedData[2];
+            data.createdBy = decryptedData[1];
+            index = 2;
             if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
-                if(decryptedData[3] == null || decryptedData[3] == 'null' ){
+                if(decryptedData[index] == null || decryptedData[index] == 'null' ){
                     data.idFurtherSubCategory = null;
                 }else{
-                    data.idFurtherSubCategory = decryptedData[3];                    
+                    data.idFurtherSubCategory = decryptedData[index];                    
                 }
+                index++;
+            }
+            
+            if(data.idBrand != 'undefined' && data.idBrand != null){
+                data.idBrand = encryptedData[index];
             }
             productService.create(data,security, function(message,status,data){
                 if(status == 200 || status == 201){
@@ -210,7 +220,6 @@ exports.update = function(req, res){
         }else{
             data.idFurtherSubCategory = null;
         }
-        
         if(data.idBrand != 'undefined' && data.idBrand != null){
             encryptedData[4] = data.idBrand;
         }

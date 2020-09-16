@@ -187,6 +187,11 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
             {
                 model: productVarianModel,
                 as: 'varian',
+                where: {
+                    status: {
+                        [operator.ne]: '0'
+                    }
+                },
                 attributes: {exclude: ['createdBy', 'dateCreated']}
             }
         ]
