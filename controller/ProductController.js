@@ -40,7 +40,7 @@ exports.create = function(req, res){
             }
             
             if(data.idBrand != 'undefined' && data.idBrand != null){
-                data.idBrand = encryptedData[index];
+                data.idBrand = decryptedData[index];
             }
             productService.create(data,security, function(message,status,data){
                 if(status == 200 || status == 201){
@@ -223,12 +223,15 @@ exports.update = function(req, res){
         if(data.idBrand != 'undefined' && data.idBrand != null){
             encryptedData[4] = data.idBrand;
         }
-        for(let i = 0; i<data.varian.length;i++){
-            if( data.varian[i].id != "undefined" && data.varian[i].id != null){
-                encryptedData[(5+i)] = data.varian[i].id;
+        if(data.varian != "undefined" && data.varian != null){
+            for(let i = 0; i<data.varian.length;i++){
+                if( data.varian[i].id != "undefined" && data.varian[i].id != null){
+                    encryptedData[(5+i)] = data.varian[i].id;
+                }
             }
         }
         let size = encryptedData.length;
+        
         if(data.pictures != "undefined" && data.pictures != null){ 
             for(let i = 0; i<data.pictures.length;i++){
                 if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
