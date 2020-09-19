@@ -262,35 +262,38 @@ exports.update = function (newData, type, result) {
 //            } else {
 //                result("no changes", 200, data[0]);
 //            }
-            
-            for (var i = 0; i < newData.varian.length; i++) {
-                newData.varian[i].id_product = newData.id;
-                newData.varian[i].dateCreated = new Date();
-                newData.varian[i].createdBy = newData.createdBy;
-            }
-            productVarianModel.bulkCreate(newData.varian,{updateOnDuplicate: Object.keys(productVarianModel.rawAttributes)}).then(function (data) {
-                if(newData.pictures != "undefined" && newData.pictures != null){
-                    let arrayPictures = new Array();
-                    let newPictures = newData.pictures;
-                    for (var i = 0; i < newPictures.length; i++) {
-                        let picture = new Object();
-                        picture['id_product'] = newData.id;
-                        picture['dateCreated'] = new Date();
-                        picture['createdBy'] = newData['createdBy'];
-                        arrayPictures[i] = picture;
-                    }
-                    pictures.bulkCreate(arrayPictures,{updateOnDuplicate: Object.keys(pictures.rawAttributes)}).then(response => {
-                        result("success", 200, null);
-                    }).catch(err => {
-                        result("failed to update pictures : " + err.message, 500, null);
-                    })            
-                }else{
-                    result("success", 200, null);
+            if(newData.varian != "undefined" && newData.varian !=null){
+                for (var i = 0; i < newData.varian.length; i++) {
+                    newData.varian[i].id_product = newData.id;
+                    newData.varian[i].dateCreated = new Date();
+                    newData.varian[i].createdBy = newData.createdBy;
                 }
-            }).catch(err => {
-                console.log(err);
-                result("failed to update varian : " + err.message, 500, null);
-            });
+                productVarianModel.bulkCreate(newData.varian,{updateOnDuplicate: Object.keys(productVarianModel.rawAttributes)}).then(function (data) {
+                    if(newData.pictures != "undefined" && newData.pictures != null){
+                        let arrayPictures = new Array();
+                        let newPictures = newData.pictures;
+                        for (var i = 0; i < newPictures.length; i++) {
+                            let picture = new Object();
+                            picture['id_product'] = newData.id;
+                            picture['dateCreated'] = new Date();
+                            picture['createdBy'] = newData['createdBy'];
+                            arrayPictures[i] = picture;
+                        }
+                        pictures.bulkCreate(arrayPictures,{updateOnDuplicate: Object.keys(pictures.rawAttributes)}).then(response => {
+                            result("success", 200, null);
+                        }).catch(err => {
+                            result("failed to update pictures : " + err.message, 500, null);
+                        })            
+                    }else{
+                        result("success", 200, null);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    result("failed to update varian : " + err.message, 500, null);
+                });                
+            }else{
+                result("success", 200, null);                
+            }
         }).catch(err => {
             console.log(err);
             result(err.message, 500, null);

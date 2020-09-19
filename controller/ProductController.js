@@ -231,7 +231,6 @@ exports.update = function(req, res){
             }
         }
         let size = encryptedData.length;
-        
         if(data.pictures != "undefined" && data.pictures != null){ 
             for(let i = 0; i<data.pictures.length;i++){
                 if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
@@ -239,6 +238,7 @@ exports.update = function(req, res){
                 }
             }
         }
+        console.log(encryptedData.length);
         security.decrypt(encryptedData)
         .then(function(decryptedData){
             data.createdBy = decryptedData[1];
@@ -253,16 +253,22 @@ exports.update = function(req, res){
                     data.idFurtherSubCategory = decryptedData[3];                    
                 }
             }
+            
             if(data.idBrand != 'undefined' && data.idBrand != null){
                data.idBrand = decryptedData[4];
             }
             
-            for(let i = 0; i<data.varian.length;i++){
-                if( data.varian[i].id != "undefined" && data.varian[i].id != null){
-                    data.varian[i].id = decryptedData[(5+i)];
+            if(data.varian != "undefined" && data.varian != null){
+                for(let i = 0; i<data.varian.length;i++){
+                    if( data.varian[i].id != "undefined" && data.varian[i].id != null){
+                        data.varian[i].id = decryptedData[(5+i)];
+                    }
                 }
+                
+                let size = 5+(data.varian.length);
+            }else{
+                size = 5;
             }
-            let size = 5+(data.varian.length);
             if(data.pictures != "undefined" && data.pictures != null){ 
                 for(let i = 0; i<data.pictures.length;i++){
                     if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
