@@ -10,7 +10,8 @@ const categoryProduct = require("../service/CategoryProduct");
 
 exports.getAll = function(req, res){
     try{
-        let order = req.headers.order;
+        let headers = req.headers;
+        let order = headers.order;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
         }else{
@@ -18,7 +19,11 @@ exports.getAll = function(req, res){
                 order = 'desc';
             }
         }
-        categoryProduct.getAll(security,order,function(message, status,data){
+        let scope = headers.scope;
+        if(typeof headers.scope === 'undefined' && typeof headers.scope === null){
+            scope = 'desc';
+        }
+        categoryProduct.getAll(security,order,scope,function(message, status,data){
             if(status == 200 || status == 201){
                 if(data == null || data == ""){
                     response.ok('empty result', status, data, res); 
