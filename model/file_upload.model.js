@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize)=>{
         idUser:{
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'id_use'
+            field: 'id_user'
         },
         fileName:{
             type: Sequelize.STRING(100),
