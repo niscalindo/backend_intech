@@ -66,6 +66,39 @@ exports.create = function(req, res){
     }
 }
 
+exports.update = function(req, res){
+    try{
+        let userToken = req.user;
+        let newFile = req.body.fileUpload;
+        console.log(newFile);
+        if((typeof newFile === 'undefined' || typeof newFile === null) && (typeof newFile.id === 'undefined' || typeof newFile.id === null)){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userToken.id, newFile.id];
+                security.decrypt(encryptedData)
+                    .then(function(decryptedLastNumerator){
+                        newFile.createdBy = decryptedLastNumerator[0];
+                        newFile.id = decryptedLastNumerator[1];
+                        fileUpload.update(newFile,function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+                }).catch(function(err){
+                    response.ok('failed to generate code :'+err, 500, null, res); 
+                });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
+
 exports.find = function(req, res){
     try{
         let param = req.query;

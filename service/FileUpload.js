@@ -115,6 +115,22 @@ exports.create = function(newData,security, result){
         result(err.message, 500, null);
     });
 };
+exports.update= function(newData, result){
+    fileUpload.update(
+        newData,
+        {
+            where: {id_file: parseInt(newData.id)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
+        result(err.message, 500, null);
+    });
+};
 function columnDictionary(key){
     if(key === 'id'){
         return 'id_file';
