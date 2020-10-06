@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/file_upload.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product_varian.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FileUpload.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/further_sub_category_product.model.js</file>
@@ -14,6 +15,7 @@
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/CategoryProductController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/ProductController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/brand.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Brand.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/SubCategoryProductController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/CategoryProduct.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/FurtherSubCategoryProductController.js</file>

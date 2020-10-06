@@ -67,6 +67,7 @@ exports.countRecords = function (param, result) {
 exports.find = function (security, order, orderBy, offset, limit, field,scope, result) {
     let op = null;
     let conditionKey = new Object();
+    let conditionKeyVarian = new Object();
     let isLookInStatus = false;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
@@ -80,8 +81,11 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
         }
-        
     }
+    
+    let conditionVarian = new Object();
+    conditionVarian[operator.ne] = '0';
+    conditionKeyVarian['status'] = conditionVarian;
     if(!isLookInStatus){
         let condition = new Object();
         condition[operator.ne] = '0';
@@ -97,7 +101,6 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
     }else{
         orderOption[0] = [columnDictionary(orderBy), order];
     }
-    
     let options = null;
     if(scope === 'all'){
         options = {
@@ -112,6 +115,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                 {
                     model: productVarianModel,
                     as: 'varian',
+                    where: [conditionKeyVarian],
                     exclude: ['createdBy','dateCreated','status', 'id_product']
                 },
                 {
@@ -139,6 +143,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                 {
                     model: productVarianModel,
                     as: 'varian',
+                    where: [conditionKeyVarian],
                     exclude: ['createdBy','dateCreated','status', 'id_product']
                 }
             ]
