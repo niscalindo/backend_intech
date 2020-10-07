@@ -11,35 +11,76 @@ const Sequelize = db.Sequelize;
 const operator =  Sequelize.Op;
 const sequelize = db.sequelize;
 
-exports.getAll = function(security,order, result){
-    categoryProduct.findAll({
-        attributes:{
-            include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
-            exclude: ['created_by', 'date_created']
-        },
-        where: {
-            status:{
-                [operator.eq]: '1'
-            }
-        },
-        include:[{
-                model: subCategoryProduct,
-                as: 'subCategories',
-                required:false,
-                attributes:[],
-                where: {
-                    status:{
-                        [operator.eq]: '1'
+exports.getAll = function(security,order,scope, result){
+    let objOptions = new Object();
+    if(scope === 'all'){
+        objOptions = {
+            attributes:{
+                exclude: ['created_by', 'date_created']
+            },
+            where: {
+                status:{
+                    [operator.eq]: '1'
+                }
+            },
+            include:[{
+                    model: subCategoryProduct,
+                    as: 'subCategories',
+                    required:false,
+                    include:[{
+                            model: furtherSubCategoryProduct,
+                            as: 'furtherSubCategories',
+                            required:false,
+                            where: {
+                                status:{
+                                    [operator.eq]: '1'
+                                }
+                            }
+                        }
+                    ],
+                    where: {
+                        status:{
+                            [operator.eq]: '1'
+                        }
                     }
                 }
-            }
-        ],
-        group: 'tm_category_product.id_category',
-        order: [
-            ['id_category', order]
-        ]
-        
-    }).then(data=>{
+            ],
+            order: [
+                ['id_category', order]
+            ]
+
+        }
+    }else{
+        objOptions = {
+            attributes:{
+                include: [[sequelize.fn('COUNT', sequelize.col('subCategories.id_category')), 'totalChild']],
+                exclude: ['created_by', 'date_created']
+            },
+            where: {
+                status:{
+                    [operator.eq]: '1'
+                }
+            },
+            include:[{
+                    model: subCategoryProduct,
+                    as: 'subCategories',
+                    required:false,
+                    attributes:[],
+                    where: {
+                        status:{
+                            [operator.eq]: '1'
+                        }
+                    }
+                }
+            ],
+            group: 'tm_category_product.id_category',
+            order: [
+                ['id_category', order]
+            ]
+
+        }
+    }
+    categoryProduct.findAll(objOptions).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             result("success", 200, encryptedData);
