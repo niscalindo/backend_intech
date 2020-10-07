@@ -15,6 +15,7 @@ module.exports = function(app){
     var captchaController = require('../controller/CaptchaController');
     var subCategoryController = require('../controller/SubCategoryProductController');
     var furtherSubCategoryController = require('../controller/FurtherSubCategoryProductController');
+    var addressController = require('../controller/AddressController');
     
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
@@ -49,8 +50,12 @@ module.exports = function(app){
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
+    // app.route('/address').get(auth.isAunthenticated,addressController.getAll);
+    app.route('/address').post(auth.isAunthenticated,addressController.create);
+    app.route('/address').put(auth.isAunthenticated,addressController.update);
+    app.route('/address/find').get(auth.isAunthenticated,addressController.find);
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);
-}
+} 
 

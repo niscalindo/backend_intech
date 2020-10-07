@@ -51,7 +51,7 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'store_name'
         },
-        sellerStar: {
+        seller_star: {
             type: Sequelize.STRING(100),
             allowNull: true,
             field: 'seller_star'
