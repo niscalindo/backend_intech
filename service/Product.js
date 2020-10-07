@@ -26,6 +26,10 @@ exports.countRecords = function (param, result) {
                         [operator.substring]: param.name
                     })];
             }
+        }else{
+            if(typeof param.status != "undefined" && typeof param.status != null){
+                isLookInStatus = true;      
+            }            
         }
     }else{
         if(typeof param.status != "undefined" && typeof param.status != null){
