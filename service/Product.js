@@ -19,13 +19,10 @@ exports.countRecords = function (param, result) {
     let isLookInStatus = false;
     if(param.countAll == 'undefined' || param.countAll == null){
         if (typeof param.name != 'undefined' && typeof param.name != null) {
-            if (param.name != "") {
-                conditionKey[operator.or] = [Sequelize.where(Sequelize.fn('concat', Sequelize.col('product.product_name'), ' ', Sequelize.col('varian.varian_title')), {
-                        [operator.substring]: param.name
-                    }), Sequelize.where(Sequelize.fn('concat', Sequelize.col('product.product_name'), ' ', Sequelize.col('varian.color')), {
-                        [operator.substring]: param.name
-                    })];
-            }
+            op = operator.substring;
+            let condition = new Object();
+            condition[op] = param.name;
+            conditionKey['product_name'] = condition;
         }else{
             if(typeof param.status != "undefined" && typeof param.status != null){
                 isLookInStatus = true;      
