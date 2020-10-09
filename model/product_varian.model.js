@@ -36,6 +36,12 @@ module.exports = (sequelize, Sequelize)=>{
             field: 'option_name',
             defaultValue: null
         },
+        sku:{
+            type: Sequelize.STRING(45),
+            allowNull: true,
+            field: 'sku',
+            defaultValue: null
+        },
         varianName:{
             type: Sequelize.STRING(20),
             allowNull: true,

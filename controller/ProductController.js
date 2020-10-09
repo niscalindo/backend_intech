@@ -76,9 +76,12 @@ exports.find = function (req,res){
         
         if(typeof offset === 'undefined' || typeof offset === null){
             offset = 0;
-        }
-        if(typeof limit === 'undefined' || typeof limit === null){
-            limit = 500;
+        }else{
+            if(offset >= 1){
+                offset = limit * (offset-1);
+            }else{
+                offset = 0;
+            }
         }
         if(typeof orderBy === 'undefined' || typeof orderBy === null){
             orderBy = 'id_product';
@@ -166,7 +169,6 @@ exports.getAll = function (req,res){
         if(typeof orderBy === 'undefined' || typeof orderBy === null){
             orderBy = 'id_product';
         }
-        
         if(typeof order === 'undefined' || typeof order === null){
             order = 'desc';
         }
@@ -196,7 +198,6 @@ exports.getAll = function (req,res){
                     response.ok(message, status, null, res);            
                 }
             });
-            
         });
     }catch(exception){
         response.ok(exception.message,500, null, res);
@@ -204,36 +205,35 @@ exports.getAll = function (req,res){
 }
 exports.update = function(req, res){
     let data = req.body.product;
-    
-            console.log(data);
+    console.log(data);
     let userToken = req.user;
     if((typeof data.id === 'undefined' || typeof data.id === null)
             || (typeof data.id === 'undefined' || data.id === null)){
         response.ok('Bad Request', 401, null, res);
     }else{
         let encryptedData = [data.id, userToken.id];
-        if(data.idSubCategory != 'undefined' && data.idSubCategory != null){
+        if(data.idSubCategory !== 'undefined' && data.idSubCategory !== null){
             encryptedData[2] = data.idSubCategory;
         }
-        if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
+        if(data.idFurtherSubCategory !== 'undefined' && data.idFurtherSubCategory !== null){
             encryptedData[3] = data.idFurtherSubCategory;
         }else{
             data.idFurtherSubCategory = null;
         }
-        if(data.idBrand != 'undefined' && data.idBrand != null){
+        if(data.idBrand !== 'undefined' && data.idBrand !== null){
             encryptedData[4] = data.idBrand;
         }
-        if(data.varian != "undefined" && data.varian != null){
+        if(data.varian !== "undefined" && data.varian !== null){
             for(let i = 0; i<data.varian.length;i++){
-                if( data.varian[i].id != "undefined" && data.varian[i].id != null){
+                if( data.varian[i].id !== "undefined" && data.varian[i].id !== null){
                     encryptedData[(5+i)] = data.varian[i].id;
                 }
             }
         }
         let size = encryptedData.length;
-        if(data.pictures != "undefined" && data.pictures != null){ 
+        if(data.pictures !== "undefined" && data.pictures !== null){ 
             for(let i = 0; i<data.pictures.length;i++){
-                if( data.pictures[i].id != "undefined" && data.pictures[i].id != null){
+                if( data.pictures[i].id !== "undefined" && data.pictures[i].id !== null){
                     encryptedData[(size+i)] = data.pictures[i].id;
                 }
             }
