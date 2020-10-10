@@ -19,10 +19,18 @@ exports.countRecords = function (param, result) {
     let isLookInStatus = false;
     if(param.countAll == 'undefined' || param.countAll == null){
         if (typeof param.name != 'undefined' && typeof param.name != null) {
-            op = operator.substring;
+            op = operator.or;
             let condition = new Object();
-            condition[op] = param.name;
-            conditionKey['product_name'] = condition;
+            let findInName = new Object();
+            findInName[operator.substring] = param.name;
+            let conditionName = new Object();
+            conditionName['product_name'] = findInName;
+            let findInSku= new Object();
+            findInSku[operator.substring] = param.name;
+            let conditionSku= new Object();
+            conditionSku['$varian.sku$'] = findInSku;
+            condition[operator.or] = [conditionName, conditionSku];
+            conditionKey = condition;
         }else{
             if(typeof param.status != "undefined" && typeof param.status != null){
                 isLookInStatus = true;      
@@ -45,23 +53,30 @@ exports.countRecords = function (param, result) {
 //    let conditionVarian = new Object();
 //    conditionVarian[operator.eq] = '1';
 //    conditionKeyVarian['status'] = conditionVarian;
-
-    productModel.count({
-        where: [conditionKey],
-//        include: [
-//            {
-//                model: productVarianModel,
-//                as: 'varian',
-//                attributes: [],
-//                required: false,
-//                where: [conditionKeyVarian]
-//            }
-//        ],
-//        distinct: true,
-//        col: 'id_product'
-    }).then(data => {
+    let options = new Object();
+    if(!isLookInStatus){
+        options = {
+            where: [conditionKey],
+            include: [
+                {
+                    model: productVarianModel,
+                    as: 'varian',
+                    attributes: [],
+                    required: false
+                }
+            ],
+            distinct: true,
+            col: 'id_product'
+        }
+    }else{
+        options = {
+            where: [conditionKey]
+        }
+    }
+    productModel.count(options).then(data => {
         result("success", 200, data);
     }).catch(err => {
+        console.log(err);
         result(err.message, 500, null);
     });
 }
@@ -70,13 +85,14 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
     let conditionKey = new Object();
     let conditionKeyVarian = new Object();
     let isLookInStatus = false;
+    let useRawQuery = false;
+    let rawQuery = null;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
         if(key === "status") isLookInStatus = true;
         if(key === "name"){
-            op = operator.substring;
-            condition[op] = value;
-            conditionKey[columnDictionary(key)] = condition;
+            useRawQuery = true;
+            rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` WHERE (((`tm_product`.`product_name` LIKE '%"+value+"%'  OR `varian`.`sku` LIKE '%"+value+"%') AND `tm_product`.`status` != '0')) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0') ORDER BY `id` DESC;";
         }else{
             op = operator.eq;
             condition[op] = value;
@@ -103,68 +119,144 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
         orderOption[0] = [columnDictionary(orderBy), order];
     }
     let options = null;
-    if(scope === 'all'){
-        options = {
-            attributes:{
-                exclude: ['createdBy']
-            },
-            order: orderOption,
-            offset: parseInt(offset),
-            limit: parseInt(limit), 
-            where: [conditionKey],
-            include:[
-                {
-                    model: productVarianModel,
-                    as: 'varian',
-                    where: [conditionKeyVarian],
-                    exclude: ['createdBy','dateCreated','status', 'id_product']
+    if(!useRawQuery){
+        if(scope === 'all'){
+            options = {
+                attributes:{
+                    exclude: ['createdBy']
                 },
-                {
-                    model: pictures,
-                    as: 'pictures',
-                    exclude: ['createdBy','dateCreated','status', 'id_product']
-                },
-                {
-                    model: brand,
-                    as: 'brand',
-                    exclude: ['createdBy','dateCreated','status', 'id_product']
-                }
-            ]
-        }        
-    }else{
-        options = {
-            attributes:{
-                exclude: ['createdBy']
-            },
-            order: orderOption,
-            offset: parseInt(offset),
-            limit: parseInt(limit), 
-            where: [conditionKey],
-            include:[
-                {
-                    model: productVarianModel,
-                    as: 'varian',
-                    where: [conditionKeyVarian],
-                    exclude: ['createdBy','dateCreated','status', 'id_product']
-                }
-            ]
-        }
-    }
-    productModel.findAll(options).then(data=>{
-        if(data == null){
-            result("Not Found", 404, null);
+                order: orderOption,
+                offset: parseInt(offset),
+                limit: parseInt(limit), 
+                where: [conditionKey],
+                include:[
+                    {
+                        model: productVarianModel,
+                        as: 'varian',
+                        where: [conditionKeyVarian],
+                        exclude: ['createdBy','dateCreated','status', 'id_product']
+                    },
+                    {
+                        model: pictures,
+                        as: 'pictures',
+                        exclude: ['createdBy','dateCreated','status', 'id_product']
+                    },
+                    {
+                        model: brand,
+                        as: 'brand',
+                        exclude: ['createdBy','dateCreated','status', 'id_product']
+                    }
+                ]
+            }        
         }else{
-            security.encrypt(data)
-            .then(function(encryptedData){
-                result("success", 200, encryptedData);
-            }).catch(function(error){
-                result(error, 500, null);
-            });            
+            options = {
+                attributes:{
+                    exclude: ['createdBy']
+                },
+                subQuery : false,
+                order: orderOption,
+                offset: parseInt(offset),
+                limit: parseInt(limit), 
+                where: [conditionKey],
+                include:[
+                    {
+                        model: productVarianModel,
+                        as: 'varian',
+                        where: [conditionKeyVarian],
+                        exclude: ['createdBy','dateCreated','status', 'id_product'],
+                    }
+                ]
+            }
         }
-    }).catch(err=>{
-        console.log(err);
-       result(err.message, 500, null);
-    });
+        productModel.findAll(options).then(data=>{
+            if(data == null){
+                result("Not Found", 404, null);
+            }else{
+                security.encrypt(data)
+                .then(function(encryptedData){
+                    result("success", 200, encryptedData);
+                }).catch(function(error){
+                    result(error, 500, null);
+                });            
+            }
+        }).catch(err=>{
+            console.log(err);
+           result(err.message, 500, null);
+        });
+    }else{
+        sequelize.query(rawQuery, {
+            type: Sequelize.QueryTypes.SELECT,
+            model: productModel,
+            mapToModel: true
+        }).then(data => {
+            let dataArray = new Array();
+            let currentId = null;
+            let product = null;
+            let listVarians = new Array();
+            let indexVarian = 0;
+            let indexProduct = 0;
+            data.forEach((element, index) => {
+                if(data[index] !== null && typeof data[index].dataValues === 'object'){
+                    if(currentId == null || currentId != data[index].dataValues.id){
+                        if(listVarians.length > 0){
+                            product.varian = listVarians;
+                            delete product['varian.dateCreated'];
+                            delete product['varian.createdBy'];
+                            delete product['varian.id'];
+                            delete product['varian.optionName'];
+                            delete product['varian.sku'];
+                            delete product['varian.varianName'];
+                            delete product['varian.price'];
+                            delete product['varian.stock'];
+                            delete product['varian.status'];
+                            delete product['varian.id_product'];
+                            delete product['id_brand'];
+                            dataArray[indexProduct] = product;
+                            indexProduct++;
+                        }
+                        product = data[index].dataValues;
+                        currentId = product.id;
+                        listVarians = new Array();
+                        indexVarian = 0;
+                    }
+                    let productVarian = new Object();
+                    productVarian.dateCreated = product['varian.dateCreated'];
+                    productVarian.createdBy= product['varian.createdBy'];
+                    productVarian.id= product['varian.id'];
+                    productVarian.optionName = product['varian.optionName'];
+                    productVarian.sku = product['varian.sku'];
+                    productVarian.varianName= product['varian.varianName'];
+                    productVarian.price = product['varian.price'];
+                    productVarian.stock = product['varian.stock'];
+                    
+                    listVarians[indexVarian] = productVarian;
+                    indexVarian++;
+                }
+            });
+            product.varian = listVarians;
+            delete product['varian.dateCreated'];
+            delete product['varian.createdBy'];
+            delete product['varian.id'];
+            delete product['varian.optionName'];
+            delete product['varian.sku'];
+            delete product['varian.varianName'];
+            delete product['varian.price'];
+            delete product['varian.stock'];
+            delete product['varian.status'];
+            delete product['varian.id_product'];
+            delete product['id_brand'];
+            dataArray[indexProduct] = product;
+            security.encrypt(dataArray, "raw")
+                    .then(function (encryptedData) {
+                        result("success", 200, encryptedData);
+                    }).catch(function (error) {
+                result(error, 500, null);
+            });
+        }).catch(err => {
+            console.log(err);
+            result(err.message, 500, null);
+        });
+    }
 }
 exports.getAll = function (security, orderBy, order, offset, limit, id, result) {
     let orderOption = Array();
