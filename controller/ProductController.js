@@ -219,7 +219,9 @@ exports.update = function(req, res){
         if(data.idFurtherSubCategory != 'undefined' && data.idFurtherSubCategory != null){
             encryptedData[3] = data.idFurtherSubCategory;
         }else{
-            data.idFurtherSubCategory = null;
+            if(data.idSubCategory != 'undefined' && data.idSubCategory != null){
+                data.idFurtherSubCategory = null;
+            }
         }
         if(data.idBrand != 'undefined' && data.idBrand != null){
             encryptedData[4] = data.idBrand;
