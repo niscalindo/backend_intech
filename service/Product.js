@@ -34,7 +34,13 @@ exports.countRecords = function (param, result) {
         }else{
             if(typeof param.status != "undefined" && typeof param.status != null){
                 isLookInStatus = true;      
-            }            
+            }else{
+                if(typeof param.stock != "undefined" && typeof param.stock!= null){
+                    let condition = new Object();
+                    condition[operator.eq] = parseInt(param.stock);
+                    conditionKey['$varian.stock$'] = condition;
+                }
+            }
         }
     }else{
         if(typeof param.status != "undefined" && typeof param.status != null){
@@ -93,6 +99,9 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
         if(key === "name"){
             useRawQuery = true;
             rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` WHERE (((`tm_product`.`product_name` LIKE '%"+value+"%'  OR `varian`.`sku` LIKE '%"+value+"%') AND `tm_product`.`status` != '0')) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0') ORDER BY `id` DESC;";
+        }else if(key === "stock"){
+            useRawQuery = true;
+            rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` WHERE (( `varian`.`stock` ='"+value+"' AND `tm_product`.`status` != '0' AND `varian`.`status` != '0')) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0')  AND (`varian`.`stock` = 0) ORDER BY `id` DESC;";
         }else{
             op = operator.eq;
             condition[op] = value;
@@ -228,7 +237,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                     productVarian.varianName= product['varian.varianName'];
                     productVarian.price = product['varian.price'];
                     productVarian.stock = product['varian.stock'];
-                    
+                    console.log(productVarian);
                     listVarians[indexVarian] = productVarian;
                     indexVarian++;
                 }
@@ -246,6 +255,8 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
             delete product['varian.id_product'];
             delete product['id_brand'];
             dataArray[indexProduct] = product;
+            
+//            console.log(dataArray);
             security.encrypt(dataArray, "raw")
                     .then(function (encryptedData) {
                         result("success", 200, encryptedData);
@@ -434,6 +445,8 @@ function columnDictionary(key){
         return 'product_name';
     }else if(key === 'idSubCategory'){
         return 'id_sub_category';
+    }else if(key === 'stock'){
+        return '$varian.stock$';
     }else{
         return key;
     }
