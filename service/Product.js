@@ -385,6 +385,9 @@ exports.update = function (newData, type, result) {
                             let picture = new Object();
                             picture['id_product'] = newData.id;
                             picture['dateCreated'] = new Date();
+                            if(newPictures[i].id != "undefined" && newPictures[i].id != null){
+                                picture['id'] = newPictures[i].id;
+                            }
                             picture['filename'] = newPictures[i].filename;
                             picture['createdBy'] = newData['createdBy'];
                             arrayPictures[i] = picture;
