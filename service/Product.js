@@ -317,7 +317,7 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
 }
 
 exports.create = function (newData, security, result) {
-    newData.status = '1';
+//    newData.status = '1';
     newData.dateCreated = new Date();
     let associationArray = new Array();
     let index = 0;
