@@ -94,19 +94,6 @@ exports.find = function (req,res){
         }else{
             let encryptedData = new Array();
             let index = 0;
-            if(typeof param.countRecords != 'undefined' && typeof param.countRecords != null){
-                productService.countRecords(param,function(message, status,data){
-                        if(status == 200 || status == 201){
-                            if(data == null || data == ""){
-                                response.ok('empty result', status, data, res); 
-                            }else{
-                                response.ok(message, status, data, res);                    
-                            }
-                        }else{
-                            response.ok(message, status, null, res);            
-                        }
-                    });
-            }else{
                 if(typeof param.id != 'undefined' && typeof param.id != null){
                     encryptedData[index] = param.id;
                     index++
@@ -119,6 +106,10 @@ exports.find = function (req,res){
 
                 if(typeof param.idSubCategory != 'undefined' && typeof param.idSubCategory != null){
                     encryptedData[index] = param.idSubCategory;
+                    index++
+                }
+                if(typeof param.idFurtherSubCategory != 'undefined' && typeof param.idFurtherSubCategory != null){
+                    encryptedData[index] = param.idFurtherSubCategory;
                     index++
                 }
                 security.decrypt(encryptedData)
@@ -138,22 +129,38 @@ exports.find = function (req,res){
                         param.idSubCategory = decryptedData[index];
                         index++
                     }
-                    productService.find(security,order,orderBy,parseInt(offset), parseInt(limit), param,scope,function(message, status,data){
-                        if(status == 200 || status == 201){
-                            if(data == null || data == ""){
-                                response.ok('empty result', status, data, res); 
+                    if(typeof param.idFurtherSubCategory != 'undefined' && typeof param.idFurtherSubCategory != null){
+                        param.idFurtherSubCategory = decryptedData[index];
+                        index++
+                    }
+                    if(typeof param.countRecords != 'undefined' && typeof param.countRecords != null){
+                        productService.countRecords(param,function(message, status,data){
+                                if(status == 200 || status == 201){
+                                    if(data == null || data == ""){
+                                        response.ok('empty result', status, data, res); 
+                                    }else{
+                                        response.ok(message, status, data, res);                    
+                                    }
+                                }else{
+                                    response.ok(message, status, null, res);            
+                                }
+                            });
+                    }else{
+                        productService.find(security,order,orderBy,parseInt(offset), parseInt(limit), param,scope,function(message, status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
                             }else{
-                                response.ok(message, status, data, res);                    
+                                response.ok(message, status, null, res);            
                             }
-                        }else{
-                            response.ok(message, status, null, res);            
-                        }
-                    });
-
+                        });                        
+                    }
                 }).catch(function(error){
                     response.ok(error, 400, null, res); 
                 });
-            }
         }
     }catch(exception){
         response.ok(exception.message,500, null, res);
