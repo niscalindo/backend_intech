@@ -30,6 +30,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'category_name'
         },
+        icon:{
+            type: Sequelize.STRING(45),
+            allowNull: true,
+            defaultValue: null
+        },
         categoryCode:{
             type: Sequelize.STRING(20),
             allowNull: false,
