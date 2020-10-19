@@ -125,6 +125,10 @@ exports.find = function(security,field, scopeAll, result){
                 condition[op] = value;
                 conditionKey[columnDictionary(key)] = condition;
             }
+        }else if(key === "data"){
+            op = operator.ne;
+            condition[op] = null;
+            conditionKey['icon'] = condition;            
         }else{
             op = operator.eq;
             condition[op] = value;
