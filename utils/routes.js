@@ -52,6 +52,7 @@ module.exports = function(app){
     app.route('/files').put(auth.isAunthenticated,fileUploadController.update);
     app.route('/files/find').get(auth.isAunthenticated,fileUploadController.find);
     app.route('/products').get(auth.isAunthenticated,productController.getAll);
+    app.route('/products/varian').get(auth.isAunthenticated,productController.getAllByVarian);
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
