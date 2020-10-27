@@ -27,6 +27,7 @@ db.sequelize = sequelize;
 db.tm_users = require("./tm_users.model.js")(sequelize, Sequelize);
 db.unit = require("./unit.model.js")(sequelize, Sequelize);
 db.brand = require("./brand.model.js")(sequelize, Sequelize);
+db.slider = require("./tm_slider.model.js")(sequelize, Sequelize);
 db.file_upload= require("./file_upload.model.js")(sequelize, Sequelize);
 db.captcha = require("./captcha.model.js")(sequelize, Sequelize);
 db.users = require("./users.model.js")(sequelize, Sequelize);

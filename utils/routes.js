@@ -10,6 +10,7 @@ module.exports = function(app){
     var usersController = require('../controller/UsersController');
     var categoryController = require('../controller/CategoryProductController');
     var unitController = require('../controller/UnitController');
+    var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
     var fileUploadController = require('../controller/FileUploadController');
     var productController = require('../controller/ProductController');
@@ -54,6 +55,10 @@ module.exports = function(app){
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
+    app.route('/sliders').get(auth.isAunthenticated,sliderController.getAll);
+    app.route('/sliders').post(auth.isAunthenticated,sliderController.create);
+    app.route('/sliders').put(auth.isAunthenticated,sliderController.update);
+    app.route('/sliders/find').get(auth.isAunthenticated,sliderController.find);
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);
