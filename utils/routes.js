@@ -10,6 +10,7 @@ module.exports = function(app){
     var usersController = require('../controller/UsersController');
     var categoryController = require('../controller/CategoryProductController');
     var unitController = require('../controller/UnitController');
+    var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
     var fileUploadController = require('../controller/FileUploadController');
     var productController = require('../controller/ProductController');
@@ -52,13 +53,14 @@ module.exports = function(app){
     app.route('/files').put(auth.isAunthenticated,fileUploadController.update);
     app.route('/files/find').get(auth.isAunthenticated,fileUploadController.find);
     app.route('/products').get(auth.isAunthenticated,productController.getAll);
+    app.route('/products/varian').get(auth.isAunthenticated,productController.getAllByVarian);
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
-    // app.route('/address').get(auth.isAunthenticated,addressController.getAll);
-    app.route('/address').post(auth.isAunthenticated,addressController.create);
-    app.route('/address').put(auth.isAunthenticated,addressController.update);
-    app.route('/address/find').get(auth.isAunthenticated,addressController.find);
+    app.route('/sliders').get(auth.isAunthenticated,sliderController.getAll);
+    app.route('/sliders').post(auth.isAunthenticated,sliderController.create);
+    app.route('/sliders').put(auth.isAunthenticated,sliderController.update);
+    app.route('/sliders/find').get(auth.isAunthenticated,sliderController.find);
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);

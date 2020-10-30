@@ -137,9 +137,9 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
     let orderOption = Array();
     if(orderBy == "price"){
         orderOption[0] = [{
-                    model: productVarianModel,
-                    as: 'varian'
-                },columnDictionary(orderBy), order];
+            model: productVarianModel,
+            as: 'varian'
+        },columnDictionary(orderBy), order];
     }else{
         orderOption[0] = [columnDictionary(orderBy), order];
     }

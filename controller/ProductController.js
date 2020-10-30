@@ -8,6 +8,7 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const productService = require("../service/Product");
+const productVarianService = require("../service/ProductVarian");
 
 exports.create = function(req, res){
     let data = req.body.product;
@@ -248,7 +249,6 @@ exports.update = function(req, res){
                 }
             }
         }
-        console.log(encryptedData.length);
         security.decrypt(encryptedData)
         .then(function(decryptedData){
             data.createdBy = decryptedData[1];
@@ -286,7 +286,6 @@ exports.update = function(req, res){
                     }
                 }
             }
-            console.log(data);
             productService.update(data,'product', function(message,status,data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
@@ -301,5 +300,55 @@ exports.update = function(req, res){
         }).catch(function(err){
             response.ok('failed to decrypt code:'+err, 500, null, res); 
         }); 
-    }       
+    }
 }
+
+    //----------------------------------------------------------------//
+    //-------------------- below is for varian------------------------//
+    //----------------------------------------------------------------//
+    exports.getAllByVarian = function (req,res){
+        try{
+            let userToken = req.user;
+            let order = req.headers.order;
+            let limit = req.headers.total_data;
+            let orderBy = req.headers.order_by;
+            let offset = req.headers.page;
+            if(typeof orderBy === 'undefined' || typeof orderBy === null){
+                orderBy = 'id_product';
+            }
+            if(typeof order === 'undefined' || typeof order === null){
+                order = 'desc';
+            }
+            if(typeof limit === 'undefined' || typeof limit === null){
+                limit = 500;
+            }
+
+            if(typeof offset === 'undefined' || typeof offset === null){
+                offset = 0;
+            }else{
+                if(offset >= 1){
+                    offset = limit * (offset-1);
+                }else{
+                    offset = 0;
+                }
+            }
+            let param = req.query;
+//            if(typeof param === 'undefined' || typeof param === null){
+//                response.ok('Bad Request', 401, null, res);
+//            }else{
+                productVarianService.find(security,orderBy, order,parseInt(offset), parseInt(limit),param,function(message, status,data){
+                    if(status == 200 || status == 201){
+                        if(data == null || data == ""){
+                            response.ok('empty result', status, data, res); 
+                        }else{
+                            response.ok(message, status, data, res);                    
+                        }
+                    }else{
+                        response.ok(message, status, null, res);            
+                    }
+                });
+//            }
+        }catch(exception){
+            response.ok(exception.message,500, null, res);
+        }
+    }
