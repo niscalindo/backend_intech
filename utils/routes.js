@@ -12,6 +12,7 @@ module.exports = function(app){
     var unitController = require('../controller/UnitController');
     var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
+    var promoController = require('../controller/PromoController');
     var fileUploadController = require('../controller/FileUploadController');
     var productController = require('../controller/ProductController');
     var captchaController = require('../controller/CaptchaController');
@@ -63,5 +64,8 @@ module.exports = function(app){
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);
+    
+    app.route('/promos').post(auth.isAunthenticated,promoController.create);
+    app.route('/promos').get(auth.isAunthenticated,promoController.getAll);
 }
 
