@@ -92,7 +92,6 @@ exports.countRecords = function (param, result) {
     productModel.count(options).then(data => {
         result("success", 200, data);
     }).catch(err => {
-        console.log(err);
         result(err.message, 500, null);
     });
 }
@@ -108,7 +107,9 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
         if(key === "status") isLookInStatus = true;
         if(key === "name"){
             useRawQuery = true;
-            if(field.idSubCategory != "undefined" && field.idSubCategory != null){
+            if(field.idCategory != "undefined" && field.idCategory != null){
+                rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` inner join tm_sub_category_product on `tm_product`.`id_sub_category` = `tm_sub_category_product`.`id_sub_category` WHERE (((`tm_product`.`product_name` LIKE '%"+decodeURI(value)+"%'  OR `varian`.`sku` LIKE '%"+decodeURI(value)+"%') AND (`tm_product`.`status` != '0' AND `tm_sub_category_product`.`id_category` = '"+field.idCategory+"'))) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0') ORDER BY `id` DESC;";
+            }else if(field.idSubCategory != "undefined" && field.idSubCategory != null){
                 rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` WHERE (((`tm_product`.`product_name` LIKE '%"+decodeURI(value)+"%'  OR `varian`.`sku` LIKE '%"+decodeURI(value)+"%') AND (`tm_product`.`status` != '0' AND `tm_product`.`id_sub_category` = '"+field.idSubCategory+"'))) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0') ORDER BY `id` DESC;";
             }else if(field.idFurtherSubCategory != "undefined" && field.idFurtherSubCategory != null){
                 rawQuery = "SELECT `tm_product`.*, `varian`.`date_created` AS `varian.dateCreated`, `varian`.`status` AS `varian.status`, `varian`.`created_by` AS `varian.createdBy`, `varian`.`id_product_varian` AS `varian.id`, `varian`.`id_product` AS `varian.id_product`, `varian`.`option_name` AS `varian.optionName`, `varian`.`sku` AS `varian.sku`, `varian`.`varian_name` AS `varian.varianName`, `varian`.`price` AS `varian.price`, `varian`.`stock` AS `varian.stock` FROM (SELECT `tm_product`.`date_created` AS `dateCreated`, `tm_product`.`status`, `tm_product`.`id_product` AS `id`, `tm_product`.`product_name` AS `name`, `tm_product`.`description`, `tm_product`.`unit`, `tm_product`.`id_sub_category` AS `idSubCategory`, `tm_product`.`sub_category_name` AS `subCategoryName`, `tm_product`.`category_name` AS `categoryName`, `tm_product`.`id_further_sub_category` AS `idFurtherSubCategory`, `tm_product`.`id_brand` AS `idBrand`, `tm_product`.`brand_name` AS `brandName`, `tm_product`.`further_sub_category_name` AS `furtherSubCategoryName`, `tm_product`.`default_picture` AS `defaultPicture`, `tm_product`.`wholesale_min_buy` AS `wholesaleMinBuy`, `tm_product`.`wholesale_max_buy` AS `wholesaleMaxBuy`, `tm_product`.`wholesale_price` AS `wholesalePrice`, `tm_product`.`packet_weight` AS `packetWeight`, `tm_product`.`packet_weight_unit` AS `packetWeightUnit`, `tm_product`.`packet_wide` AS `packetWide`, `tm_product`.`packet_long` AS `packetLong`, `tm_product`.`packet_tall` AS `packetTall`, `tm_product`.`preorder`, `tm_product`.`condition`, `tm_product`.`id_brand`, `tm_product`.`id_product` FROM `tm_product` AS `tm_product` inner join  `tm_product_varian` AS `varian` ON `tm_product`.`id_product` = `varian`.`id_product` WHERE (((`tm_product`.`product_name` LIKE '%"+decodeURI(value)+"%'  OR `varian`.`sku` LIKE '%"+decodeURI(value)+"%') AND (`tm_product`.`status` != '0' AND `tm_product`.`id_further_sub_category` = '"+field.idFurtherSubCategory+"'))) group by `tm_product`.`id_product` ORDER BY `tm_product`.`id_product` DESC LIMIT "+parseInt(offset)+", "+parseInt(limit)+") AS `tm_product` INNER JOIN `tm_product_varian` AS `varian` ON `tm_product`.`id` = `varian`.`id_product` AND (`varian`.`status` != '0') ORDER BY `id` DESC;";
@@ -205,7 +206,6 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                 });            
             }
         }).catch(err=>{
-            console.log(err);
            result(err.message, 500, null);
         });
     }else{
@@ -221,7 +221,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
             let indexVarian = 0;
             let indexProduct = 0;
             data.forEach((element, index) => {
-                if(data[index] !== null && typeof data[index].dataValues === 'object'){
+                if(data[index] != null && typeof data[index].dataValues === 'object'){
                     if(currentId == null || currentId != data[index].dataValues.id){
                         if(listVarians.length > 0){
                             product.varian = listVarians;
@@ -243,6 +243,8 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                         currentId = product.id;
                         listVarians = new Array();
                         indexVarian = 0;
+                    }else{
+                        product = data[index].dataValues;
                     }
                     let productVarian = new Object();
                     productVarian.dateCreated = product['varian.dateCreated'];
@@ -253,7 +255,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                     productVarian.varianName= product['varian.varianName'];
                     productVarian.price = product['varian.price'];
                     productVarian.stock = product['varian.stock'];
-                    console.log(productVarian);
+//                    console.log(productVarian);
                     listVarians[indexVarian] = productVarian;
                     indexVarian++;
                 }
@@ -280,7 +282,6 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                 result(error, 500, null);
             });
         }).catch(err => {
-            console.log(err);
             result(err.message, 500, null);
         });
     }
@@ -417,14 +418,12 @@ exports.update = function (newData, type, result) {
                         result("success", 200, null);
                     }
                 }).catch(err => {
-                    console.log(err);
                     result("failed to update varian : " + err.message, 500, null);
                 });                
             }else{
                 result("success", 200, null);                
             }
         }).catch(err => {
-            console.log(err);
             result(err.message, 500, null);
         });
     } else if (type === "varian") {

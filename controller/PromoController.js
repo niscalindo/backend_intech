@@ -54,10 +54,10 @@ exports.create = function(req, res){
         }else{
             let encryptedData = [userToken.id];
             let index = 1;
-            let isDetailsValid = true;
-            if(typeof newPromo.details === 'undefined' || typeof newPromo.details === null){
+            let isDetailValid = true;
+            if(typeof newPromo.details != 'undefined' || typeof newPromo.details != null){
                 for (let i = 0; i < newPromo.details.length; i++) {
-                    if(typeof newPromo.details[i].idProductVarian === 'undefined' || typeof newPromo.details[i].idProductVarian === null){
+                    if(typeof newPromo.details[i].idProductVarian != 'undefined' && typeof newPromo.details[i].idProductVarian != null){
                         encryptedData[index] = newPromo.details[i].idProductVarian;
                         index++;
                     }else{
@@ -82,8 +82,8 @@ exports.create = function(req, res){
                                 newPromo.code = generateCode(numerator.dataValues.numerator);
                                 newPromo.createdBy = decryptedData[0];
                                 index = 1;
-                                if(typeof newPromo.details === 'undefined' || typeof newPromo.details === null){
-                                    for (let i = 0; i < newBrand.details.length; i++) {
+                                if(typeof newPromo.details != 'undefined' && typeof newPromo.details != null){
+                                    for (let i = 0; i < newPromo.details.length; i++) {
                                         newPromo.details[i].idParticipant = decryptedData[0]; //if request contain details, it must be from user
                                         newPromo.details[i].idProductVarian = decryptedData[index];
                                         index++;

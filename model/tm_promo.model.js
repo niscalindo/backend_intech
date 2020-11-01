@@ -45,7 +45,7 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'date_started'
         },
-        dateEnd:{
+        dateEnded:{
             type: Sequelize.DATE,
             allowNull: false,
             field: 'date_ended'

@@ -40,20 +40,20 @@ module.exports = (sequelize, Sequelize)=>{
             primaryKey: true,
             field: 'id_product_varian'
         },
-        amount:{
+        discountInPercent:{
             type: Sequelize.DECIMAL(10,2),
-            field: 'amount',
+            field: 'discount_in_percent',
             defaultValue: 0
         },
-        amountUnit:{
-            type: Sequelize.ENUM('percent','rupiah'),
-            defaultValue: 'rupiah',
-            field: 'amount_unit'
-        },
-        priceAfterDiscount:{
+        discountInRupiah:{
             type: Sequelize.DECIMAL(10,2),
             defaultValue: 0,
-            field: 'price_after_discount'
+            field: 'discount_in_rupiah'
+        },
+        purchaseLimit:{
+            type: Sequelize.DECIMAL(10,2),
+            defaultValue: 0,
+            field: 'purchase_limit'
         }
     },{timestamps: false});
     return detail_promo;

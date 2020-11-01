@@ -18,14 +18,21 @@ exports.getAll = function(security,order,source,id, result){
 //        },
         include:[
             {
-                model: productVarianModel,
-                as: 'varian',
-                attributes: {exclude:['createdBy', 'dateCreated', 'idProduct']},
-                include:[
+            model: detailPromoModel,
+            as: 'details',
+            attributes: {exclude:['createdBy', 'dateCreated']},
+            include:[
                     {
-                        model: productModel,
-                        as: 'product',
-                        attributes: {exclude:['createdBy', 'dateCreated', 'idProduct']}
+                        model: productVarianModel,
+                        as: 'varian',
+                        attributes: {exclude:['createdBy', 'dateCreated', 'idProduct']},
+                        include:[
+                            {
+                                model: productModel,
+                                as: 'product',
+                                attributes: {exclude:['createdBy', 'dateCreated', 'idProduct']}
+                            }
+                        ]
                     }
                 ]
             }
@@ -175,7 +182,7 @@ exports.create = function (newData, security, result) {
 //    });
 //};
 exports.findMaxNumerator= function( result){
-    promo.findOne({
+    promoModel.findOne({
         attributes:[
             [sequelize.fn('max', sequelize.col('id_promo')), 'numerator']
         ],

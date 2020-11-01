@@ -39,6 +39,7 @@ db.product_varian = require("./product_varian.model.js")(sequelize, Sequelize);
 db.product.hasMany(db.product_varian,{as: 'varian', foreignKey: 'id_product'});
 db.product.hasMany(db.pictures,{as: 'pictures', foreignKey: 'id_product'});
 db.promo.hasMany(db.detail_promo,{as: 'details', foreignKey: 'id_promo'});
+//db.product_varian.hasMany(db.detail_promo,{as: 'promos', foreignKey: 'id_product_varian'});
 db.detail_promo.belongsTo(db.product_varian, {as: 'varian', foreignKey: 'id_product_varian'});
 db.users.hasMany(db.file_upload,{as: 'files', foreignKey: 'id_user'});
 db.file_upload.belongsTo(db.users, {as: 'uploader', foreignKey: 'id_user'});
