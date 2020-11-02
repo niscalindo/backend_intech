@@ -12,6 +12,15 @@ const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
 exports.getAll = function(security,order,source,id, result){
+    let conditionDetails = new Object();
+    if(source == "user"){
+        conditionDetails = 
+            {
+                id_participant:{
+                    [operator.eq]:id
+                }
+            }
+    }
     promoModel.findAll({
 //        attributes:{
 //            exclude: ['createdBy', 'dateCreated']
@@ -21,6 +30,7 @@ exports.getAll = function(security,order,source,id, result){
             model: detailPromoModel,
             as: 'details',
             attributes: {exclude:['createdBy', 'dateCreated']},
+            where:conditionDetails,
             include:[
                     {
                         model: productVarianModel,
@@ -38,18 +48,13 @@ exports.getAll = function(security,order,source,id, result){
             }
         ],
         where: {
-            [operator.or]:[
-                {
-                    created_by:{
-                        [operator.eq]:id
-                    }
+                created_by:{
+                    [operator.eq]:id
                 },
-                {
-                    source:{
-                        [operator.eq]:source
-                    }
+                source:{
+                    [operator.eq]:source
                 }
-            ]
+                
         },
         order: [
             ['id_promo', order]

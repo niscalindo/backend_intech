@@ -24,6 +24,10 @@ exports.getAll = function(req, res){
         if((typeof param === 'undefined' || typeof param === null) || (typeof param.source === 'undefined' || typeof param.source === null)) {
             response.ok('Bad Request', 401, null, res);
         }else{
+            if(param.source == "admin" && userToken.role != "admin"){
+                response.ok('Not Allowed', 403, null, res);
+                return;
+            }
             let encryptedData = [userToken.id];
             security.decrypt(encryptedData)
                 .then(function(decryptedData){
