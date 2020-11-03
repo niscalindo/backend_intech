@@ -113,6 +113,10 @@ exports.find = function (req,res){
                     encryptedData[index] = param.idFurtherSubCategory;
                     index++
                 }
+                if(typeof param.idCategory != 'undefined' && typeof param.idCategory != null){
+                    encryptedData[index] = param.idCategory;
+                    index++
+                }
                 security.decrypt(encryptedData)
                     .then(function(decryptedData){
                     index = 0;
@@ -132,6 +136,10 @@ exports.find = function (req,res){
                     }
                     if(typeof param.idFurtherSubCategory != 'undefined' && typeof param.idFurtherSubCategory != null){
                         param.idFurtherSubCategory = decryptedData[index];
+                        index++
+                    }
+                    if(typeof param.idCategory != 'undefined' && typeof param.idCategory != null){
+                        param.idCategory = decryptedData[index];
                         index++
                     }
                     if(typeof param.countRecords != 'undefined' && typeof param.countRecords != null){
