@@ -19,10 +19,6 @@ Date.prototype.datetime = function() {
                 + this.getMinutes() + ":" 
                 + this.getSeconds();
         return datetime;
-//    return [this.getFullYear(),
-//          (mm>9 ? '' : '0') + mm,
-//          (dd>9 ? '' : '0') + dd
-//         ].join('');
 };
 
 exports.find = function(security,order,source,id,field, result){
@@ -78,7 +74,7 @@ exports.find = function(security,order,source,id,field, result){
                     date_ended:{
                         [operator.gte]:Date.parse(currentDate.datetime().toString())
                     }
-                },
+                }
             ];
             conditionFirst[operator.and] = conditionDate;
         }else if(field.status == "incoming"){

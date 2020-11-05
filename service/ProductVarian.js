@@ -6,6 +6,7 @@
 const db = require("../model");
 const productVarianModel = db.product_varian;
 const productModel = db.product;
+const detailPromoModel = db.detail_promo;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
@@ -56,17 +57,24 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
         attributes:{
             exclude: ['createdBy','id_product']
         },
-        include:[{
+        include:[
+            {
+                model: detailPromoModel,
+                as: 'detailPromo',
+                attributes:{exclude: ['createdBy', 'dateCreated']},
+                required: false
+            },
+            {
                 model: productModel,
                 as: 'product',
                 attributes:{exclude: ['createdBy', 'dateCreated']},
                 where: conditionForProduct
-            }
+            },
         ],
         offset: parseInt(offset),
         limit: limit,
         where:conditionForVarian,
-        order: orderOption
+//        order: orderOption
     }).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
