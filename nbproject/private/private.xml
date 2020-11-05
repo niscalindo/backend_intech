@@ -3,17 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/tm_detail_promo.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/tm_promo.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product_varian.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/ProductController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/PromoController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/server.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/User.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Brand.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/tm_promo.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/PromoController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UsersController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/ProductVarian.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Brand.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Promo.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/tm_detail_promo.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
         </group>
     </open-files>
 </project-private>

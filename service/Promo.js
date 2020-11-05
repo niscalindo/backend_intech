@@ -91,6 +91,11 @@ exports.find = function(security,order,source,id,field, result){
             conditionFirst['date_started'] = conditionDate;
         }
     }
+    if(field.idPromo != "undefined" && field.idPromo != null){
+        let conditionId = new Object;
+        conditionId[operator.eq] = field.idPromo;
+        conditionFirst['id_promo'] = conditionId;
+    }
     promoModel.findAll({
 //        attributes:{
 //            exclude: ['createdBy', 'dateCreated']

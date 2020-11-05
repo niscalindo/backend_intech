@@ -29,8 +29,16 @@ exports.getAll = function(req, res){
                 return;
             }
             let encryptedData = [userToken.id];
+            let index = 1;
+            if(param.idPromo != "undefined" && param.idPromo != null){
+               encryptedData[index] = param.idPromo;
+            }
             security.decrypt(encryptedData)
                 .then(function(decryptedData){
+                 index = 1;  
+                if(param.idPromo != "undefined" && param.idPromo != null){
+                   param.idPromo = decryptedData[1];
+                }
                 promo.find(security,order,param.source, decryptedData[0],param,function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
