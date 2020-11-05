@@ -31,7 +31,7 @@ exports.getAll = function(req, res){
             let encryptedData = [userToken.id];
             security.decrypt(encryptedData)
                 .then(function(decryptedData){
-                promo.getAll(security,order,param.source, decryptedData[0],function(message, status,data){
+                promo.find(security,order,param.source, decryptedData[0],param,function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 
@@ -59,7 +59,7 @@ exports.create = function(req, res){
             let encryptedData = [userToken.id];
             let index = 1;
             let isDetailValid = true;
-            if(typeof newPromo.details != 'undefined' || typeof newPromo.details != null){
+            if(typeof newPromo.details != 'undefined' && typeof newPromo.details != null){
                 for (let i = 0; i < newPromo.details.length; i++) {
                     if(typeof newPromo.details[i].idProductVarian != 'undefined' && typeof newPromo.details[i].idProductVarian != null){
                         encryptedData[index] = newPromo.details[i].idProductVarian;

@@ -11,8 +11,24 @@ const productVarianModel = db.product_varian;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
-exports.getAll = function(security,order,source,id, result){
+Date.prototype.datetime = function() {
+    var datetime = this.getFullYear() + "-"
+                + (this.getMonth()+1)  + "-" 
+                + this.getDate() + " "  
+                + this.getHours() + ":"  
+                + this.getMinutes() + ":" 
+                + this.getSeconds();
+        return datetime;
+//    return [this.getFullYear(),
+//          (mm>9 ? '' : '0') + mm,
+//          (dd>9 ? '' : '0') + dd
+//         ].join('');
+};
+
+exports.find = function(security,order,source,id,field, result){
+    
     let conditionDetails = new Object();
+    let conditionFirst = new Object
     if(source == "user"){
         conditionDetails = 
             {
@@ -20,6 +36,64 @@ exports.getAll = function(security,order,source,id, result){
                     [operator.eq]:id
                 }
             }
+        conditionFirst = 
+            {
+                [operator.or]:[
+                    {
+                        created_by:{
+                            [operator.eq]:id
+                        }
+                    },
+                    {
+                        source:{
+                            [operator.eq]:'admin'
+                        }
+                    },
+                ]
+            }
+    }else{
+       conditionFirst =  {
+                created_by:{
+                    [operator.eq]:id
+                },
+                source:{
+                    [operator.eq]:source
+                }
+                
+        }
+    }
+    if(field.status != "undefined" && field.status != null){
+        let conditionDate;
+        let currentDate = new Date();
+        if(field.status == "ongoing"){
+            conditionDate = new Array();
+            conditionDate =    
+            [
+                {
+                    date_started:{
+                        [operator.lte]:Date.parse(currentDate.datetime().toString())
+                    }
+                },
+                {
+                    date_ended:{
+                        [operator.gte]:Date.parse(currentDate.datetime().toString())
+                    }
+                },
+            ];
+            conditionFirst[operator.and] = conditionDate;
+        }else if(field.status == "incoming"){
+            conditionDate = new Object;
+            conditionDate[operator.gt] = Date.parse(currentDate.datetime().toString());
+            conditionFirst['date_started'] = conditionDate;
+        }else if(field.status == "expired"){
+            conditionDate = new Object;
+            conditionDate[operator.lt] = Date.parse(currentDate.datetime().toString());
+            conditionFirst['date_ended'] = conditionDate;
+        }else if(field.status == "inon"){
+            conditionDate = new Object;
+            conditionDate[operator.gte] = Date.parse(currentDate.datetime().toString());
+            conditionFirst['date_started'] = conditionDate;
+        }
     }
     promoModel.findAll({
 //        attributes:{
@@ -28,6 +102,7 @@ exports.getAll = function(security,order,source,id, result){
         include:[
             {
             model: detailPromoModel,
+            required: false,
             as: 'details',
             attributes: {exclude:['createdBy', 'dateCreated']},
             where:conditionDetails,
@@ -47,15 +122,7 @@ exports.getAll = function(security,order,source,id, result){
                 ]
             }
         ],
-        where: {
-                created_by:{
-                    [operator.eq]:id
-                },
-                source:{
-                    [operator.eq]:source
-                }
-                
-        },
+        where: conditionFirst,
         order: [
             ['id_promo', order]
         ],

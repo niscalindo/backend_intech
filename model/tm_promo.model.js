@@ -51,7 +51,7 @@ module.exports = (sequelize, Sequelize)=>{
             field: 'date_ended'
         },
         source:{
-            type: Sequelize.ENUM('marketplace','user'),
+            type: Sequelize.ENUM('admin','user'),
             defaultValue: 'user'
         }
     },{timestamps: false});
