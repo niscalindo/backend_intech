@@ -54,6 +54,6 @@ db.brand.belongsTo(db.further_sub_category_product,{as: 'furtherSubCategory', fo
 db.sub_category_product.belongsTo(db.category_product,{as: 'category', foreignKey: 'id_category'});
 db.category_product.hasMany(db.sub_category_product,{as: 'subCategories', foreignKey: 'id_category'});
 db.sub_category_product.hasMany(db.further_sub_category_product,{as: 'furtherSubCategories', foreignKey: 'id_sub_category'});
-db.tm_users = require("./tr_address.model.js")(sequelize, Sequelize);
+db.tr_address = require("./tr_address.model.js")(sequelize, Sequelize);
 module.exports = db;
 
