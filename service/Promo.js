@@ -21,7 +21,7 @@ Date.prototype.datetime = function() {
         return datetime;
 };
 
-exports.find = function(security,order,source,id,field, result){
+exports.find = function(security,order,source,id,field,orderBy, result){
     
     let conditionDetails = new Object();
     let conditionFirst = new Object
@@ -125,7 +125,7 @@ exports.find = function(security,order,source,id,field, result){
         ],
         where: conditionFirst,
         order: [
-            ['id_promo', order]
+            [columnDictionary(orderBy), order]
         ],
     }).then(data=>{
         security.encrypt(data)
@@ -307,6 +307,8 @@ function columnDictionary(key){
         return 'id_product_varian';
     }else if(key === 'name'){
         return 'promo_name';
+    }else if(key === 'dateStarted'){
+        return 'date_started';
     }else{
         return key;
     }
