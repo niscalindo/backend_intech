@@ -237,6 +237,36 @@ exports.create = function (newData, security, result) {
         result(err.message, 500, null);
     });
 };
+exports.joinPromo = function (newData, security, result) {
+    console.log(newData);
+    detailPromoModel.destroy({
+        where: [
+            {
+                id_participant: newData[0].idParticipant
+            },
+            {
+                id_promo: newData[0].idPromo
+            }
+        ]
+    }).then(rowsAffected=>{
+        console.log(rowsAffected);
+        detailPromoModel.bulkCreate(newData).then(data => {
+            security.encrypt(data)
+                .then(function (encryptedData) {
+                    result("success", 201, null);
+            }).catch(function (error) {
+                console.log(error);
+                result(error, 500, null);
+            });
+        }).catch(err => {
+        console.log(err);
+            result(err.message, 500, null);
+        });
+    }).catch(err => {
+        console.log(err);
+        result(err.message, 500, null);
+    });
+};
 
 //exports.update= function(newData, result){
 //    brand.update(

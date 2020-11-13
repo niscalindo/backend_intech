@@ -66,6 +66,7 @@ module.exports = function(app){
     app.route('/captcha/compare').get(captchaController.find);
     
     app.route('/promos').post(auth.isAunthenticated,promoController.create);
+    app.route('/promos/join').post(auth.isAunthenticated,promoController.joinPromo);
     app.route('/promos').get(auth.isAunthenticated,promoController.getAll);
 }
 

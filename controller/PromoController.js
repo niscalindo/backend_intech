@@ -124,6 +124,69 @@ exports.create = function(req, res){
         response.ok(exception.message, 500, null, res);
     }
 }
+exports.joinPromo = function(req, res){
+    try{
+        let userToken = req.user;
+        let newPromo = req.body.detailsPromo;
+        if((typeof newPromo === 'undefined' || typeof newPromo === null)){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userToken.id, newPromo[0].idPromo];
+            let index = 2;
+            let isDetailValid = true;
+            for (let i = 0; i < newPromo.length; i++) {
+                if(typeof newPromo[i].idProductVarian != 'undefined' && typeof newPromo[i].idProductVarian != null){
+                    encryptedData[index] = newPromo[i].idProductVarian;
+                    index++;
+                }else{
+                    isDetailValid = false;
+                    break;
+                }
+            }
+            if(!isDetailValid){
+                response.ok('Bad Request', 401, null, res);
+                return;
+            }
+            security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                    index = 2;
+                    isDetailValid = true;
+                    for (let i = 0; i < newPromo.length; i++) {
+                        if(typeof decryptedData[index] != 'undefined' && typeof decryptedData[index] != null){
+                            newPromo[i].idProductVarian = decryptedData[index];
+                            newPromo[i].idPromo = decryptedData[1];
+                            newPromo[i].idParticipant = decryptedData[0];
+                            newPromo[i].createdBy= decryptedData[0];
+                            newPromo[i].dateCreated = new Date();
+                            index++;
+                        }else{
+                            isDetailValid = false;
+                            break;
+                        }
+                    }
+                    if(isDetailValid && decryptedData[1] != null){
+                        promo.joinPromo(newPromo,security, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+                    }else{
+                        response.ok('Failed to decode id', 500, null, res);                         
+                    }
+            }).catch(function(err){
+                response.ok('failed to generate code :'+err, 500, null, res); 
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 
 //exports.update = function(req, res){
 //    try{
