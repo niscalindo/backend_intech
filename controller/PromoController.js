@@ -21,8 +21,8 @@ exports.getAll = function(req, res){
                 order = 'desc';
             }
         }
-        if(typeof orderBy === 'undefined' && typeof orderBy === null){
-            orderBy = 'idPromo';
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'id';
         }
         if((typeof param === 'undefined' || typeof param === null) || (typeof param.source === 'undefined' || typeof param.source === null)) {
             response.ok('Bad Request', 401, null, res);

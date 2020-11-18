@@ -126,7 +126,7 @@ exports.find = function(security,order,source,id,field,orderBy, result){
         where: conditionFirst,
         order: [
             [columnDictionary(orderBy), order]
-        ],
+        ]
     }).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
@@ -309,6 +309,8 @@ function columnDictionary(key){
         return 'promo_name';
     }else if(key === 'dateStarted'){
         return 'date_started';
+    }else if(key === 'idPromo'){
+        return 'id_promo';
     }else{
         return key;
     }
