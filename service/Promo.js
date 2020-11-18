@@ -89,6 +89,22 @@ exports.find = function(security,order,source,id,field,orderBy, result){
             conditionDate = new Object;
             conditionDate[operator.gte] = Date.parse(currentDate.datetime().toString());
             conditionFirst['date_started'] = conditionDate;
+        }else if(field.status == "existing"){
+            conditionDate = new Array();
+            conditionDate =    
+            [
+                {
+                    date_started:{
+                        [operator.lte]:Date.parse(field.selectedDate)
+                    }
+                },
+                {
+                    date_ended:{
+                        [operator.gte]:Date.parse(field.selectedDate)
+                    }
+                }
+            ];
+            conditionFirst[operator.and] = conditionDate;            
         }
     }
     if(field.idPromo != "undefined" && field.idPromo != null){
