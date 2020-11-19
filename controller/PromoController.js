@@ -11,27 +11,38 @@ const promo = require("../service/Promo");
 exports.getAll = function(req, res){
     try{
         let order = req.headers.order;
+        let orderBy = req.headers.orderby;
         let userToken = req.user;
         let param = req.query;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
         }else{
-            if(order !== 'asc' && order !== 'desc'){
+            if(order != 'asc' && order != 'desc'){
                 order = 'desc';
             }
         }
-        
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'id';
+        }
         if((typeof param === 'undefined' || typeof param === null) || (typeof param.source === 'undefined' || typeof param.source === null)) {
             response.ok('Bad Request', 401, null, res);
         }else{
-            if(param.source == "admin" && userToken.role != "admin"){
-                response.ok('Not Allowed', 403, null, res);
-                return;
-            }
+//            if(param.source == "admin" && userToken.role != "admin"){
+//                response.ok('Not Allowed', 403, null, res);
+//                return;
+//            }
             let encryptedData = [userToken.id];
+            let index = 1;
+            if(param.idPromo != "undefined" && param.idPromo != null){
+               encryptedData[index] = param.idPromo;
+            }
             security.decrypt(encryptedData)
                 .then(function(decryptedData){
-                promo.find(security,order,param.source, decryptedData[0],param,function(message, status,data){
+                 index = 1;  
+                if(param.idPromo != "undefined" && param.idPromo != null){
+                   param.idPromo = decryptedData[1];
+                }
+                promo.find(security,order,param.source, decryptedData[0],param,orderBy, function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 
@@ -110,6 +121,69 @@ exports.create = function(req, res){
                         
                     }
                 }
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
+exports.joinPromo = function(req, res){
+    try{
+        let userToken = req.user;
+        let newPromo = req.body.detailsPromo;
+        if((typeof newPromo === 'undefined' || typeof newPromo === null)){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userToken.id, newPromo[0].idPromo];
+            let index = 2;
+            let isDetailValid = true;
+            for (let i = 0; i < newPromo.length; i++) {
+                if(typeof newPromo[i].idProductVarian != 'undefined' && typeof newPromo[i].idProductVarian != null){
+                    encryptedData[index] = newPromo[i].idProductVarian;
+                    index++;
+                }else{
+                    isDetailValid = false;
+                    break;
+                }
+            }
+            if(!isDetailValid){
+                response.ok('Bad Request', 401, null, res);
+                return;
+            }
+            security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                    index = 2;
+                    isDetailValid = true;
+                    for (let i = 0; i < newPromo.length; i++) {
+                        if(typeof decryptedData[index] != 'undefined' && typeof decryptedData[index] != null){
+                            newPromo[i].idProductVarian = decryptedData[index];
+                            newPromo[i].idPromo = decryptedData[1];
+                            newPromo[i].idParticipant = decryptedData[0];
+                            newPromo[i].createdBy= decryptedData[0];
+                            newPromo[i].dateCreated = new Date();
+                            index++;
+                        }else{
+                            isDetailValid = false;
+                            break;
+                        }
+                    }
+                    if(isDetailValid && decryptedData[1] != null){
+                        promo.joinPromo(newPromo,security, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+                    }else{
+                        response.ok('Failed to decode id', 500, null, res);                         
+                    }
+            }).catch(function(err){
+                response.ok('failed to generate code :'+err, 500, null, res); 
             });
         }
     }catch(exception){

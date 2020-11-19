@@ -21,7 +21,7 @@ Date.prototype.datetime = function() {
         return datetime;
 };
 
-exports.find = function(security,order,source,id,field, result){
+exports.find = function(security,order,source,id,field,orderBy, result){
     
     let conditionDetails = new Object();
     let conditionFirst = new Object
@@ -89,7 +89,28 @@ exports.find = function(security,order,source,id,field, result){
             conditionDate = new Object;
             conditionDate[operator.gte] = Date.parse(currentDate.datetime().toString());
             conditionFirst['date_started'] = conditionDate;
+        }else if(field.status == "existing"){
+            conditionDate = new Array();
+            conditionDate =    
+            [
+                {
+                    date_started:{
+                        [operator.lte]:Date.parse(field.selectedDate)
+                    }
+                },
+                {
+                    date_ended:{
+                        [operator.gte]:Date.parse(field.selectedDate)
+                    }
+                }
+            ];
+            conditionFirst[operator.and] = conditionDate;            
         }
+    }
+    if(field.idPromo != "undefined" && field.idPromo != null){
+        let conditionId = new Object;
+        conditionId[operator.eq] = field.idPromo;
+        conditionFirst['id_promo'] = conditionId;
     }
     promoModel.findAll({
 //        attributes:{
@@ -120,8 +141,8 @@ exports.find = function(security,order,source,id,field, result){
         ],
         where: conditionFirst,
         order: [
-            ['id_promo', order]
-        ],
+            [columnDictionary(orderBy), order]
+        ]
     }).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
@@ -232,6 +253,36 @@ exports.create = function (newData, security, result) {
         result(err.message, 500, null);
     });
 };
+exports.joinPromo = function (newData, security, result) {
+    console.log(newData);
+    detailPromoModel.destroy({
+        where: [
+            {
+                id_participant: newData[0].idParticipant
+            },
+            {
+                id_promo: newData[0].idPromo
+            }
+        ]
+    }).then(rowsAffected=>{
+        console.log(rowsAffected);
+        detailPromoModel.bulkCreate(newData).then(data => {
+            security.encrypt(data)
+                .then(function (encryptedData) {
+                    result("success", 201, null);
+            }).catch(function (error) {
+                console.log(error);
+                result(error, 500, null);
+            });
+        }).catch(err => {
+        console.log(err);
+            result(err.message, 500, null);
+        });
+    }).catch(err => {
+        console.log(err);
+        result(err.message, 500, null);
+    });
+};
 
 //exports.update= function(newData, result){
 //    brand.update(
@@ -272,6 +323,10 @@ function columnDictionary(key){
         return 'id_product_varian';
     }else if(key === 'name'){
         return 'promo_name';
+    }else if(key === 'dateStarted'){
+        return 'date_started';
+    }else if(key === 'idPromo'){
+        return 'id_promo';
     }else{
         return key;
     }

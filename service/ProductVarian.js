@@ -7,9 +7,19 @@ const db = require("../model");
 const productVarianModel = db.product_varian;
 const productModel = db.product;
 const detailPromoModel = db.detail_promo;
+const promoModel = db.promo;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
+Date.prototype.datetime = function() {
+    var datetime = this.getFullYear() + "-"
+                + (this.getMonth()+1)  + "-" 
+                + this.getDate() + " "  
+                + this.getHours() + ":"  
+                + this.getMinutes() + ":" 
+                + this.getSeconds();
+        return datetime;
+};
 exports.find = function(security, orderBy, order, offset, limit,field, result){
     let op = null;
     let conditionForProduct = new Object();
@@ -52,40 +62,65 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
         model: productModel,
         as: 'product'
     }, columnDictionary(orderBy), order];
-    
-    productVarianModel.findAll({
-        attributes:{
-            exclude: ['createdBy','id_product']
-        },
-        include:[
-            {
-                model: detailPromoModel,
-                as: 'detailPromo',
-                attributes:{exclude: ['createdBy', 'dateCreated']},
-                required: false
+    try{
+        let currentDate = new Date();
+        productVarianModel.findAll({
+            attributes:{
+                exclude: ['createdBy','id_product']
             },
-            {
-                model: productModel,
-                as: 'product',
-                attributes:{exclude: ['createdBy', 'dateCreated']},
-                where: conditionForProduct
-            },
-        ],
-        offset: parseInt(offset),
-        limit: limit,
-        where:conditionForVarian,
-//        order: orderOption
-    }).then(data=>{
-        security.encrypt(data)
-        .then(function(encryptedData){
-            result("success", 200, encryptedData);
-        }).catch(function(error){
-            result(error, 500, null);
+            include:[
+                {
+                    model: detailPromoModel,
+                    as: 'detailPromo',
+                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    required: false,
+                    include:[
+                        {
+                            model: promoModel,
+                            as: 'promo',
+                            attributes:{exclude: ['createdBy', 'dateCreated']},
+                            required: false,
+                            where:[
+                                    {
+                                        date_started:{
+                                            [operator.lte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    },
+                                    {
+                                        date_ended:{
+                                            [operator.gte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    }
+                            ]
+                        }
+                     ]
+                },
+                {
+                    model: productModel,
+                    as: 'product',
+                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    where: conditionForProduct
+                },
+            ],
+            offset: parseInt(offset),
+            limit: limit,
+            where:conditionForVarian,
+    //        order: orderOption
+        }).then(data=>{
+            security.encrypt(data)
+            .then(function(encryptedData){
+                result("success", 200, encryptedData);
+            }).catch(function(error){
+                console.log(error);
+                result(error, 500, null);
+            });
+        }).catch(err=>{
+           console.log(err);
+           result(err.message, 500, null);
         });
-    }).catch(err=>{
-        console.log(err);
-       result(err.message, 500, null);
-    });
+    }catch(error){
+        console.log(error);
+    }
 };
 
 //exports.find = function(security,field, result){
