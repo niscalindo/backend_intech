@@ -6,6 +6,8 @@
 const db = require("../model");
 const productVarianModel = db.product_varian;
 const productModel = db.product;
+const pictureModel = db.pictures;
+const userModel = db.users;
 const detailPromoModel = db.detail_promo;
 const promoModel = db.promo;
 const operator = db.Sequelize.Op;
@@ -98,7 +100,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 {
                     model: productModel,
                     as: 'product',
-                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    attributes:{exclude: ['dateCreated']},
                     where: conditionForProduct
                 },
             ],
@@ -120,6 +122,93 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
         });
     }catch(error){
         console.log(error);
+        result(error.message, 500, null);
+    }
+};
+
+exports.findOne = function(security, field, result){
+    let op = null;
+    let conditionForProduct = new Object();
+    op = operator.eq;
+    let condition = new Object();
+    condition[op] = '1';
+    conditionForProduct['status'] = condition;
+    let conditionForVarian = new Object();
+    if(field.id!= "undefined" && field.id != null){
+        let conditionVarian = new Object();
+        conditionVarian[op] = field.id;
+        conditionForVarian['id_product_varian'] = conditionVarian;
+        try{
+            let currentDate = new Date();
+            productVarianModel.findAll({
+                attributes:{
+                    exclude: ['createdBy','id_product']
+                },
+                include:[
+                    {
+                        model: detailPromoModel,
+                        as: 'detailPromo',
+                        attributes:{exclude: ['createdBy', 'dateCreated']},
+                        required: false,
+                        include:[
+                            {
+                                model: promoModel,
+                                as: 'promo',
+                                attributes:{exclude: ['createdBy', 'dateCreated']},
+                                required: false,
+                                where:[
+                                        {
+                                            date_started:{
+                                                [operator.lte]:Date.parse(currentDate.datetime().toString())
+                                            }
+                                        },
+                                        {
+                                            date_ended:{
+                                                [operator.gte]:Date.parse(currentDate.datetime().toString())
+                                            }
+                                        }
+                                ]
+                            }
+                         ]
+                    },
+                    {
+                        model: productModel,
+                        as: 'product',
+                        attributes:{exclude: [ 'dateCreated']},
+                        where: conditionForProduct,
+                        include:[
+                            {
+                                model: userModel,
+                                as: 'owner',
+                                attributes:{exclude: ['createdBy', 'dateCreated','password', 'username']}
+                            },
+                            {
+                                model: pictureModel,
+                                as: 'pictures',
+                                attributes:{exclude: ['createdBy', 'dateCreated']}
+                            }
+                        ]
+                    },
+                ],
+                where:conditionForVarian,
+            }).then(data=>{
+                security.encrypt(data)
+                .then(function(encryptedData){
+                    result("success", 200, encryptedData);
+                }).catch(function(error){
+                    console.log(error);
+                    result(error, 500, null);
+                });
+            }).catch(err=>{
+               console.log(err);
+               result(err.message, 500, null);
+            });
+        }catch(error){
+            console.log(error);
+            result(error.message, 500, null);
+        }
+    }else{
+        result("Bad Request", 400, null);  
     }
 };
 
@@ -237,6 +326,8 @@ function columnDictionary(key){
         return 'sub_category_code';
     }else if(key === 'dateCreated'){
         return 'date_created';
+    }else if(key === 'createdBy'){
+        return 'created_by';
     }else{
         return key;
     }

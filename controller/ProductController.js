@@ -360,3 +360,33 @@ exports.update = function(req, res){
             response.ok(exception.message,500, null, res);
         }
     }
+    exports.findOne = function (req,res){
+        try{
+            let userToken = req.user;
+            let param = req.query;
+            if(typeof param === 'undefined' || typeof param === null){
+                response.ok('Bad Request', 401, null, res);
+            }else{
+                let encryptedData = [param.id, userToken.id];
+                security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                    param.id = decryptedData[0];
+                    productVarianService.findOne(security,param,function(message, status,data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });                    
+                }).catch(function(err){
+                    response.ok('failed to decrypt code:'+err, 500, null, res); 
+                });
+            }
+        }catch(exception){
+            response.ok(exception.message,500, null, res);
+        }
+    }

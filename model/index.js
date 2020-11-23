@@ -48,6 +48,7 @@ db.file_upload.belongsTo(db.users, {as: 'uploader', foreignKey: 'id_user'});
 db.product_varian.belongsTo(db.product, {as: 'product', foreignKey: 'id_product'});
 db.product_varian.hasMany(db.detail_promo, {as: 'detailPromo', foreignKey: 'id_product_varian'});
 db.product.belongsTo(db.brand, {as: 'brand', foreignKey: 'id_brand'});
+db.product.belongsTo(db.users, {as: 'owner', foreignKey: 'created_by'});
 db.category_product = require("./category_product.model.js")(sequelize, Sequelize);
 db.sub_category_product = require("./sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product = require("./further_sub_category_product.model.js")(sequelize, Sequelize);
