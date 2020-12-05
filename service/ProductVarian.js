@@ -70,7 +70,8 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 }
                 productObject['include']=categoryModel;
             }else if(key == "subCategory"){
-
+                conditionCategory[op] = value;
+                conditionForProduct['id_sub_category'] = conditionCategory;
             }
         }
     }
