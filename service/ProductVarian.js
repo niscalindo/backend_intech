@@ -6,6 +6,7 @@
 const db = require("../model");
 const productVarianModel = db.product_varian;
 const productModel = db.product;
+const subCategoryProduct = db.sub_category_product;
 const pictureModel = db.pictures;
 const userModel = db.users;
 const detailPromoModel = db.detail_promo;
@@ -25,10 +26,16 @@ Date.prototype.datetime = function() {
 exports.find = function(security, orderBy, order, offset, limit,field, result){
     let op = null;
     let conditionForProduct = new Object();
+    let conditionForCategory = new Object();
+    let conditionCategory = new Object();
     op = operator.eq;
     let condition = new Object();
     condition[op] = '1';
     conditionForProduct['status'] = condition;
+    let productObject = new Object();
+    productObject['model']= productModel;
+    productObject['as']='product';
+    productObject['attributes']={exclude: ['dateCreated']};
     let conditionForVarian = new Object();
     if(field != null){
         for (let [key, value] of Object.entries(field)) {
@@ -53,12 +60,21 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     return;
                 }
             }else if(key == "category"){
-
+                conditionCategory[op] = value;
+                conditionForCategory['id_category'] = conditionCategory;
+                let categoryModel = { 
+                    model: subCategoryProduct,
+                    as: 'subCategory',
+                    exclude: ['createdBy','dateCreated','status'],
+                    where:conditionForCategory
+                }
+                productObject['include']=categoryModel;
             }else if(key == "subCategory"){
 
             }
         }
     }
+    productObject['where']=conditionForProduct;
     let orderOption = Array();
     orderOption[0] = [{
         model: productModel,
@@ -97,12 +113,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                         }
                      ]
                 },
-                {
-                    model: productModel,
-                    as: 'product',
-                    attributes:{exclude: ['dateCreated']},
-                    where: conditionForProduct
-                },
+                productObject
             ],
             offset: parseInt(offset),
             limit: limit,

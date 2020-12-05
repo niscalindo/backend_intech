@@ -341,9 +341,22 @@ exports.update = function(req, res){
                 }
             }
             let param = req.query;
-//            if(typeof param === 'undefined' || typeof param === null){
-//                response.ok('Bad Request', 401, null, res);
-//            }else{
+            let encryptedData = new Array();
+            let index = 0;
+            if(param.category != 'undefined' && param.category != null){
+                encryptedData[index] = param.category;
+            }else if(param.subCategory != 'undefined' && param.subCategory != null){
+                encryptedData[index] = param.subCategory;
+            }
+            index++;
+            security.decrypt(encryptedData)
+            .then(function(decryptedData){
+                index = 0;
+                if(param.category != 'undefined' && param.category != null){
+                    param.category  = decryptedData[index];
+                }else if(param.subCategory != 'undefined' && param.subCategory != null){
+                    param.subCategory = decryptedData[index];
+                }   
                 productVarianService.find(security,orderBy, order,parseInt(offset), parseInt(limit),param,function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
@@ -355,7 +368,9 @@ exports.update = function(req, res){
                         response.ok(message, status, null, res);            
                     }
                 });
-//            }
+            }).catch(function(err){
+            response.ok('failed to decrypt code:'+err, 500, null, res); 
+        }); 
         }catch(exception){
             response.ok(exception.message,500, null, res);
         }
