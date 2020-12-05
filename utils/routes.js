@@ -18,6 +18,9 @@ module.exports = function(app){
     var captchaController = require('../controller/CaptchaController');
     var subCategoryController = require('../controller/SubCategoryProductController');
     var furtherSubCategoryController = require('../controller/FurtherSubCategoryProductController');
+    var addressController = require('../controller/AddressController');
+    var mailinController = require('../controller/MailinController');
+    var mailoutController = require('../controller/MailoutController');
     
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
@@ -62,6 +65,15 @@ module.exports = function(app){
     app.route('/sliders').post(auth.isAunthenticated,sliderController.create);
     app.route('/sliders').put(auth.isAunthenticated,sliderController.update);
     app.route('/sliders/find').get(auth.isAunthenticated,sliderController.find);
+    app.route('/mail-in').get(auth.isAunthenticated,mailinController.getAll);
+    app.route('/mail-in').post(auth.isAunthenticated,mailinController.create);
+    app.route('/mail-in').put(auth.isAunthenticated,mailinController.update);
+    app.route('/mail-in/find').get(auth.isAunthenticated,mailinController.find);
+    app.route('/mail-in/findMailOut').get(auth.isAunthenticated,mailinController.findMailOut);
+    app.route('/mail-out').get(auth.isAunthenticated,mailoutController.getAll);
+    app.route('/mail-out').post(auth.isAunthenticated,mailoutController.create);
+    app.route('/mail-out').put(auth.isAunthenticated,mailoutController.update);
+    app.route('/mail-out/find').get(auth.isAunthenticated,mailoutController.find);
     
     app.route('/captcha').post(captchaController.create);
     app.route('/captcha/compare').get(captchaController.find);
