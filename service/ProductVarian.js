@@ -42,7 +42,24 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             let condition = new Object();
 
             if(key == "name"){
-
+                let condition = new Object();
+//                let findInSku= new Object();
+//                findInSku[operator.substring] = decodeURI(param.name);
+//                let conditionSku= new Object();
+//                conditionSku['$varian.sku$'] = findInSku;
+//                condition[operator.or] = [conditionName, conditionSku];
+                console.log("here");
+                let populateCondition = new Array();
+                let splittedKey = decodeURI(value).split(" ");
+                for(let i = 0; i<splittedKey.length; i++){
+                    let findInName = new Object();
+                    findInName[operator.substring] = splittedKey[i];
+                    let conditionName = new Object();
+                    conditionName['product_name'] = findInName;
+                    populateCondition[i] = conditionName;
+                }
+                condition[operator.or] = populateCondition;
+                conditionForProduct= condition;
             }else if(key == "dateCreated"){
                 if(field.dateOp != "undefined" && isValidDate(value)){
                     if(field.dateOp == "lt"){
