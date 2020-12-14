@@ -25,6 +25,7 @@ module.exports = function(app){
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
     app.route('/users/admin/find').get(auth.isAunthenticated,userController.find);
+    app.route('/users/admin/update').put(auth.isAunthenticated,userController.update);
     app.route('/users/customer/login').post(usersController.login);
     app.route('/users/customer/find').get(auth.isAunthenticated,usersController.find);
     app.route('/users/customer').put(auth.isAunthenticated,usersController.update);

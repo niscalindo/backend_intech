@@ -79,3 +79,35 @@ exports.find = function(req, res){
         response.ok(exception.message, 500, null, res);        
     }
 };
+
+exports.update = function(req, res){
+    try{
+        let newUser = req.body.user;
+        let userToken = req.user;
+        if((typeof newUser === 'undefined' || typeof newUser === null) || (typeof newUser.id === 'undefined' || typeof newUser.id === null)){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [newUser.id, userToken.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                        newUser.id = decryptedId[0];
+                        newUser.createdBy = decryptedId[1];
+                        user.update(newUser, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+            }).catch(function (error){
+                response.ok("data not found : "+error, 500, null, res);   
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+};
