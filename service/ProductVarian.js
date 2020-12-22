@@ -23,6 +23,124 @@ Date.prototype.datetime = function() {
                 + this.getSeconds();
         return datetime;
 };
+exports.countResult = function(orderBy, order,field, result){
+    let op = null;
+    let conditionForProduct = new Object();
+    let conditionForCategory = new Object();
+    let conditionCategory = new Object();
+    op = operator.eq;
+    let condition = new Object();
+    condition[op] = '1';
+    conditionForProduct['status'] = condition;
+    let productObject = new Object();
+    productObject['model']= productModel;
+    productObject['as']='product';
+    productObject['attributes']={exclude: ['dateCreated']};
+    let conditionForVarian = new Object();
+    if(field != null){
+        for (let [key, value] of Object.entries(field)) {
+            let condition = new Object();
+            if(key == "name"){
+                let condition = new Object();
+                let populateCondition = new Array();
+                let splittedKey = decodeURI(value).split(" ");
+                for(let i = 0; i<splittedKey.length; i++){
+                    let findInName = new Object();
+                    findInName[operator.substring] = splittedKey[i];
+                    let conditionName = new Object();
+                    conditionName['product_name'] = findInName;
+                    populateCondition[i] = conditionName;
+                }
+                condition[operator.or] = populateCondition;
+                conditionForProduct= condition;
+            }else if(key == "dateCreated"){
+                if(field.dateOp != "undefined" && isValidDate(value)){
+                    if(field.dateOp == "lt"){
+                        op = operator.lt;                  
+                    }else if(field.dateOp == "gt"){
+                        op = operator.gt;                       
+                    }else{
+                        result("Bad Request - Unknown date operator", 400, null);
+                        return; 
+                    }
+                    condition[op] = value;
+                    conditionForProduct[columnDictionary(key)] = condition;
+                }else{
+                    result("Bad Request - Unknown date or operator", 400, null);
+                    return;
+                }
+            }else if(key == "category"){
+                conditionCategory[op] = value;
+                conditionForCategory['id_category'] = conditionCategory;
+                let categoryModel = { 
+                    model: subCategoryProduct,
+                    as: 'subCategory',
+                    exclude: ['createdBy','dateCreated','status'],
+                    where:conditionForCategory
+                }
+                productObject['include']=categoryModel;
+            }else if(key == "subCategory"){
+                conditionCategory[op] = value;
+                conditionForProduct['id_sub_category'] = conditionCategory;
+            }
+        }
+    }
+    productObject['where']=conditionForProduct;
+    let orderOption = Array();
+    orderOption[0] = [{
+        model: productModel,
+        as: 'product'
+    }, columnDictionary(orderBy), order];
+    try{
+        let currentDate = new Date();
+        productVarianModel.count({
+            attributes:{
+                exclude: ['createdBy','id_product']
+            },
+            include:[
+                {
+                    model: detailPromoModel,
+                    as: 'detailPromo',
+                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    required: false,
+                    include:[
+                        {
+                            model: promoModel,
+                            as: 'promo',
+                            attributes:{exclude: ['createdBy', 'dateCreated']},
+                            required: false,
+                            where:[
+                                    {
+                                        date_started:{
+                                            [operator.lte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    },
+                                    {
+                                        date_ended:{
+                                            [operator.gte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    }
+                            ]
+                        }
+                     ]
+                },
+                productObject
+            ],
+            distinct: true,
+            col: 'id_product_varian',
+            where:conditionForVarian,
+    //        order: orderOption
+        }).then(data=>{
+            result("success", 200, data);
+        }).catch(err=>{
+           console.log(err);
+           result(err.message, 500, null);
+        });
+    }catch(error){
+        console.log(error);
+        result(error.message, 500, null);
+    }
+}
 exports.find = function(security, orderBy, order, offset, limit,field, result){
     let op = null;
     let conditionForProduct = new Object();
@@ -153,8 +271,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
         console.log(error);
         result(error.message, 500, null);
     }
-};
-
+}
 exports.findOne = function(security, field, result){
     let op = null;
     let conditionForProduct = new Object();

@@ -43,7 +43,6 @@ exports.create = function(req, res){
                 data.idBrand = decryptedData[index];
             }
             
-            console.log(data);
             productService.create(data,security, function(message,status,data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
@@ -360,17 +359,26 @@ exports.update = function(req, res){
                 productVarianService.find(security,orderBy, order,parseInt(offset), parseInt(limit),param,function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
+                            let resultAll = new Object();
+                            resultAll.rowCount = 0;
+                            resultAll.data = data;
+                            response.ok('empty result', status, resultAll, res); 
                         }else{
-                            response.ok(message, status, data, res);                    
+                            productVarianService.countResult(orderBy, order,param,function(messageRow, statusRow,dataRow){
+                                let resultAll = new Object();
+                                resultAll.rowCount = dataRow;
+                                resultAll.data = data;
+                                response.ok(message, status, resultAll, res);                    
+                            });
+//                            response.ok(message, status, data, res);                    
                         }
                     }else{
                         response.ok(message, status, null, res);            
                     }
                 });
             }).catch(function(err){
-            response.ok('failed to decrypt code:'+err, 500, null, res); 
-        }); 
+                response.ok('failed to decrypt code:'+err, 500, null, res); 
+            }); 
         }catch(exception){
             response.ok(exception.message,500, null, res);
         }
