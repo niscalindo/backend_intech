@@ -49,6 +49,7 @@ exports.login = function(field, result){
 };
 
 exports.find = function(field, result){
+    
     let op = null;
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
@@ -66,7 +67,7 @@ exports.find = function(field, result){
     }
     let condition = new Object();
     condition[operator.eq] = '1';
-    conditionKey['status'] = condition;
+    conditionKey['USER_STATUS'] = condition;
     
     tmUsers.findAll({
         attributes: {
@@ -86,6 +87,23 @@ exports.find = function(field, result){
             });  
         }      
     }).catch(err=>{
+        result(err.message, 500, null);
+    });
+};
+
+exports.update= function(newData, result){
+    tmUsers.update(
+        newData,
+        {
+            where: {USER_ID: parseInt(newData.id)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
         result(err.message, 500, null);
     });
 };
