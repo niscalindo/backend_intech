@@ -154,7 +154,16 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     productObject['model']= productModel;
     productObject['as']='product';
     productObject['attributes']={exclude: ['dateCreated']};
+    if(orderBy == "productName"){
+        productObject['order']=[[[columnDictionary(orderBy), order]]];
+    }
     let conditionForVarian = new Object();
+    let orderOption = Array();
+    if(orderBy == "productName"){
+        orderOption[0]=[sequelize.literal('`product.name`'),order]
+    }else{
+        orderOption[0] = [columnDictionary(orderBy), order];
+    }       
     if(field != null){
         for (let [key, value] of Object.entries(field)) {
             let condition = new Object();
@@ -211,11 +220,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
         }
     }
     productObject['where']=conditionForProduct;
-    let orderOption = Array();
-    orderOption[0] = [{
-        model: productModel,
-        as: 'product'
-    }, columnDictionary(orderBy), order];
+    
     try{
         let currentDate = new Date();
         productVarianModel.findAll({
@@ -254,7 +259,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             offset: parseInt(offset),
             limit: limit,
             where:conditionForVarian,
-    //        order: orderOption
+            order: orderOption
         }).then(data=>{
             security.encrypt(data)
             .then(function(encryptedData){
@@ -464,6 +469,8 @@ exports.findOne = function(security, field, result){
 function columnDictionary(key){
     if(key === 'id'){
         return 'id_product_varian';
+    }else if(key === 'idProductVarian'){
+        return 'id_product_varian';
     }else if(key === 'idCategory'){
         return 'id_category';
     }else if(key === 'subCategoryName'){
@@ -474,6 +481,8 @@ function columnDictionary(key){
         return 'date_created';
     }else if(key === 'createdBy'){
         return 'created_by';
+    }else if(key === 'productName'){
+        return 'name';
     }else{
         return key;
     }

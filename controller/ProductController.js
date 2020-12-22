@@ -321,10 +321,10 @@ exports.update = function(req, res){
             let orderBy = req.headers.order_by;
             let offset = req.headers.page;
             if(typeof orderBy === 'undefined' || typeof orderBy === null){
-                orderBy = 'id_product';
+                orderBy = 'id_product_varian';
             }
             if(typeof order === 'undefined' || typeof order === null){
-                order = 'desc';
+                order = 'asc';
             }
             if(typeof limit === 'undefined' || typeof limit === null){
                 limit = 500;
