@@ -27,6 +27,7 @@ exports.countResult = function(orderBy, order,field, result){
     let op = null;
     let conditionForProduct = new Object();
     let conditionForCategory = new Object();
+    let conditionForVarian = new Object();
     let conditionCategory = new Object();
     op = operator.eq;
     let condition = new Object();
@@ -36,7 +37,6 @@ exports.countResult = function(orderBy, order,field, result){
     productObject['model']= productModel;
     productObject['as']='product';
     productObject['attributes']={exclude: ['dateCreated']};
-    let conditionForVarian = new Object();
     if(field != null){
         for (let [key, value] of Object.entries(field)) {
             let condition = new Object();
@@ -82,6 +82,14 @@ exports.countResult = function(orderBy, order,field, result){
             }else if(key == "subCategory"){
                 conditionCategory[op] = value;
                 conditionForProduct['id_sub_category'] = conditionCategory;
+            }else if(key == "minPrice"){
+                op = operator.gte;
+                condition[op] = value;
+                conditionForVarian['price'] = condition;
+            }else if(key == "maxPrice"){
+                op = operator.lte;
+                condition[op] = value;
+                conditionForVarian['price'] = condition;
             }
         }
     }
@@ -145,6 +153,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let op = null;
     let conditionForProduct = new Object();
     let conditionForCategory = new Object();
+    let conditionForVarian = new Object();
     let conditionCategory = new Object();
     op = operator.eq;
     let condition = new Object();
@@ -157,7 +166,6 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     if(orderBy == "productName"){
         productObject['order']=[[[columnDictionary(orderBy), order]]];
     }
-    let conditionForVarian = new Object();
     let orderOption = Array();
     if(orderBy == "productName"){
         orderOption[0]=[sequelize.literal('`product.name`'),order]
@@ -167,15 +175,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     if(field != null){
         for (let [key, value] of Object.entries(field)) {
             let condition = new Object();
-
             if(key == "name"){
-                let condition = new Object();
-//                let findInSku= new Object();
-//                findInSku[operator.substring] = decodeURI(param.name);
-//                let conditionSku= new Object();
-//                conditionSku['$varian.sku$'] = findInSku;
-//                condition[operator.or] = [conditionName, conditionSku];
-                console.log("here");
                 let populateCondition = new Array();
                 let splittedKey = decodeURI(value).split(" ");
                 for(let i = 0; i<splittedKey.length; i++){
@@ -216,6 +216,14 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             }else if(key == "subCategory"){
                 conditionCategory[op] = value;
                 conditionForProduct['id_sub_category'] = conditionCategory;
+            }else if(key == "minPrice"){
+                op = operator.gte;
+                condition[op] = value;
+                conditionForVarian['price'] = condition;
+            }else if(key == "maxPrice"){
+                op = operator.lte;
+                condition[op] = value;
+                conditionForVarian['price'] = condition;
             }
         }
     }
