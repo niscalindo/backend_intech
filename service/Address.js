@@ -89,6 +89,8 @@ function columnDictionary(key){
         return 'id_address';
     }else if(key === 'recipientName'){
         return 'recipient_name';
+    }else if(key === 'id'){
+        return 'id_address';
     }else{
         return key;
     }

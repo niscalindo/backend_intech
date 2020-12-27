@@ -21,6 +21,7 @@ module.exports = function(app){
     var addressController = require('../controller/AddressController');
     var mailinController = require('../controller/MailinController');
     var mailoutController = require('../controller/MailoutController');
+    var userPaymentAccountController = require('../controller/UserPaymentAccountController');
     
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
@@ -82,5 +83,8 @@ module.exports = function(app){
     app.route('/promos').post(auth.isAunthenticated,promoController.create);
     app.route('/promos/join').post(auth.isAunthenticated,promoController.joinPromo);
     app.route('/promos').get(auth.isAunthenticated,promoController.getAll);
+    
+    app.route('/payment-account').get(auth.isAunthenticated,userPaymentAccountController.getAll);
+    app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
 }
 

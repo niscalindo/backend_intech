@@ -11,42 +11,18 @@ var security = require('../utils/Security');
 exports.find = function(req, res){
     try{
         let param = req.query;
-        if(typeof param === 'undefined' || typeof param === null){
-            response.ok('Bad Request', 401, null, res);
-        }else{
-            if(typeof param.id === 'undefined' || typeof param.id === null){
-                address.find(security,param, function(message, status, data){
-                    if(status == 200 || status == 201){
-                        if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
-                        }else{
-                            response.ok(message, status, data, res);                    
-                        }
-                    }else{
-                        response.ok(message, status, null, res);            
-                    }
-                });
+        param.id = req.user.id;
+        address.find(security,param, function(message, status, data){
+            if(status == 200 || status == 201){
+                if(data == null || data == ""){
+                    response.ok('empty result', status, data, res); 
+                }else{
+                    response.ok(message, status, data, res);                    
+                }
             }else{
-                let encryptedData = [param.id];
-                security.decrypt(encryptedData)
-                .then(function(data){
-                    param.id = data;
-                    address.find(security,param, function(message, status, data){
-                        if(status == 200 || status == 201){
-                            if(data == null || data == ""){
-                                response.ok('empty result', status, data, res); 
-                            }else{
-                                response.ok(message, status, data, res);                    
-                            }
-                        }else{
-                            response.ok(message, status, null, res);            
-                        }
-                    });
-                }).catch(function(error){
-                    response.ok(error, 400, null, res); 
-                });
+                response.ok(message, status, null, res);            
             }
-        }
+        });
     }catch(exception){
         response.ok(exception.message, 500, null, res);
     }

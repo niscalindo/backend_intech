@@ -36,6 +36,7 @@ db.captcha = require("./captcha.model.js")(sequelize, Sequelize);
 db.users = require("./users.model.js")(sequelize, Sequelize);
 db.product = require("./product.model.js")(sequelize, Sequelize);
 db.pictures = require("./tm_pictures.model.js")(sequelize, Sequelize);
+db.user_payment_account = require("./user_payment_account.model.js")(sequelize, Sequelize);
 db.category_product = require("./category_product.model.js")(sequelize, Sequelize);
 db.sub_category_product = require("./sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product = require("./further_sub_category_product.model.js")(sequelize, Sequelize);
