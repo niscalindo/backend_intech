@@ -104,6 +104,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'photo_id_card'
         },
+        dob: {
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'dob'
+        },
         storeDescription: {
             type: Sequelize.TEXT,
             allowNull: false,
