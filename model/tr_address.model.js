@@ -46,6 +46,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'date_created'
         },
+        dob: {
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'dob'
+        },
         recipientName:{
             type: Sequelize.STRING(100),
             allowNull: false,
