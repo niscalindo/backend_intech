@@ -85,6 +85,7 @@ module.exports = function(app){
     app.route('/promos').get(auth.isAunthenticated,promoController.getAll);
     
     app.route('/payment-account').get(auth.isAunthenticated,userPaymentAccountController.getAll);
+    app.route('/payment-account').post(auth.isAunthenticated,userPaymentAccountController.create);
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
 }
 

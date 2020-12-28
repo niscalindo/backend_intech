@@ -33,7 +33,7 @@ module.exports = (sequelize, Sequelize)=>{
         accountNumber:{
             type: Sequelize.STRING(45),
             allowNull: false,
-            field: 'account_name'
+            field: 'account_number'
         },
         accountBank:{
             type: Sequelize.STRING(20),
@@ -44,6 +44,11 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(20),
             allowNull: false,
             field: 'account_icon'
+        },
+        idUser:{
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            field: 'id_user'
         }
     },{timestamps: false});
     return userPaymentAccount;

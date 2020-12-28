@@ -12,64 +12,58 @@ exports.getAll = function(req, res){
     try{
         let headers = req.headers;
         let userData = req.user;
-        userPaymentAccount.getAll(security,userData.id,function(message, status,data){
-            if(status == 200 || status == 201){
-                if(data == null || data == ""){
-                    response.ok('empty result', status, data, res); 
+        let encryptedData = [userData.id];
+        security.decrypt(encryptedData)
+                .then(function(decryptedId){
+            userPaymentAccount.getAll(security,decryptedId[0],function(message, status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
                 }else{
-                    response.ok(message, status, data, res);                    
+                    response.ok(message, status, null, res);            
                 }
-            }else{
-                response.ok(message, status, null, res);            
-            }
+            });
+        }).catch(function (error){
+            response.ok("data not found : "+error, 500, null, res);   
         });
     }catch(exception){
         response.ok(exception.message, 500, null, res);
     }
 }
-
-//exports.create = function(req, res){
-//    try{
-//        let userToken = req.user;
-//        let newCategory = req.body.category;
-//        if(typeof newCategory === 'undefined' || typeof newCategory === null){
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            let encryptedData = [userToken.id];
-//            categoryProduct.findMaxNumerator(function(message, status, numerator){
-//                if(status == 400){
-//                    response.ok(message, 400, null, res);
-//                }else if(status == 200){
-//                    if(numerator == null || numerator == ""){
-//                        response.ok('failed to generate code', 400, numerator, res); 
-//                    }else{
-//                        security.decrypt(encryptedData)
-//                            .then(function(decryptedLastNumerator){
-//                                newCategory.categoryCode = generateCode(numerator.dataValues.numerator);
-//                                newCategory['createdBy'] = decryptedLastNumerator[0];
-//                                categoryProduct.create(newCategory,security, function(message,status,data){
-//                                    if(status == 200 || status == 201){
-//                                        if(data == null || data == ""){
-//                                            response.ok('empty result', status, data, res); 
-//                                        }else{
-//                                            response.ok(message, status, data, res);                    
-//                                        }
-//                                    }else{
-//                                        response.ok(message, status, null, res);            
-//                                    }
-//                                });
-//                        }).catch(function(err){
-//                            response.ok('failed to generate code :'+err, 500, null, res); 
-//                        });
-//                        
-//                    }
-//                }
-//            });
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
+exports.create = function(req, res){
+    try{
+        let userData = req.user;
+        let newPaymentAccount = req.body.paymentAccount;
+        if(typeof newPaymentAccount=== 'undefined' || typeof newPaymentAccount === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userData.id];
+            security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                    newPaymentAccount ['idUser'] = decryptedData[0];
+                    newPaymentAccount ['createdBy'] = decryptedData[0];
+                    userPaymentAccount.create(newPaymentAccount,security, function(message,status,data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+            }).catch(function(err){
+                response.ok('failed to generate code :'+err, 500, null, res); 
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 //
 //exports.update = function(req, res){
 //    try{
