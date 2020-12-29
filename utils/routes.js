@@ -9,6 +9,7 @@ module.exports = function(app){
     var userController = require('../controller/UserController');
     var usersController = require('../controller/UsersController');
     var categoryController = require('../controller/CategoryProductController');
+    var provinceController = require('../controller/ProvinceController');
     var unitController = require('../controller/UnitController');
     var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
@@ -88,5 +89,6 @@ module.exports = function(app){
     app.route('/payment-account').post(auth.isAunthenticated,userPaymentAccountController.create);
     app.route('/payment-account').put(auth.isAunthenticated,userPaymentAccountController.update);
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
+    app.route('/provinces').get(auth.isAunthenticated,provinceController.getAll);
 }
 
