@@ -64,37 +64,36 @@ exports.create = function(req, res){
         response.ok(exception.message, 500, null, res);
     }
 }
-//
-//exports.update = function(req, res){
-//    try{
-//        let newCategory = req.body.category;
-//        if(typeof newCategory === 'undefined' || typeof newCategory === null){
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            let encryptedData = [newCategory.id, newCategory.createdBy];
-//            security.decrypt(encryptedData)
-//                    .then(function(decryptedId){
-//                        newCategory.id = decryptedId[0];
-//                        newCategory.createdBy = decryptedId[1];
-//                        categoryProduct.update(newCategory, function(message,status,data){
-//                            if(status == 200 || status == 201){
-//                                if(data == null || data == ""){
-//                                    response.ok('empty result', status, data, res); 
-//                                }else{
-//                                    response.ok(message, status, data, res);                    
-//                                }
-//                            }else{
-//                                response.ok(message, status, null, res);            
-//                            }
-//                        });
-//            }).catch(function (error){
-//                response.ok("data not found : "+error, 500, null, res);   
-//            });
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
+exports.update = function(req, res){
+    try{
+        let newPaymentAccount = req.body.paymentAccount;
+        if(typeof newPaymentAccount === 'undefined' || typeof newPaymentAccount === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [newPaymentAccount.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                        newPaymentAccount.id = decryptedId[0];
+                        newPaymentAccount.createdBy = decryptedId[0];
+                        userPaymentAccount.update(newPaymentAccount, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+            }).catch(function (error){
+                response.ok("data not found : "+error, 500, null, res);   
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 //
 //exports.find = function(req, res){
 //    try{

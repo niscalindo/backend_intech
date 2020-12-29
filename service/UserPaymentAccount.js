@@ -109,22 +109,22 @@ exports.create = function(newData,security, result){
     });
 };
 //
-//exports.update= function(newData, result){
-//    subCategoryProduct.update(
-//        newData,
-//        {
-//            where: {id_sub_category: parseInt(newData.id)}
-//        }).then(function(data){
-//        if(data[0] == 1){
-//            result("success", 200, data[0]);
-//        }else{
-//            result("no changes", 200, data[0]);
-//        }
-//    })
-//    .catch(err=>{
-//        result(err.message, 500, null);
-//    });
-//};
+exports.update= function(newData, result){
+    userPaymentAccount.update(
+        newData,
+        {
+            where: {id_account: parseInt(newData.id)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
+        result(err.message, 500, null);
+    });
+};
 //exports.findMaxNumerator= function( result){
 //    subCategoryProduct.findOne({
 //        attributes:[
