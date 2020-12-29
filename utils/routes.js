@@ -10,6 +10,7 @@ module.exports = function(app){
     var usersController = require('../controller/UsersController');
     var categoryController = require('../controller/CategoryProductController');
     var provinceController = require('../controller/ProvinceController');
+    var regencyController = require('../controller/RegencyController');
     var unitController = require('../controller/UnitController');
     var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
@@ -90,5 +91,6 @@ module.exports = function(app){
     app.route('/payment-account').put(auth.isAunthenticated,userPaymentAccountController.update);
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
     app.route('/provinces').get(auth.isAunthenticated,provinceController.getAll);
+    app.route('/cities').get(auth.isAunthenticated,regencyController.find);
 }
 

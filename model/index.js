@@ -31,6 +31,7 @@ db.detail_promo = require("./tm_detail_promo.model.js")(sequelize, Sequelize);
 db.unit = require("./unit.model.js")(sequelize, Sequelize);
 db.brand = require("./brand.model.js")(sequelize, Sequelize);
 db.province = require("./province.model.js")(sequelize, Sequelize);
+db.regency = require("./regency.model.js")(sequelize, Sequelize);
 db.slider = require("./tm_slider.model.js")(sequelize, Sequelize);
 db.file_upload= require("./file_upload.model.js")(sequelize, Sequelize);
 db.captcha = require("./captcha.model.js")(sequelize, Sequelize);
