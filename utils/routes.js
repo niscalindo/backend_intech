@@ -11,6 +11,7 @@ module.exports = function(app){
     var categoryController = require('../controller/CategoryProductController');
     var provinceController = require('../controller/ProvinceController');
     var regencyController = require('../controller/RegencyController');
+    var districtController = require('../controller/DistrictController');
     var unitController = require('../controller/UnitController');
     var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
@@ -92,5 +93,6 @@ module.exports = function(app){
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
     app.route('/provinces').get(auth.isAunthenticated,provinceController.getAll);
     app.route('/cities').get(auth.isAunthenticated,regencyController.find);
+    app.route('/districts').get(auth.isAunthenticated,districtController.find);
 }
 
