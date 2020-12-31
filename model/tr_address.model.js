@@ -41,7 +41,7 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'postal_code'
         },
-        createdAt: {
+        dateCreated: {
             type: Sequelize.DATE,
             allowNull: true,
             field: 'date_created'
@@ -56,17 +56,20 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'phone'
         },
-        private_address:{
+        privateAddress:{
             type: Sequelize.ENUM('0','1'),
-            defaultValue: '0'
+            defaultValue: '0',
+            field: 'private_address'
         },
-        store_address:{
+        storeAddress:{
             type: Sequelize.ENUM('0','1'),
-            defaultValue: '0'
+            defaultValue: '0',
+            field: 'store_address'
         },
-        return_address:{
+        returnAddress:{
             type: Sequelize.ENUM('0','1'),
-            defaultValue: '0'
+            defaultValue: '0',
+            field: 'return_address'
         },
         status:{
             type: Sequelize.ENUM('0','1'),

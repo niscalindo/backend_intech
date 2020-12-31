@@ -51,7 +51,7 @@ exports.find = function(security,field, result){
 
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
-    newData['createdAt'] = new Date();   
+    newData['dateCreated'] = new Date();   
     address.create(newData).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
@@ -91,6 +91,8 @@ function columnDictionary(key){
         return 'recipient_name';
     }else if(key === 'id'){
         return 'id_address';
+    }else if(key === 'idUser'){
+        return 'id_user';
     }else{
         return key;
     }

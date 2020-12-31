@@ -91,6 +91,7 @@ module.exports = function(app){
     app.route('/payment-account').post(auth.isAunthenticated,userPaymentAccountController.create);
     app.route('/payment-account').put(auth.isAunthenticated,userPaymentAccountController.update);
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
+    app.route('/user-addresses').post(auth.isAunthenticated,addressController.create);
     app.route('/provinces').get(auth.isAunthenticated,provinceController.getAll);
     app.route('/cities').get(auth.isAunthenticated,regencyController.find);
     app.route('/districts').get(auth.isAunthenticated,districtController.find);

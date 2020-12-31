@@ -11,17 +11,24 @@ var security = require('../utils/Security');
 exports.find = function(req, res){
     try{
         let param = req.query;
-        param.id = req.user.id;
-        address.find(security,param, function(message, status, data){
-            if(status == 200 || status == 201){
-                if(data == null || data == ""){
-                    response.ok('empty result', status, data, res); 
+        param.idUser = req.user.id;
+        let encryptedData = [param.idUser];
+        security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+            param.idUser = decryptedId[0];
+            address.find(security,param, function(message, status, data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
                 }else{
-                    response.ok(message, status, data, res);                    
+                    response.ok(message, status, null, res);            
                 }
-            }else{
-                response.ok(message, status, null, res);            
-            }
+            });       
+        }).catch(function (error){
+            response.ok(error, 500, null, res);   
         });
     }catch(exception){
         response.ok(exception.message, 500, null, res);
@@ -67,10 +74,14 @@ exports.create = function(req, res){
         if(typeof newAddress === 'undefined' || typeof newAddress === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [userToken.id];
+            let encryptedData = [userToken.id, newAddress.idProvince, newAddress.idCity, newAddress.idDistrict];
             security.decrypt(encryptedData)
                 .then(function(decryptedLastNumerator){
                     newAddress['createdBy'] = decryptedLastNumerator[0];
+                    newAddress.idProvince = decryptedLastNumerator[1];
+                    newAddress.idCity = decryptedLastNumerator[2];
+                    newAddress.idDistrict = decryptedLastNumerator[3];
+                    newAddress.idUser = decryptedLastNumerator[0];
                     address.create(newAddress,security, function(message,status,data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
