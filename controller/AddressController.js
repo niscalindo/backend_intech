@@ -42,11 +42,15 @@ exports.update = function(req, res){
         if(typeof newAddress === 'undefined' || typeof newAddress === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newAddress.id, userToken.id];
+            let encryptedData = [newAddress.id, userToken.id, newAddress.idProvince, newAddress.idCity, newAddress.idDistrict];
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
                         newAddress.id = decryptedId[0];
                         newAddress.createdBy = decryptedId[1];
+                        newAddress.idProvince = decryptedId[2];
+                        newAddress.idCity = decryptedId[3];
+                        newAddress.idDistrict = decryptedId[4];
+                        newAddress.idUser = decryptedId[0];
                         address.update(newAddress, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
