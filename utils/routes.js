@@ -25,7 +25,10 @@ module.exports = function(app){
     var mailinController = require('../controller/MailinController');
     var mailoutController = require('../controller/MailoutController');
     var userPaymentAccountController = require('../controller/UserPaymentAccountController');
-    
+    var courierController = require('../controller/courierController');
+    var deliveryController = require('../controller/deliveryController');
+
+
     var auth = require('./auth');
     app.route('/users/admin/login').post(userController.login);
     app.route('/users/admin/find').get(auth.isAunthenticated,userController.find);
@@ -90,11 +93,21 @@ module.exports = function(app){
     app.route('/payment-account').get(auth.isAunthenticated,userPaymentAccountController.getAll);
     app.route('/payment-account').post(auth.isAunthenticated,userPaymentAccountController.create);
     app.route('/payment-account').put(auth.isAunthenticated,userPaymentAccountController.update);
+    app.route('/payment-account/find').get(auth.isAunthenticated,userPaymentAccountController.find);
     app.route('/user-addresses').get(auth.isAunthenticated,addressController.find);
     app.route('/user-addresses').post(auth.isAunthenticated,addressController.create);
     app.route('/user-addresses').put(auth.isAunthenticated,addressController.update);
     app.route('/provinces').get(auth.isAunthenticated,provinceController.getAll);
     app.route('/cities').get(auth.isAunthenticated,regencyController.find);
     app.route('/districts').get(auth.isAunthenticated,districtController.find);
+
+    app.route('/couriers').get(auth.isAunthenticated,courierController.getAll);
+    app.route('/couriers').post(auth.isAunthenticated,courierController.create);
+    app.route('/couriers').put(auth.isAunthenticated,courierController.update);
+    app.route('/couriers/find').get(auth.isAunthenticated,courierController.find);
+    app.route('/delivery').get(auth.isAunthenticated,deliveryController.getAll);
+    app.route('/delivery').post(auth.isAunthenticated,deliveryController.create);
+    app.route('/delivery').put(auth.isAunthenticated,deliveryController.update);
+    app.route('/delivery/find').get(auth.isAunthenticated,deliveryController.find);
 }
 

@@ -150,3 +150,51 @@ exports.update= function(newData, result){
 //        return 'sub_category_code';
 //    }
 //}
+exports.find = function(security,field, result){
+    let op = null;
+    let conditionKey = new Object();
+    for (let [key, value] of Object.entries(field)) {
+        let condition = new Object();
+        if(key === "makeMain"){
+            op = operator.substring;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }else{
+            op = operator.eq;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }
+        
+    }
+    let condition = new Object();
+    condition[operator.eq] = '1';
+    conditionKey['status'] = condition;
+    
+    userPaymentAccount.findAll({
+        attributes:{
+            exclude: ['createdBy','dateCreated']
+        },
+        where: [conditionKey]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            security.encrypt(data)
+            .then(function(encryptedData){
+                result("success", 200, encryptedData);
+            }).catch(function(error){
+                result(error, 500, null);
+            });            
+        }
+    }).catch(err=>{
+       result(err.message, 500, null);
+    });
+}
+
+function columnDictionary(key){
+    if(key === 'makeMain'){
+        return 'make_main';
+    }else{
+     return key;
+     }
+ }

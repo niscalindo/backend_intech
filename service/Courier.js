@@ -4,16 +4,41 @@
  * and open the template in the editor.
  */
 const db = require("../model");
-const address = db.tr_address;
+const courier = db.tm_courier;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+
+exports.getAll = function(security,order, result){
+    courier.findAll({
+        attributes:{
+            exclude: ['createdBy', 'dateCreated']
+        },
+        where: {
+            status:{
+                [operator.eq]: '1'
+            }
+        },
+        order: [
+            ['id_courier', order]
+        ],
+    }).then(data=>{
+        security.encrypt(data)
+        .then(function(encryptedData){
+            result("success", 200, encryptedData);
+        }).catch(function(error){
+            result(error, 500, null);
+        });
+    }).catch(err=>{
+       result(err.message, 500, null);
+    });
+};
 
 exports.find = function(security,field, result){
     let op = null;
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
-        if(key === "recipientName"){
+        if(key === "name"){
             op = operator.substring;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
@@ -28,9 +53,9 @@ exports.find = function(security,field, result){
     condition[operator.eq] = '1';
     conditionKey['status'] = condition;
     
-    address.findAll({
+    courier.findAll({
         attributes:{
-            exclude: ['createdBy','createdAt']
+            exclude: ['createdBy','dateCreated']
         },
         where: [conditionKey]
     }).then(data=>{
@@ -52,7 +77,7 @@ exports.find = function(security,field, result){
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
     newData['dateCreated'] = new Date();   
-    address.create(newData).then(data=>{
+    courier.create(newData).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             let newInsertedId = encryptedData.dataValues.id;
@@ -68,10 +93,10 @@ exports.create = function(newData,security, result){
 };
 
 exports.update= function(newData, result){
-    address.update(
+    courier.update(
         newData,
         {
-            where: {id_address: parseInt(newData.id)}
+            where: {id_courier: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);
@@ -85,20 +110,10 @@ exports.update= function(newData, result){
 };
 
 function columnDictionary(key){
-    if(key === 'idAddress'){
-        return 'id_address';
-    }else if(key === 'recipientName'){
-        return 'recipient_name';
-    }else if(key === 'id'){
-        return 'id_address';
-    }else if(key === 'idUser'){
-        return 'id_user';
-    }else if(key === 'privateAddress'){
-        return 'private_address';
-    }else if(key === 'store_address'){
-        return 'private_address';
-    }else if(key === 'returnAddress'){
-        return 'return_address';
+    if(key === 'id'){
+        return 'id_courier';
+    }else if(key === 'name'){
+        return 'courier_name';
     }else{
         return key;
     }

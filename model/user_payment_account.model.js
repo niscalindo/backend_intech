@@ -14,6 +14,11 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.ENUM('0','1','2'),
             defaultValue: '1'
         },
+        makeMain:{
+            type: Sequelize.ENUM('0','1'),
+            defaultValue: '0',
+            field: 'make_main'
+        },
         createdBy:{
             type: Sequelize.INTEGER,
             allowNull: false,

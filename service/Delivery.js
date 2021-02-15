@@ -4,16 +4,43 @@
  * and open the template in the editor.
  */
 const db = require("../model");
-const address = db.tr_address;
+const delivery = db.tm_delivery;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+
+exports.getAll = function(security,createdBy, result){
+    delivery.findAll({
+        attributes:{
+            exclude: ['createdBy', 'dateCreated']
+        },
+        where: {
+            status:{
+                [operator.eq]: '1'
+            },created_by:{
+                [operator.eq]: createdBy
+            }
+        },
+        order: [
+            ['id_delivery', 'asc']
+        ],
+    }).then(data=>{
+        security.encrypt(data)
+        .then(function(encryptedData){
+            result("success", 200, encryptedData);
+        }).catch(function(error){
+            result(error, 500, null);
+        });
+    }).catch(err=>{
+       result(err.message, 500, null);
+    });
+};
 
 exports.find = function(security,field, result){
     let op = null;
     let conditionKey = new Object();
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
-        if(key === "recipientName"){
+        if(key === "name"){
             op = operator.substring;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
@@ -28,9 +55,9 @@ exports.find = function(security,field, result){
     condition[operator.eq] = '1';
     conditionKey['status'] = condition;
     
-    address.findAll({
+    delivery.findAll({
         attributes:{
-            exclude: ['createdBy','createdAt']
+            exclude: ['createdBy','dateCreated']
         },
         where: [conditionKey]
     }).then(data=>{
@@ -52,7 +79,7 @@ exports.find = function(security,field, result){
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
     newData['dateCreated'] = new Date();   
-    address.create(newData).then(data=>{
+    delivery.create(newData).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             let newInsertedId = encryptedData.dataValues.id;
@@ -68,10 +95,10 @@ exports.create = function(newData,security, result){
 };
 
 exports.update= function(newData, result){
-    address.update(
+    delivery.update(
         newData,
         {
-            where: {id_address: parseInt(newData.id)}
+            where: {id_delivery: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);
@@ -85,20 +112,10 @@ exports.update= function(newData, result){
 };
 
 function columnDictionary(key){
-    if(key === 'idAddress'){
-        return 'id_address';
-    }else if(key === 'recipientName'){
-        return 'recipient_name';
-    }else if(key === 'id'){
-        return 'id_address';
-    }else if(key === 'idUser'){
-        return 'id_user';
-    }else if(key === 'privateAddress'){
-        return 'private_address';
-    }else if(key === 'store_address'){
-        return 'private_address';
-    }else if(key === 'returnAddress'){
-        return 'return_address';
+    if(key === 'id'){
+        return 'id_delivery';
+    }else if(key === 'name'){
+        return 'delivery_name';
     }else{
         return key;
     }

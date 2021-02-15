@@ -66,5 +66,7 @@ db.sub_category_product.hasMany(db.further_sub_category_product,{as: 'furtherSub
 db.tr_address = require("./tr_address.model.js")(sequelize, Sequelize);
 db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
+db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);
+db.tm_delivery = require("./tm_delivery.model.js")(sequelize, Sequelize);
 module.exports = db;
 
