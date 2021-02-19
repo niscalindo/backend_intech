@@ -42,8 +42,8 @@ exports.update = function(req, res){
         if(typeof newAddress === 'undefined' || typeof newAddress === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newAddress.id, userToken.id, newAddress.idDistrict];
-            let index=1;
+            let encryptedData = [newAddress.id, userToken.id];
+            let index=2;
             if(typeof newAddress.idProvince != 'undefined' && typeof newAddress.idProvince != null){
                 encryptedData[index]=newAddress.idProvince;
                 index++;
@@ -56,24 +56,27 @@ exports.update = function(req, res){
                 encryptedData[index]=newAddress.idDistrict;
                 index++;
             }
+            // console.log(encryptedData)
             security.decrypt(encryptedData)
-                    .then(function(decryptedId){
+            .then(function(decryptedId){
+                console.log(decryptedId)
                 newAddress.id = decryptedId[0];
                 newAddress.createdBy = decryptedId[1];
-                index=1;
+                // console.log(decryptedId);
+                index=2;
                 if(typeof newAddress.idProvince != 'undefined' && typeof newAddress.idProvince != null){
-                    newAddress.idProvince = decryptedData[index];
+                    newAddress.idProvince = decryptedId[index];
                     index++;
                 }
                 if(typeof newAddress.idCity != 'undefined' && typeof newAddress.idCity != null){
-                    newAddress.idCity == decryptedData[index];
+                    newAddress.idCity = decryptedId[index];
                     index++;
                 }
                 if(typeof newAddress.idDistrict != 'undefined' && typeof newAddress.idDistrict != null){
-                    newAddress.idDistrict = decryptedData[index];
+                    newAddress.idDistrict = decryptedId[index];
                     index++;
                 }
-                newAddress.idUser = decryptedId[0];
+                newAddress.idUser = decryptedId[1];
                 address.update(newAddress, function(message,status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){

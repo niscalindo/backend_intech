@@ -43,6 +43,7 @@ exports.create = function(req, res){
             let encryptedData = [userData.id];
             security.decrypt(encryptedData)
                 .then(function(decryptedData){
+                    console.log(decryptedData)
                     newPaymentAccount ['idUser'] = decryptedData[0];
                     newPaymentAccount ['createdBy'] = decryptedData[0];
                     userPaymentAccount.create(newPaymentAccount,security, function(message,status,data){
@@ -72,7 +73,8 @@ exports.update = function(req, res){
         }else{
             let encryptedData = [newPaymentAccount.id];
             security.decrypt(encryptedData)
-                    .then(function(decryptedId){
+            .then(function(decryptedId){
+                console.log(decryptedId)
                         newPaymentAccount.id = decryptedId[0];
                         newPaymentAccount.createdBy = decryptedId[0];
                         userPaymentAccount.update(newPaymentAccount, function(message,status,data){

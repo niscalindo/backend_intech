@@ -25,6 +25,11 @@ module.exports = (sequelize, Sequelize)=>{
             autoIncrement: true,
             field: 'id_delivery'
         },
+        idCourier:{
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            field: 'id_courier'
+        },
         deliveryName:{
             type: Sequelize.STRING(100),
             allowNull: false,

@@ -67,10 +67,12 @@ exports.create = function(req, res){
         if(typeof newDelivery === 'undefined' || typeof newDelivery === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [userToken.id];
+            let encryptedData = [userToken.id, newDelivery.idCourier];
+            
             security.decrypt(encryptedData)
                 .then(function(decryptedLastNumerator){
                     newDelivery['createdBy'] = decryptedLastNumerator[0];
+                    newDelivery['idCourier'] = decryptedLastNumerator[1];
                     delivery.create(newDelivery,security, function(message,status,data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
@@ -93,16 +95,16 @@ exports.create = function(req, res){
 
 exports.update = function(req, res){
     try{
-        let userToken = req.user;
         let newDelivery = req.body.delivery;
         if(typeof newDelivery === 'undefined' || typeof newDelivery === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newDelivery.id, userToken.id];
+            let encryptedData = [newDelivery.id];
             security.decrypt(encryptedData)
-                    .then(function(decryptedId){
+            .then(function(decryptedId){
+                console.log(decryptedId)
                         newDelivery.id = decryptedId[0];
-                        newDelivery.createdBy = decryptedId[1];
+                        // newDelivery.createdBy = decryptedId[0];
                         delivery.update(newDelivery, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
