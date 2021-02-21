@@ -3,18 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/ProvinceController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Regency.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/RegencyController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Unit.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/regency.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/UserPaymentAccount.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UserPaymentAccountController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Province.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/brand.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/province.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Mailin.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/District.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FurtherSubCategoryProduct.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Address.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/FileUpload.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Captcha.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Mailout.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Brand.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/CategoryProduct.js</file>
         </group>
     </open-files>
 </project-private>

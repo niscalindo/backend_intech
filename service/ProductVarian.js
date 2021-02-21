@@ -159,10 +159,15 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let condition = new Object();
     condition[op] = '1';
     conditionForProduct['status'] = condition;
+    let productOwnerObject = new Object();
+    productOwnerObject['model']= userModel;
+    productOwnerObject['as']='owner';
+    productOwnerObject['attributes']={exclude: ['dateCreated']};
     let productObject = new Object();
     productObject['model']= productModel;
     productObject['as']='product';
     productObject['attributes']={exclude: ['dateCreated']};
+    productObject['include']=productOwnerObject
     if(orderBy == "productName"){
         productObject['order']=[[[columnDictionary(orderBy), order]]];
     }

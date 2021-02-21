@@ -25,8 +25,8 @@ module.exports = function(app){
     var mailinController = require('../controller/MailinController');
     var mailoutController = require('../controller/MailoutController');
     var userPaymentAccountController = require('../controller/UserPaymentAccountController');
-    var courierController = require('../controller/courierController');
-    var deliveryController = require('../controller/deliveryController');
+    var courierController = require('../controller/CourierController');
+    var deliveryController = require('../controller/DeliveryController');
 
 
     var auth = require('./auth');
