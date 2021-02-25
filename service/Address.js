@@ -85,7 +85,7 @@ exports.update= function(newData, result){
 };
 
 function columnDictionary(key){
-    if(key === 'idAddress'){
+   if(key === 'idAddress'){
         return 'id_address';
     }else if(key === 'recipientName'){
         return 'recipient_name';
@@ -95,8 +95,8 @@ function columnDictionary(key){
         return 'id_user';
     }else if(key === 'privateAddress'){
         return 'private_address';
-    }else if(key === 'store_address'){
-        return 'private_address';
+    }else if(key === 'storeAddress'){
+        return 'store_address';
     }else if(key === 'returnAddress'){
         return 'return_address';
     }else{
