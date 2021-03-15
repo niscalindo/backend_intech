@@ -64,6 +64,9 @@ db.sub_category_product.belongsTo(db.category_product,{as: 'category', foreignKe
 db.category_product.hasMany(db.sub_category_product,{as: 'subCategories', foreignKey: 'id_category'});
 db.sub_category_product.hasMany(db.further_sub_category_product,{as: 'furtherSubCategories', foreignKey: 'id_sub_category'});
 db.tr_address = require("./tr_address.model.js")(sequelize, Sequelize);
+db.tr_address.belongsTo(db.province, {as: 'province', foreignKey: 'id_province'});
+db.tr_address.belongsTo(db.regency, {as: 'city', foreignKey: 'id_city'});
+db.tr_address.belongsTo(db.district, {as: 'district', foreignKey: 'id_district'});
 db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
 db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);

@@ -5,6 +5,9 @@
  */
 const db = require("../model");
 const address = db.tr_address;
+const province = db.province;
+const regency= db.regency;
+const district= db.district;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
@@ -32,6 +35,19 @@ exports.find = function(security,field, result){
         attributes:{
             exclude: ['createdBy','createdAt']
         },
+        include:[{
+                model: province,
+                as: 'province'
+            },
+            {
+                model: regency,
+                as: 'city'
+            },
+            {
+                model: district,
+                as: 'district'
+            }
+        ],
         where: [conditionKey]
     }).then(data=>{
         if(data == null){
