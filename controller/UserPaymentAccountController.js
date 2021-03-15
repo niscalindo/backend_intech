@@ -74,9 +74,7 @@ exports.update = function(req, res){
             let encryptedData = [newPaymentAccount.id];
             security.decrypt(encryptedData)
             .then(function(decryptedId){
-                console.log(decryptedId)
                         newPaymentAccount.id = decryptedId[0];
-                        newPaymentAccount.createdBy = decryptedId[0];
                         userPaymentAccount.update(newPaymentAccount, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
@@ -163,46 +161,72 @@ exports.update = function(req, res){
 //    return "CAT-" + lastNumerator;
 //}
 
+// exports.find = function(req, res){
+//     try{
+//         let param = req.query;
+//         if(typeof param === 'undefined' || typeof param === null){
+//             response.ok('Bad Request', 401, null, res);
+//         }else{
+//             if(typeof param.id === 'undefined' || typeof param.id === null){
+//                 userPaymentAccount.find(security,param, function(message, status, data){
+//                     if(status == 200 || status == 201){
+//                         if(data == null || data == ""){
+//                             response.ok('empty result', status, data, res); 
+//                         }else{
+//                             response.ok(message, status, data, res);                    
+//                         }
+//                     }else{
+//                         response.ok(message, status, null, res);            
+//                     }
+//                 });
+//             }else{
+//                 let encryptedData = [param.id];
+//                 security.decrypt(encryptedData)
+//                 .then(function(data){
+//                     param.id = data;
+//                     userPaymentAccount.find(security,param, function(message, status, data){
+//                         if(status == 200 || status == 201){
+//                             if(data == null || data == ""){
+//                                 response.ok('empty result', status, data, res); 
+//                             }else{
+//                                 response.ok(message, status, data, res);                    
+//                             }
+//                         }else{
+//                             response.ok(message, status, null, res);            
+//                         }
+//                     });
+//                 }).catch(function(error){
+//                     response.ok(error, 400, null, res); 
+//                 });
+//             }
+//         }
+//     }catch(exception){
+//         response.ok(exception.message, 500, null, res);
+//     }
+// }
 exports.find = function(req, res){
     try{
         let param = req.query;
-        if(typeof param === 'undefined' || typeof param === null){
-            response.ok('Bad Request', 401, null, res);
-        }else{
-            if(typeof param.id === 'undefined' || typeof param.id === null){
-                userPaymentAccount.find(security,param, function(message, status, data){
-                    if(status == 200 || status == 201){
-                        if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
-                        }else{
-                            response.ok(message, status, data, res);                    
-                        }
+        param.idUser = req.user.id;
+        let encryptedData = [param.idUser];
+        security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+            param.idUser = decryptedId[0];
+            userPaymentAccount.find(security,param, function(message, status, data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
                     }else{
-                        response.ok(message, status, null, res);            
+                        response.ok(message, status, data, res);                    
                     }
-                });
-            }else{
-                let encryptedData = [param.id];
-                security.decrypt(encryptedData)
-                .then(function(data){
-                    param.id = data;
-                    userPaymentAccount.find(security,param, function(message, status, data){
-                        if(status == 200 || status == 201){
-                            if(data == null || data == ""){
-                                response.ok('empty result', status, data, res); 
-                            }else{
-                                response.ok(message, status, data, res);                    
-                            }
-                        }else{
-                            response.ok(message, status, null, res);            
-                        }
-                    });
-                }).catch(function(error){
-                    response.ok(error, 400, null, res); 
-                });
-            }
-        }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });       
+        }).catch(function (error){
+            response.ok(error, 500, null, res);   
+        });
     }catch(exception){
         response.ok(exception.message, 500, null, res);
     }
-}
+};
