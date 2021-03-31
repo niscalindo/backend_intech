@@ -74,6 +74,14 @@ module.exports = (sequelize, Sequelize)=>{
         status:{
             type: Sequelize.ENUM('0','1'),
             defaultValue: '1'
+        },
+        latitude:{
+            type: Sequelize.STRING(150),
+            allowNull: false
+        },
+        longitude:{
+            type: Sequelize.STRING(150),
+            allowNull: false
         }
     },{timestamps: false});
     return trAddress;
