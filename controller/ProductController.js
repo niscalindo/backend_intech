@@ -347,6 +347,10 @@ exports.update = function(req, res){
             }else if(param.subCategory != 'undefined' && param.subCategory != null){
                 encryptedData[index] = param.subCategory;
             }
+            if(param.idStore != 'undefined' && param.idStore != null){
+                index++;
+                encryptedData[index] = param.idStore;
+            }
             index++;
             security.decrypt(encryptedData)
             .then(function(decryptedData){
@@ -356,6 +360,10 @@ exports.update = function(req, res){
                 }else if(param.subCategory != 'undefined' && param.subCategory != null){
                     param.subCategory = decryptedData[index];
                 }   
+                if(param.idStore != 'undefined' && param.idStore != null){
+                    index++;
+                    param.idStore = decryptedData[index];
+                }
                 productVarianService.find(security,orderBy, order,parseInt(offset), parseInt(limit),param,function(message, status,data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){

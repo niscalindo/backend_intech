@@ -167,7 +167,6 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     productObject['model']= productModel;
     productObject['as']='product';
     productObject['attributes']={exclude: ['dateCreated']};
-    productObject['include']=productOwnerObject
     if(orderBy == "productName"){
         productObject['order']=[[[columnDictionary(orderBy), order]]];
     }
@@ -229,9 +228,16 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 op = operator.lte;
                 condition[op] = value;
                 conditionForVarian['price'] = condition;
+            }else if(key == "idStore"){
+                op = operator.eq;
+                let conditionForOwner= new Object();
+                condition[op] = value;
+                conditionForOwner['id'] = condition;
+                productOwnerObject['where']=conditionForOwner;
             }
         }
     }
+    productObject['include']=productOwnerObject
     productObject['where']=conditionForProduct;
     
     try{
