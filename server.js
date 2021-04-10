@@ -28,3 +28,36 @@ var server = app.listen(port, function(){
     let port = server.address().port;
     console.log("server listening at http://%s:%s", host, port);
 })
+
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+//io.origins('*:*');
+
+io.on('connection',(socket)=>{
+    console.log('new user connected');
+    socket.on( 'new_count_message', function( data ) {
+        io.sockets.emit( 'new_count_message', { 
+            new_count_message: data.new_count_message
+
+        });
+    });
+    socket.on( 'update_count_message', function( data ) {
+        io.sockets.emit( 'update_count_message', {
+            update_count_message: data.update_count_message 
+        });
+      });
+    socket.on( 'new_message', function( data ) {
+        io.sockets.emit( 'new_message', {
+            name: data.name,
+            email: data.email,
+            subject: data.subject,
+            created_at: data.created_at,
+            id: data.id
+        });
+      });
+
+})

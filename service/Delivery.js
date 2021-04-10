@@ -113,7 +113,7 @@ exports.update= function(newData, result){
 
 function columnDictionary(key){
     if(key === 'id'){
-        return 'id_delivery';
+        return 'created_by';
     }else if(key === 'name'){
         return 'delivery_name';
     }else{
