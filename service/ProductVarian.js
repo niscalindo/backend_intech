@@ -162,7 +162,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let productOwnerObject = new Object();
     productOwnerObject['model']= userModel;
     productOwnerObject['as']='owner';
-    productOwnerObject['attributes']={exclude: ['dateCreated']};
+    productOwnerObject['attributes']={exclude: ['password','username','code','email','idCitizen','photoIdCitizen','photoId','serialNumber','dob','fullName','phoneNumber','dateCreated']};
     let productObject = new Object();
     productObject['model']= productModel;
     productObject['as']='product';
@@ -350,7 +350,7 @@ exports.findOne = function(security, field, result){
                             {
                                 model: userModel,
                                 as: 'owner',
-                                attributes:{exclude: ['createdBy', 'dateCreated','password', 'username']}
+                                attributes:{exclude: ['password','username','code','email','idCitizen','photoIdCitizen','photoId','serialNumber','dob','fullName','phoneNumber','dateCreated']}
                             },
                             {
                                 model: pictureModel,

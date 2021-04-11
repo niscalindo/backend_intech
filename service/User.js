@@ -48,7 +48,7 @@ exports.login = function(field, result){
     })
 };
 
-exports.find = function(field, result){
+exports.find = function(isSameUser, field, result){
     
     let op = null;
     let conditionKey = new Object();
@@ -69,9 +69,25 @@ exports.find = function(field, result){
     condition[operator.eq] = '1';
     conditionKey['USER_STATUS'] = condition;
     
+    let excludeOptions = new Array();
+    if(isSameUser){
+        excludeOptions[0]='password';
+        excludeOptions[1]='date_created';
+    }else{
+        excludeOptions[0]='password';
+        excludeOptions[1]='date_created';  
+        excludeOptions[2]='username';
+        excludeOptions[3]='photo_account';  
+        excludeOptions[4]='user_code'; 
+        excludeOptions[5]='full_name'; 
+        excludeOptions[6]='phone_number'; 
+        excludeOptions[7]='id_citizen';
+        excludeOptions[8]='photo_id_card';
+        excludeOptions[8]='dob';
+    }
     tmUsers.findAll({
         attributes: {
-            exclude: ['password','date_created']
+            exclude: excludeOptions
           },
         where: [conditionKey]
     }).then(data=>{

@@ -32,7 +32,8 @@ exports.login = function(req, res){
 };
 exports.find = function(req, res){
     try{
-        var query = req.query;
+        let query = req.query;
+        let user = req.user; 
         if(typeof req.query === 'undefined' || typeof req.query === null){
             response.ok("bad request", 401, null, res);
         }else{
@@ -53,11 +54,15 @@ exports.find = function(req, res){
                     }
                 });
             }else{
-                let encryptedData = [query.id]
+                let encryptedData = [query.id];
                 security.decrypt(encryptedData)
                 .then(function(data){
+                    let isSameUser = false;
+                    if(query.id == user.id){
+                        isSameUser = true;
+                    }
                     query.id = data[0];
-                    user.find(query, function(message, status, data){
+                    user.find(isSameUser,query, function(message, status, data){
                         if(status == 400){
                             response.ok(message, 400, null, res);
                         }else if(status == 200){
