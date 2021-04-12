@@ -359,7 +359,7 @@ exports.update = function(req, res){
                     param.category  = decryptedData[index];
                 }else if(param.subCategory != 'undefined' && param.subCategory != null){
                     param.subCategory = decryptedData[index];
-                }   
+                }
                 if(param.idStore != 'undefined' && param.idStore != null){
                     index++;
                     param.idStore = decryptedData[index];

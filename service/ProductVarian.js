@@ -155,6 +155,8 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let conditionForCategory = new Object();
     let conditionForVarian = new Object();
     let conditionCategory = new Object();
+    let categoryIncludeArray = new Array();
+    let indexCategoryArray = 0;
     op = operator.eq;
     let condition = new Object();
     condition[op] = '1';
@@ -208,6 +210,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     return;
                 }
             }else if(key == "category"){
+                console.log("here : "+value);
                 conditionCategory[op] = value;
                 conditionForCategory['id_category'] = conditionCategory;
                 let categoryModel = { 
@@ -216,7 +219,10 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     exclude: ['createdBy','dateCreated','status'],
                     where:conditionForCategory
                 }
-                productObject['include']=categoryModel;
+                
+                categoryIncludeArray[indexCategoryArray] = categoryModel;
+                indexCategoryArray++;
+//                productObject['include']=categoryModel;
             }else if(key == "subCategory"){
                 conditionCategory[op] = value;
                 conditionForProduct['id_sub_category'] = conditionCategory;
@@ -237,7 +243,9 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             }
         }
     }
-    productObject['include']=productOwnerObject
+    categoryIncludeArray[indexCategoryArray] = productOwnerObject;
+    productObject['include'] = categoryIncludeArray;
+//    productObject['include']=productOwnerObject
     productObject['where']=conditionForProduct;
     
     try{
