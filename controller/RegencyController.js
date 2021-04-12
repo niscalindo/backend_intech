@@ -11,10 +11,20 @@ const regency = require("../service/Regency");
 exports.find = function(req, res){
     try{
         let param = req.query;
-        if(typeof param === 'undefined' && typeof param === null){
-            response.ok('Bad Request', 401, null, res);
+        if((typeof param === 'undefined' || typeof param === null) || (typeof param.idProvince === 'undefined' || typeof param.idProvince === null)){
+            regency.find(security,null,function(message, status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });
         }else{
-            if(typeof param.idProvince === 'undefined' && typeof param.idProvince === null){
+            if(typeof param.idProvince === 'undefined' || typeof param.idProvince === null){
                 response.ok('Bad Request', 401, null, res);
             }else{
                 let encryptedData = [param.idProvince];

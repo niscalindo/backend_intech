@@ -11,10 +11,10 @@ const district = require("../service/District");
 exports.find = function(req, res){
     try{
         let param = req.query;
-        if(typeof param === 'undefined' && typeof param === null){
+        if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            if(typeof param.idRegency === 'undefined' && typeof param.idRegency === null){
+            if(typeof param.idRegency === 'undefined' || typeof param.idRegency === null){
                 response.ok('Bad Request', 401, null, res);
             }else{
                 let encryptedData = [param.idRegency];

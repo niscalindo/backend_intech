@@ -9,16 +9,24 @@ const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
 exports.find = function(security,id, result){
-    regency.findAll({
-        where: {
+    let condition = new Object();
+    if(id != null){
+        let whereCondition = {
             province_id:{
                 [operator.eq]: id
             }
-        },
-        order: [
+        }
+        condition['where']=whereCondition;
+    }else{
+        condition['include']=[{
+            model:db.province,
+            as:'province'
+        }];
+    }
+    condition['order']=[
             ['name', 'asc']
-        ],
-    }).then(data=>{
+        ];
+    regency.findAll(condition).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             result("success", 200, encryptedData);
