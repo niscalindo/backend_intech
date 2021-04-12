@@ -6,6 +6,8 @@
 const db = require("../model");
 const chat = db.chat;
 const detailChat = db.detail_chat;
+const productVarian = db.product_varian;
+const product= db.product;
 const users = db.users;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
@@ -33,21 +35,41 @@ exports.getAll = function(security,order,userRole, idUser, result){
             {
                 model: users,
                 as: 'destination',
-                attributes: [],
                 required: true
             },
             {
                 model: detailChat,
                 as: 'histories',
-                attributes: [],
                 where:{
                   status:{
                       [operator.ne]: '2'
                   }  
                 },
+                include:[
+                    {
+                        model: productVarian,
+                        as: 'varian',
+                        include:[
+                            {
+                                model: db.detail_promo,
+                                as: 'detailPromo',
+                                required: false
+                            },
+                            {
+                                model: product,
+                                as: 'product',
+                                required: true
+                            }
+                        ],
+                        required: false
+                    }
+                ],
+                order: [
+                    ['id', order]
+                ],
                 required: false
             }
-            ],
+        ],
         order: [
             ['id', order]
         ],
@@ -67,37 +89,65 @@ exports.create = function(newData,security, result){
     newData['status'] = '0';  
     newData['dateCreated'] = new Date();   
     if(newData['idChat'] == "" || newData['idChat'] == null){
-        chatData = new Array();
-        chatData['status'] = '1';
-        chatData['dateCreated'] = newData['dateCreated'];
-        chatData['createdBy'] = newData['createdBy'];
-        chatData['destinationId'] = newData['destinationId'];
-        chat.create(chatData).then(data=>{
-            security.encrypt(data)
-            .then(function(encryptedData){
-                let newInsertedId = encryptedData.dataValues.id;
-                chatDetail.create(newData).then(data=>{
+        chat.findAll({
+            attributes:{
+                exclude: ['createdBy','dateCreated']
+            },
+            where:{
+                destination_id:newData['destinationId']
+            },
+        }).then(data=>{
+//            console.log('data : '+data.length);
+            if(data.length == 0){
+                chatData = new Object();
+                chatData['status'] = '1';
+                chatData['dateCreated'] = newData['dateCreated'];
+                chatData['createdBy'] = newData['createdBy'];
+                chatData['destinationId'] = newData['destinationId'];
+                chat.create(chatData).then(data=>{
+                    let newInsertedId = data.dataValues.id;
+                    newData['idChat'] = newInsertedId;
+                    detailChat.create(newData).then(data=>{
+                        security.encrypt(data)
+                        .then(function(encryptedData){
+                            let newInsertedId = encryptedData.dataValues.id;
+                            let newData = new Object();
+                            newData['id'] = newInsertedId;
+                            result("success",201,newData);
+                        }).catch(function(error){
+                            result(error,500,null);
+                        });        
+                    }).catch(err=>{
+                        result(err.message, 500, null);
+                    });
+                }).catch(function(error){
+                    result(error,500,null);
+                });
+            }else{
+//                console.log('data haha : '+data[0].id);
+                delete newData['destinationId'];
+                newData['idChat'] = data[0].id;
+                detailChat.create(newData).then(data=>{
                     security.encrypt(data)
                     .then(function(encryptedData){
                         let newInsertedId = encryptedData.dataValues.id;
                         let newData = new Object();
                         newData['id'] = newInsertedId;
-                        result("success",201,newData);
-                    }).catch(function(error){
-                        result(error,500,null);
-                    });        
+                        result("success",201,newData);        
+                    }).catch(err=>{
+                        result(err.message, 500, null);
+                    });
                 }).catch(err=>{
                     result(err.message, 500, null);
                 });
-            }).catch(function(error){
-                result(error,500,null);
-            });        
+            }
         }).catch(err=>{
-            result(err.message, 500, null);
+           console.log(err);
+           result(err.message, 500, null);
         });
     }else{
         delete newData['destinationId'];
-        chat.create(newData).then(data=>{
+        detailChat.create(newData).then(data=>{
             security.encrypt(data)
             .then(function(encryptedData){
                 let newInsertedId = encryptedData.dataValues.id;

@@ -115,5 +115,6 @@ module.exports = function(app){
     app.route('/delivery').put(auth.isAunthenticated,deliveryController.update);
     app.route('/delivery/find').get(auth.isAunthenticated,deliveryController.find);
     app.route('/chat').get(auth.isAunthenticated,chatController.getAll);
+    app.route('/chat').post(auth.isAunthenticated,chatController.create);
 }
 

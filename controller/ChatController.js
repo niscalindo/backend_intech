@@ -12,7 +12,7 @@ exports.getAll = function(req, res){
     try{
         let order = req.headers.order;
         if(typeof order === 'undefined' && typeof order === null){
-            order = 'desc';
+            order = 'asc';
         }else{
             if(order !== 'asc' && order !== 'desc'){
                 order = 'desc';
@@ -38,7 +38,7 @@ exports.getAll = function(req, res){
                     }
                 });            
             }).catch(function(error){
-                result(error,500,null);
+                response.ok(error,500,null);
             }); 
         }
     }catch(exception){
@@ -49,40 +49,52 @@ exports.getAll = function(req, res){
 exports.create = function(req, res){
     try{
         let userToken = req.user;
-        let newBrand = req.body.brand;
-        if((typeof newBrand === 'undefined' || typeof newBrand === null) || (typeof newBrand.idParent === 'undefined' || typeof newBrand.idParent === null)){
+        let newMessage = req.body.chat;
+        if((typeof newMessage === 'undefined' || typeof newMessage === null)){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [userToken.id, newBrand.idParent];
-            brand.findMaxNumerator(function(message, status, numerator){
-                if(status == 400){
-                    response.ok(message, 400, null, res);
-                }else if(status == 200){
-                    if(numerator == null || numerator == ""){
-                        response.ok('failed to generate code', 400, numerator, res); 
-                    }else{
-                        security.decrypt(encryptedData)
-                            .then(function(decryptedLastNumerator){
-                                newBrand.code = generateCode(numerator.dataValues.numerator);
-                                newBrand.createdBy = decryptedLastNumerator[0];
-                                newBrand.idParent = decryptedLastNumerator[1];
-                                brand.create(newBrand,security, function(message,status,data){
-                                    if(status == 200 || status == 201){
-                                        if(data == null || data == ""){
-                                            response.ok('empty result', status, data, res); 
-                                        }else{
-                                            response.ok(message, status, data, res);                    
-                                        }
-                                    }else{
-                                        response.ok(message, status, null, res);            
-                                    }
-                                });
-                        }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
-                        });
-                        
-                    }
+            let encryptedData = [userToken.id];
+            let index = 1;
+            if(newMessage.context != null && newMessage.context != ""){
+                encryptedData[index] = newMessage.context;
+                index++;
+            }
+            if(newMessage.idChat != null && newMessage.idChat != ""){
+                encryptedData[index] = newMessage.idChat;
+                index++;
+            }
+            if(newMessage.destinationId != null && newMessage.destinationId != ""){
+                encryptedData[index] = newMessage.destinationId;
+            }
+            security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                index = 1;
+                if(newMessage.context != null && newMessage.context != ""){
+                    newMessage.context = decryptedData[index];
+                    index++;
                 }
+                if(newMessage.idChat != null && newMessage.idChat != ""){
+                    newMessage.idChat = decryptedData[index];
+                    index++;
+                }
+                if(newMessage.destinationId != null && newMessage.destinationId != ""){
+                    newMessage.destinationId = decryptedData[index];
+                    index++;
+                }
+                newMessage.createdBy = decryptedData[0];
+                chat.create(newMessage,security, function(message,status,data){
+                    if(status == 200 || status == 201){
+                        if(data == null || data == ""){
+                            response.ok('empty result', status, data, res); 
+                        }else{
+                            response.ok(message, status, data, res);                    
+                        }
+                    }else{
+                        response.ok(message, status, null, res);            
+                    }
+                });
+            }).catch(function(err){
+                response.ok('failed to generate code :'+err, 500, null, res); 
             });
         }
     }catch(exception){
