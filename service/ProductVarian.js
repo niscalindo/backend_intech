@@ -9,6 +9,7 @@ const productModel = db.product;
 const subCategoryProduct = db.sub_category_product;
 const pictureModel = db.pictures;
 const userModel = db.users;
+const trAddress = db.tr_address;
 const detailPromoModel = db.detail_promo;
 const promoModel = db.promo;
 const operator = db.Sequelize.Op;
@@ -210,7 +211,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     return;
                 }
             }else if(key == "category"){
-                console.log("here : "+value);
+//                console.log("here : "+value);
                 conditionCategory[op] = value;
                 conditionForCategory['id_category'] = conditionCategory;
                 let categoryModel = { 
@@ -243,6 +244,31 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             }
         }
     }
+    productOwnerObject['include']=[{
+            model:db.tr_address,
+            as:'addresses',
+            where:[{
+                status:'1'
+            },
+            {
+                store_address:'1'
+            }],
+            include:[
+                {
+                    model:db.province,
+                    as: 'province'
+                },
+                {
+                    model:db.regency,
+                    as: 'city'
+                },
+                {
+                    model:db.district,
+                    as:'district'
+                }
+            ],
+            required: true
+    }];
     categoryIncludeArray[indexCategoryArray] = productOwnerObject;
     productObject['include'] = categoryIncludeArray;
 //    productObject['include']=productOwnerObject
