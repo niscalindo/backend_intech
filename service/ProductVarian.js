@@ -384,6 +384,31 @@ exports.findOne = function(security, field, result){
                             {
                                 model: userModel,
                                 as: 'owner',
+                                include:[{
+                                    model:db.tr_address,
+                                    as:'addresses',
+                                    where:[{
+                                        status:'1'
+                                    },
+                                    {
+                                        store_address:'1'
+                                    }],
+                                    include:[
+                                        {
+                                            model:db.province,
+                                            as: 'province'
+                                        },
+                                        {
+                                            model:db.regency,
+                                            as: 'city'
+                                        },
+                                        {
+                                            model:db.district,
+                                            as:'district'
+                                        }
+                                    ],
+                                    required: true
+                            }],
                                 attributes:{exclude: ['password','username','code','email','idCitizen','photoIdCitizen','photoId','serialNumber','dob','fullName','phoneNumber','dateCreated']}
                             },
                             {
