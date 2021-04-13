@@ -18,6 +18,14 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(100),
             allowNull: false,
             field: 'name'
+        },
+        latitude:{
+            type: Sequelize.STRING(150),
+            allowNull: false
+        },
+        longitude:{
+            type: Sequelize.STRING(150),
+            allowNull: false
         }
     },{timestamps: false});
     return regency;
