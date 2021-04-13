@@ -460,6 +460,8 @@ exports.update = function (newData, type, result) {
 function columnDictionary(key){
     if(key === 'id'){
         return 'id_product';
+    }else if(key === 'idProduct'){
+        return 'id_product';
     }else if(key === 'name'){
         return 'product_name';
     }else if(key === 'idSubCategory'){
