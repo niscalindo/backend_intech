@@ -11,7 +11,7 @@ const sequelize = db.sequelize;
 exports.find = function(security,order,findBy,id, result){
     let whereCondition = new Object();
     if(findBy == "user"){
-        whereCondition["created_by"]={
+        whereCondition["id_user"]={
             [operator.eq]:id
         }
     }else{

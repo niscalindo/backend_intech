@@ -12,13 +12,13 @@ exports.create = function(req, res){
     try{
         let userToken = req.user;
         let newLike = req.body.like;
-        if((typeof newLike === 'undefined' || typeof newLike === null) || (typeof newBrand.idProductVarian === 'undefined' || typeof newBrand.idProductVarian === null)){
+        if((typeof newLike === 'undefined' || typeof newLike === null) || (typeof newLike.idProductVarian === 'undefined' || typeof newLike.idProductVarian === null)){
             response.ok('Bad Request', 401, null, res);
         }else{
             let encryptedData = [userToken.id, newLike.idProductVarian];
             security.decrypt(encryptedData)
                             .then(function(decryptedData){
-                newLike.createdBy = decryptedData[0];
+                newLike.idUser = decryptedData[0];
                 newLike.idProductVarian = decryptedData[1];
                 productLike.create(newLike,security, function(message,status,data){
                     if(status == 200 || status == 201){

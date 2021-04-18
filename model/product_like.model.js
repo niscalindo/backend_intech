@@ -10,10 +10,10 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'date_created'
         },
-        createdBy:{
+        idUser:{
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'created_by'
+            field: 'id_user'
         },
         id:{
             type: Sequelize.INTEGER,

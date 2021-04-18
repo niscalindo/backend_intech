@@ -76,7 +76,7 @@ db.tr_address.belongsTo(db.regency, {as: 'city', foreignKey: 'id_city'});
 db.tr_address.belongsTo(db.district, {as: 'district', foreignKey: 'id_district'});
 db.regency.belongsTo(db.province, {as: 'province', foreignKey: 'province_id'});
 db.users.hasMany(db.tr_address,{as: 'addresses', foreignKey: 'id_user'});
-db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'created_by'});
+db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'id_user'});
 db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
 db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);
