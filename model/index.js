@@ -31,6 +31,7 @@ db.detail_promo = require("./tm_detail_promo.model.js")(sequelize, Sequelize);
 db.unit = require("./unit.model.js")(sequelize, Sequelize);
 db.brand = require("./brand.model.js")(sequelize, Sequelize);
 db.product_like = require("./product_like.model.js")(sequelize, Sequelize);
+db.follower = require("./follower.model.js")(sequelize, Sequelize);
 db.province = require("./province.model.js")(sequelize, Sequelize);
 db.regency = require("./regency.model.js")(sequelize, Sequelize);
 db.chat= require("./chat.model.js")(sequelize, Sequelize);
@@ -77,6 +78,8 @@ db.tr_address.belongsTo(db.district, {as: 'district', foreignKey: 'id_district'}
 db.regency.belongsTo(db.province, {as: 'province', foreignKey: 'province_id'});
 db.users.hasMany(db.tr_address,{as: 'addresses', foreignKey: 'id_user'});
 db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'id_user'});
+db.users.hasMany(db.follower,{as: 'follower', foreignKey: 'id_user'});
+db.users.hasMany(db.follower,{as: 'followings', foreignKey: 'id_store'});
 db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
 db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);

@@ -29,6 +29,7 @@ module.exports = function(app){
     var courierController = require('../controller/CourierController');
     var deliveryController = require('../controller/DeliveryController');
     var chatController = require('../controller/ChatController');
+    var followerController = require('../controller/FollowerController');
 
 
     var auth = require('./auth');
@@ -70,6 +71,8 @@ module.exports = function(app){
     app.route('/products/varian/find-one').get(auth.isAunthenticated,productController.findOne);
     app.route('/products/varian/like').post(auth.isAunthenticated,productLikeController.create);
     app.route('/products/varian/like/find').get(auth.isAunthenticated,productLikeController.find);
+    app.route('/follower').post(auth.isAunthenticated,followerController.create);
+    app.route('/follower/find').get(auth.isAunthenticated,followerController.find);
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
