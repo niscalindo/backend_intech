@@ -104,6 +104,7 @@ module.exports = function(app){
     app.route('/cities').get(auth.isAunthenticated,regencyController.find);
     // app.route('/cities/find').get(auth.isAunthenticated,regencyController.get);
     app.route('/districts').get(auth.isAunthenticated,districtController.find);
+    app.route('/districts/find').get(auth.isAunthenticated,districtController.getById);
     // app.route('/districts/find').get(auth.isAunthenticated,districtController.get);
 
     app.route('/couriers').get(auth.isAunthenticated,courierController.getAll);
