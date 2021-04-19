@@ -307,7 +307,13 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                         }
                      ]
                 },
-                productObject
+                productObject,
+                {
+                    model: db.product_like,
+                    as: 'likes',
+                    attributes:{exclude: ['dateCreated']},
+                    required: false
+                }
             ],
             offset: parseInt(offset),
             limit: limit,
@@ -418,6 +424,12 @@ exports.findOne = function(security, field, result){
                             }
                         ]
                     },
+                    {
+                        model: db.product_like,
+                        as: 'likes',
+                        attributes:{exclude: ['dateCreated']},
+                        required: false
+                    }
                 ],
                 where:conditionForVarian,
             }).then(data=>{

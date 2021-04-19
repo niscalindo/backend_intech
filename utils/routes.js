@@ -15,6 +15,7 @@ module.exports = function(app){
     var unitController = require('../controller/UnitController');
     var sliderController = require('../controller/SliderController');
     var brandController = require('../controller/BrandController');
+    var productLikeController = require('../controller/ProductLikeController');
     var promoController = require('../controller/PromoController');
     var fileUploadController = require('../controller/FileUploadController');
     var productController = require('../controller/ProductController');
@@ -67,6 +68,8 @@ module.exports = function(app){
     app.route('/products').get(auth.isAunthenticated,productController.getAll);
     app.route('/products/varian').get(auth.isAunthenticated,productController.getAllByVarian);
     app.route('/products/varian/find-one').get(auth.isAunthenticated,productController.findOne);
+    app.route('/products/varian/like').post(auth.isAunthenticated,productLikeController.create);
+    app.route('/products/varian/like/find').get(auth.isAunthenticated,productLikeController.find);
     app.route('/products').post(auth.isAunthenticated,productController.create);
     app.route('/products').put(auth.isAunthenticated,productController.update);
     app.route('/products/find').get(auth.isAunthenticated,productController.find);
