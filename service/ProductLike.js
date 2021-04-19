@@ -85,33 +85,3 @@ exports.create = function(newData,security, result){
        result(err.message, 500, null);
     });
 };
-
-exports.update= function(newData, result){
-    brand.update(
-        newData,
-        {
-            where: {id_brand: parseInt(newData.id)}
-        }).then(function(data){
-        if(data[0] == 1){
-            result("success", 200, data[0]);
-        }else{
-            result("no changes", 200, data[0]);
-        }
-    })
-    .catch(err=>{
-        result(err.message, 500, null);
-    });
-};
-function columnDictionary(key){
-    if(key === 'id'){
-        return 'id_brand';
-    }else if(key === 'idParent'){
-        return 'id_parent';
-    }else if(key === 'groupBy'){
-        return 'parent';
-    }else if(key === 'name'){
-        return 'brand_name';
-    }else{
-        return key;
-    }
-}
