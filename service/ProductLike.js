@@ -8,29 +8,30 @@ const productLike = db.product_like;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
-exports.find = function(security,order,findBy,id, result){
+exports.find = function(security,findBy,id, result){
     let whereCondition = new Object();
+    let condition = new Object();
     if(findBy == "user"){
-        whereCondition["id_user"]={
-            [operator.eq]:id
-        }
+        condition[operator.eq] = id;
+        whereCondition["id_user"]=condition
     }else{
-        whereCondition["id_product_varian"]={
-            [operator.eq]:id
-        }        
+        condition[operator.eq] = id;
+        whereCondition["id_product_varian"]=condition;
     }
     productLike.findAll({
         attributes:{
-            exclude: ['createdBy', 'dateCreated']
+            exclude: ['dateCreated']
         },
-        where:whereCondition
-        ,
-        order: [
-            ['id', order]
-        ],
+        where:[whereCondition]
     }).then(data=>{
-        
+        security.encrypt(data)
+        .then(function(encryptedData){
+            result("success", 200, encryptedData);
+        }).catch(function(error){
+            result(error, 500, null);
+        });
     }).catch(err=>{
+        console.log(err);
        result(err.message, 500, null);
     });
 };
