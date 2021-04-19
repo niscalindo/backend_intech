@@ -79,16 +79,16 @@ exports.find = function(req, res){
         let param = req.query;
         let userCredential = req.user;
         let encryptedData = new Array();
-        let findBy = "user";
-        if(typeof param === 'undefined' || typeof param === null){
-            encryptedData[index] = userCredential.id;
-        }else if (typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
-            encryptedData[index] = param.idProductVarian;
+        let findBy = "user";            
+        if (typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
+            encryptedData[0] = param.idProductVarian;
             findBy = "product";
+        }else{
+            encryptedData[0] = userCredential.id;
         }
         security.decrypt(encryptedData)
         .then(function(data){
-            let id = data[index];
+            let id = data[0];
             productLike.find(security,findBy,id, function(message, status, data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
