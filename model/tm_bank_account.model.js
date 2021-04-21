@@ -44,6 +44,10 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(100),
             allowNull: false,
             field: 'bank_account_number'
+        },
+        icon:{
+            type: Sequelize.STRING(30),
+            allowNull: true
         }
     },{timestamps: false});
     return bankAccount;
