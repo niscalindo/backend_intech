@@ -31,8 +31,7 @@ module.exports = function(app){
     var chatController = require('../controller/ChatController');
     var followerController = require('../controller/FollowerController');
     var bankController = require('../controller/BankController');
-
-
+    var virtualAccountController = require('../controller/VirtualAccountController');
     var auth = require('./auth');
     //route dibawah ini harus diupdate. dipisahkan berdasarkan role (admin atau user)
     app.route('/users/admin/login').post(userController.login);
@@ -130,5 +129,9 @@ module.exports = function(app){
     app.route('/delivery/find').get(auth.isAunthenticated,deliveryController.find);
     app.route('/chat').get(auth.isAunthenticated,chatController.getAll);
     app.route('/chat').post(auth.isAunthenticated,chatController.create);
+    app.route('/virtual-account').get(auth.isAunthenticated,virtualAccountController.getAll);
+    app.route('/virtual-account').post(auth.isAunthenticated,virtualAccountController.create);
+    app.route('/virtual-account').put(auth.isAunthenticated,virtualAccountController.update);
+    app.route('/virtual-account/find').get(auth.isAunthenticated,virtualAccountController.find);
 }
 
