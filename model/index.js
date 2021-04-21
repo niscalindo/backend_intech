@@ -41,6 +41,7 @@ db.slider = require("./tm_slider.model.js")(sequelize, Sequelize);
 db.file_upload= require("./file_upload.model.js")(sequelize, Sequelize);
 db.captcha = require("./captcha.model.js")(sequelize, Sequelize);
 db.users = require("./users.model.js")(sequelize, Sequelize);
+db.tm_bank_account = require("./tm_bank_account.model.js")(sequelize, Sequelize);
 db.chat.belongsTo(db.users, {as: 'destination', foreignKey: 'destination_id'});
 db.product = require("./product.model.js")(sequelize, Sequelize);
 db.pictures = require("./tm_pictures.model.js")(sequelize, Sequelize);
