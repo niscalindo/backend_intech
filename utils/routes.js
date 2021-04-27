@@ -32,6 +32,7 @@ module.exports = function(app){
     var followerController = require('../controller/FollowerController');
     var bankController = require('../controller/BankController');
     var virtualAccountController = require('../controller/VirtualAccountController');
+    var orderController = require('../controller/OrderController');
     var auth = require('./auth');
     //route dibawah ini harus diupdate. dipisahkan berdasarkan role (admin atau user)
     app.route('/users/admin/login').post(userController.login);
@@ -64,6 +65,7 @@ module.exports = function(app){
     app.route('/units').post(auth.isAunthenticated,unitController.create);
     app.route('/units').put(auth.isAunthenticated,unitController.update);
     app.route('/units/find').get(auth.isAunthenticated,unitController.find);
+    app.route('/order').post(auth.isAunthenticated,orderController.create);
     app.route('/brands').get(auth.isAunthenticated,brandController.getAll);
     app.route('/brands').post(auth.isAunthenticated,brandController.create);
     app.route('/brands').put(auth.isAunthenticated,brandController.update);
