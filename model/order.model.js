@@ -19,6 +19,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'created_by'
         },
+        totalInvoice:{
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            field: 'total_invoice'
+        },
         id:{
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -35,6 +40,11 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(30),
             allowNull: false,
             field: 'payment_bank_name'
+        },
+        paymentBankIcon:{
+            type: Sequelize.STRING(30),
+            allowNull: true,
+            field: 'payment_bank_icon'
         },
         paymentBankNumber:{
             type: Sequelize.STRING(30),

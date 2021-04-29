@@ -50,6 +50,11 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.INTEGER,
             allowNull: false,
             field: 'delivery_price'
+        },
+        note:{
+            type: Sequelize.STRING(1000),
+            allowNull: true,
+            field: 'note'
         }
     },{timestamps: false});
     return detailOrderStore;

@@ -35,73 +35,39 @@ const sequelize = db.sequelize;
 //    });
 //};
 
-//exports.find = function(security,field, result){
-//    let parent = null;
-//    let op = null;
-//    let conditionKey = new Object();
-//    for (let [key, value] of Object.entries(field)) {
-//        let condition = new Object();
-//        if(key === "parent"){
-//            parent = value;
-//        }
-//        if(key === "name"){
-//            op = operator.substring;
-//            condition[op] = value;
-//            conditionKey[columnDictionary(key)] = condition;
-//        }else{
-//            op = operator.eq;
-//            condition[op] = value;
-//            conditionKey[columnDictionary(key)] = condition;
-//        }
-//        
-//    }
-//    let condition = new Object();
-//    condition[operator.eq] = '1';
-//    conditionKey['status'] = condition;
-//    let includeParent = new Object();
-//    if(parent === "subCategory"){
-//        includeParent = 
-//            {
-//                model: subCategoryProduct,
-//                as: 'subCategory',
-//                exclude: ['createdBy','dateCreated','status']
-//            }
-//    }else if(parent === "furtherSubCategory"){
-//        includeParent = 
-//            {
-//                model: furtherSubCategoryProduct,
-//                as: 'furtherSubCategory',
-//                exclude: ['createdBy','dateCreated','status','idSubCategory','subCategoryName','categoryName'],
-//                include:[
-//                   {
-//                        model: subCategoryProduct,
-//                        as: 'subCategory',
-//                        exclude: ['createdBy','dateCreated','status']
-//                    } 
-//                ]
-//            }
-//    }
-//    brand.findAll({
-//        attributes:{
-//            exclude: ['createdBy','dateCreated']
-//        },
-//        include:[includeParent],
-//        where: [conditionKey]
-//    }).then(data=>{
-//        if(data == null){
-//            result("Not Found", 404, null);
-//        }else{
-//            security.encrypt(data)
-//            .then(function(encryptedData){
-//                result("success", 200, encryptedData);
-//            }).catch(function(error){
-//                result(error, 500, null);
-//            });            
-//        }
-//    }).catch(err=>{
-//       result(err.message, 500, null);
-//    });
-//}
+exports.find = function(security,field, result){
+    let parent = null;
+    let op = null;
+    let conditionKey = new Object();
+    for (let [key, value] of Object.entries(field)) {
+        let condition = new Object();
+        if(key === "productName"){
+            op = operator.substring;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }else{
+            op = operator.eq;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }
+    }
+    order.findAll({
+        where: [conditionKey]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            security.encrypt(data)
+            .then(function(encryptedData){
+                result("success", 200, encryptedData);
+            }).catch(function(error){
+                result(error, 500, null);
+            });            
+        }
+    }).catch(err=>{
+       result(err.message, 500, null);
+    });
+}
 
 exports.create = function(newData,security, result){
     newData['status'] = '1';  
@@ -158,16 +124,16 @@ exports.create = function(newData,security, result){
 //        result(err.message, 500, null);
 //    });
 //};
-//function columnDictionary(key){
-//    if(key === 'id'){
-//        return 'id_brand';
-//    }else if(key === 'idParent'){
-//        return 'id_parent';
-//    }else if(key === 'groupBy'){
-//        return 'parent';
-//    }else if(key === 'name'){
-//        return 'brand_name';
-//    }else{
-//        return key;
-//    }
-//}
+function columnDictionary(key){
+    if(key === 'createdBy'){
+        return 'created_by';
+    }else if(key === 'idOrder'){
+        return 'id_order';
+    }else if(key === 'productName'){
+        return 'product_name';
+    }else if(key === 'paid'){
+        return 'is_paid';
+    }else{
+        return key;
+    }
+}

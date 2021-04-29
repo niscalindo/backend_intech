@@ -60,11 +60,6 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(20),
             allowNull: false,
             field: 'packet_unit'
-        },
-        note:{
-            type: Sequelize.STRING(1000),
-            allowNull: true,
-            field: 'note'
         }
     },{timestamps: false});
     return detailOrderProduct;

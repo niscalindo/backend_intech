@@ -163,65 +163,45 @@ exports.create = function(req, res){
 //    }
 //}
 
-//exports.find = function(req, res){
-//    try{
-//        let param = req.query;
-//        console.log(param);
-//        if((typeof param === 'undefined' || typeof param === null) || (typeof param.parent === 'undefined' || typeof param.parent === null)) {
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            if((typeof param.id === 'undefined' || typeof param.id === null) && (typeof param.idParent === 'undefined' || typeof param.idParent === null)){
-//                brand.find(security,param, function(message, status, data){
-//                    if(status == 200 || status == 201){
-//                        if(data == null || data == ""){
-//                            response.ok('empty result', status, data, res); 
-//                        }else{
-//                            response.ok(message, status, data, res);                    
-//                        }
-//                    }else{
-//                        response.ok(message, status, null, res);            
-//                    }
-//                });
-//            }else{
-//                let encryptedData = new Array();
-//                let index = 0;
-//                if(typeof param.id != 'undefined' && typeof param.id != null){
-//                    encryptedData[index] = param.id;
-//                    index++;
-//                }
-//                if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
-//                    encryptedData[index] = param.idParent;
-//                }
-//                security.decrypt(encryptedData)
-//                .then(function(data){
-//                    index = 0;
-//                    if(typeof param.id != 'undefined' && typeof param.id != null){
-//                        param.id = data[index];
-//                        index++;
-//                    }
-//                    if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
-//                        param.idParent = data[index];
-//                    }
-//                    brand.find(security,param, function(message, status, data){
-//                        if(status == 200 || status == 201){
-//                            if(data == null || data == ""){
-//                                response.ok('empty result', status, data, res); 
-//                            }else{
-//                                response.ok(message, status, data, res);                    
-//                            }
-//                        }else{
-//                            response.ok(message, status, null, res);            
-//                        }
-//                    });
-//                }).catch(function(error){
-//                    response.ok(error, 400, null, res); 
-//                });
-//            }
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
+exports.find = function(req, res){
+    try{
+        let param = req.query;
+        console.log(param);
+        let userData = req.user;  
+        if((typeof param === 'undefined' || typeof param === null)) {
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userData.id];
+            let index = 1;
+            if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
+                encryptedData[index] = param.idOrder;
+            }
+            security.decrypt(encryptedData)
+            .then(function(data){
+                param.createdBy = data[0];
+                console.log("test : "+data[1]);
+                if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
+                    param.idOrder = data[1];
+                }
+                order.find(security,param, function(message, status, data){
+                    if(status == 200 || status == 201){
+                        if(data == null || data == ""){
+                            response.ok('empty result', status, data, res); 
+                        }else{
+                            response.ok(message, status, data, res);                    
+                        }
+                    }else{
+                        response.ok(message, status, null, res);            
+                    }
+                });
+            }).catch(function(error){
+                response.ok(error, 400, null, res); 
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 
 //function generateCode(lastNumerator){
 //    if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {
