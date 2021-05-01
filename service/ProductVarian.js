@@ -157,6 +157,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let conditionForVarian = new Object();
     let conditionCategory = new Object();
     let categoryIncludeArray = new Array();
+    let provinceArray;
     let indexCategoryArray = 0;
     op = operator.eq;
     let condition = new Object();
@@ -241,22 +242,33 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 condition[op] = value;
                 conditionForOwner['id'] = condition;
                 productOwnerObject['where']=conditionForOwner;
+            }else if(key == "loc"){
+                let arrayValue = value.toString().split(",");
+                provinceArray = new Array();
+                for(let i = 0; i< arrayValue.length; i++){
+                    let findCondition = new Object();
+                    findCondition.id_province=arrayValue[i];
+                    provinceArray[i]=findCondition;
+                }
             }
         }
+    }
+    let productOwnerWhereCondition = new Object();
+    productOwnerWhereCondition[operator.and]=[
+                    {status:'1'},
+                    {store_address:'1'}
+                ];
+    if(provinceArray != null){
+        productOwnerWhereCondition[operator.or]=provinceArray;
     }
     productOwnerObject['include']=[{
             model:db.tr_address,
             as:'addresses',
-            where:[{
-                status:'1'
-            },
-            {
-                store_address:'1'
-            }],
+            where:productOwnerWhereCondition,
             include:[
                 {
                     model:db.province,
-                    as: 'province'
+                    as: 'province',
                 },
                 {
                     model:db.regency,
