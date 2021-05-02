@@ -10,6 +10,7 @@ const subCategoryProduct = db.sub_category_product;
 const pictureModel = db.pictures;
 const userModel = db.users;
 const trAddress = db.tr_address;
+const productViewModel = db.product_viewed;
 const detailPromoModel = db.detail_promo;
 const promoModel = db.promo;
 const operator = db.Sequelize.Op;
@@ -463,12 +464,26 @@ exports.findOne = function(security, field, result){
                         as: 'likes',
                         attributes:{exclude: ['dateCreated']},
                         required: false
+                    },
+                    {
+                        model: productViewModel,
+                        as: 'viewer',
+                        required: false,
                     }
                 ],
-                where:conditionForVarian,
+                where:conditionForVarian
             }).then(data=>{
                 security.encrypt(data)
                 .then(function(encryptedData){
+                    let dataViewer = new Object();
+                    dataViewer.idProduct = field.id;
+                    dataViewer.dateCreated = new Date();
+                    dataViewer.idViewer = field.idViewer;
+                    productViewModel.create(dataViewer).then(data=>{
+                        console.log("viewer incremented");
+                    }).catch(err=>{
+                        console.log("error insert viewer : "+err);
+                    });
                     result("success", 200, encryptedData);
                 }).catch(function(error){
                     console.log(error);

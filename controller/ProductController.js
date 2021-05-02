@@ -433,6 +433,7 @@ exports.update = function(req, res){
                 security.decrypt(encryptedData)
                 .then(function(decryptedData){
                     param.id = decryptedData[0];
+                    param.idViewer = decryptedData[1];
                     productVarianService.findOne(security,param,function(message, status,data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
