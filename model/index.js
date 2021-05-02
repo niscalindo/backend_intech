@@ -92,6 +92,7 @@ db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
 db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);
 db.tm_delivery = require("./tm_delivery.model.js")(sequelize, Sequelize);
+db.users.hasMany(db.tm_delivery,{as: 'deliveries', foreignKey: 'created_by'});
 db.tm_virtual_account = require("./tm_virtual_account.model.js")(sequelize, Sequelize);
 module.exports = db;
 

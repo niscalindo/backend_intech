@@ -359,6 +359,13 @@ exports.update = function(req, res){
                     index++;
                 }
             }
+            if(param.delivery!= 'undefined' && param.delivery != null){
+                let arrayOfDeliveries = param.delivery.split(",");
+                for(let i=0; i< arrayOfDeliveries.length; i++){
+                    encryptedData[index] = arrayOfDeliveries[i];
+                    index++;
+                }
+            }
             security.decrypt(encryptedData)
             .then(function(decryptedData){
                 index = 0;
@@ -379,6 +386,14 @@ exports.update = function(req, res){
                         index++;
                     }
                     param.loc = arrayOfLoc;
+                }
+                if(param.delivery!= 'undefined' && param.delivery != null){
+                    let arrayOfDeliveries = param.delivery.split(",");
+                    for(let i=0; i< arrayOfDeliveries.length; i++){
+                        arrayOfDeliveries[i]=decryptedData[index];
+                        index++;
+                    }
+                    param.delivery = arrayOfDeliveries;
                 }
                 productVarianService.find(security,orderBy, order,parseInt(offset), parseInt(limit),param,function(message, status,data){
                     if(status == 200 || status == 201){

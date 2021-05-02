@@ -158,6 +158,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let conditionCategory = new Object();
     let categoryIncludeArray = new Array();
     let provinceArray;
+    let deliveryArray;
     let indexCategoryArray = 0;
     op = operator.eq;
     let condition = new Object();
@@ -250,6 +251,14 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     findCondition.id_province=arrayValue[i];
                     provinceArray[i]=findCondition;
                 }
+            }else if(key == "delivery"){
+                let arrayValue = value.toString().split(",");
+                deliveryArray = new Array();
+                for(let i = 0; i< arrayValue.length; i++){
+                    let findCondition = new Object();
+                    findCondition.id_courier=arrayValue[i];
+                    deliveryArray[i]=findCondition;
+                }
             }
         }
     }
@@ -261,7 +270,8 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     if(provinceArray != null){
         productOwnerWhereCondition[operator.or]=provinceArray;
     }
-    productOwnerObject['include']=[{
+    let includeProductOwnerObject = new Array();
+    includeProductOwnerObject[0]={
             model:db.tr_address,
             as:'addresses',
             where:productOwnerWhereCondition,
@@ -280,7 +290,19 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 }
             ],
             required: true
-    }];
+    };
+    if(deliveryArray != null){
+        includeProductOwnerObject[1]={
+             model:db.tm_delivery,
+             attributes: ['id_delivery'],
+             as:'deliveries',
+             where:{
+                [operator.or]: deliveryArray
+              },
+             required: true
+        }; 
+    }
+    productOwnerObject['include']=includeProductOwnerObject;
     categoryIncludeArray[indexCategoryArray] = productOwnerObject;
     productObject['include'] = categoryIncludeArray;
 //    productObject['include']=productOwnerObject
