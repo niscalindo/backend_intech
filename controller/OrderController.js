@@ -38,7 +38,7 @@ exports.create = function(req, res){
     try{
         let userToken = req.user;
         let newOrder = req.body.order;
-        console.log(newOrder);
+//        console.log(newOrder);
         if((typeof newOrder === 'undefined' || typeof newOrder === null) 
                 || (typeof newOrder.stores === 'undefined' || typeof newOrder.stores === null)
                 ){
@@ -166,7 +166,8 @@ exports.create = function(req, res){
 exports.find = function(req, res){
     try{
         let param = req.query;
-        console.log(param);
+        let scope = req.headers.scope;
+//        console.log(param);
         let userData = req.user;  
         if((typeof param === 'undefined' || typeof param === null)) {
             response.ok('Bad Request', 401, null, res);
@@ -179,11 +180,11 @@ exports.find = function(req, res){
             security.decrypt(encryptedData)
             .then(function(data){
                 param.createdBy = data[0];
-                console.log("test : "+data[1]);
+//                console.log("test : "+data[1]);
                 if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
                     param.idOrder = data[1];
                 }
-                order.find(security,param, function(message, status, data){
+                order.find(security,param, scope,function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
                             response.ok('empty result', status, data, res); 

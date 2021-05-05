@@ -82,6 +82,28 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'packed_date',
             defaultValue:null
+        },
+        isDelivered:{
+            type: Sequelize.ENUM('0','1'),
+            defaultValue: '0',
+            field: 'is_delivered'
+        },
+        deliveredDate:{
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'delivered_date',
+            defaultValue:null
+        },
+        isFinish:{
+            type: Sequelize.ENUM('0','1'),
+            defaultValue: '0',
+            field: 'is_finish'
+        },
+        finishDate:{
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'finish_date',
+            defaultValue:null
         }
     },{timestamps: false});
     return order;

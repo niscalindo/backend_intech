@@ -35,7 +35,7 @@ const sequelize = db.sequelize;
 //    });
 //};
 
-exports.find = function(security,field, result){
+exports.find = function(security,field,scope, result){
     let parent = null;
     let op = null;
     let conditionKey = new Object();
@@ -51,9 +51,25 @@ exports.find = function(security,field, result){
             conditionKey[columnDictionary(key)] = condition;
         }
     }
-    order.findAll({
+    if(field.status === 'undefined' || field.status === null){
+        op = operator.ne;
+        condition[op] = '0';
+        conditionKey['status'] = condition;
+    }
+    let conditionObject = {
         where: [conditionKey]
-    }).then(data=>{
+    }
+    if(scope!= "null" && scope == "all"){
+        conditionObject.include={
+            model: db.detailOrderStore,
+            as: 'stores',
+            include:{
+                model: db.detailOrderProduct,
+                as: 'products'
+            }
+        }
+    }
+    order.findAll(conditionObject).then(data=>{
         if(data == null){
             result("Not Found", 404, null);
         }else{
