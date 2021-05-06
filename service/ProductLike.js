@@ -8,9 +8,50 @@ const productLike = db.product_like;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
-exports.find = function(security,findBy,id, result){
+Date.prototype.datetime = function() {
+    var datetime = this.getFullYear() + "-"
+                + (this.getMonth()+1)  + "-" 
+                + this.getDate() + " "  
+                + this.getHours() + ":"  
+                + this.getMinutes() + ":" 
+                + this.getSeconds();
+        return datetime;
+};
+exports.find = function(security,findBy,id,scope, result){
+    let currentDate = new Date();
     let whereCondition = new Object();
     let condition = new Object();
+    let includeProduct = {
+        model:db.product,
+        as:'product',
+        include:
+            {
+                model:db.users,
+                as:'owner',
+                attributes:{exclude: ['password','username','code','email','idCitizen','photoIdCitizen','photoId','serialNumber','dob','fullName','phoneNumber','dateCreated']},
+                include:
+                {
+                    model:db.tr_address,
+                    as:'addresses',
+                    include:[
+                        {
+                            model:db.province,
+                            as: 'province',
+                        },
+                        {
+                            model:db.regency,
+                            as: 'city'
+                        },
+                        {
+                            model:db.district,
+                            as:'district'
+                        }
+                    ],
+                    required: true
+                }
+            }
+        
+    };
     if(findBy == "user"){
         condition[operator.eq] = id;
         whereCondition["id_user"]=condition
@@ -18,12 +59,45 @@ exports.find = function(security,findBy,id, result){
         condition[operator.eq] = id;
         whereCondition["id_product_varian"]=condition;
     }
-    productLike.findAll({
+    let conditionObject = {
         attributes:{
             exclude: ['dateCreated']
         },
         where:[whereCondition]
-    }).then(data=>{
+    };
+    if(scope!="null" && scope == "all"){
+        conditionObject.include={
+            model:db.product_varian,
+            as: 'products_liked',
+            include:[{
+                    model: db.detail_promo,
+                    as: 'detailPromo',
+                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    required: false,
+                    include:[
+                        {
+                            model: db.promo,
+                            as: 'promo',
+                            attributes:{exclude: ['createdBy', 'dateCreated']},
+                            required: false,
+                            where:[
+                                    {
+                                        date_started:{
+                                            [operator.lte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    },
+                                    {
+                                        date_ended:{
+                                            [operator.gte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    }
+                            ]
+                        }
+                     ]
+                },includeProduct]
+        }
+    }
+    productLike.findAll(conditionObject).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             result("success", 200, encryptedData);

@@ -85,6 +85,7 @@ db.tr_address = require("./tr_address.model.js")(sequelize, Sequelize);
 db.tr_address.belongsTo(db.province, {as: 'province', foreignKey: 'id_province'});
 db.tr_address.belongsTo(db.regency, {as: 'city', foreignKey: 'id_city'});
 db.tr_address.belongsTo(db.district, {as: 'district', foreignKey: 'id_district'});
+db.product_like.belongsTo(db.product_varian, {as: 'products_liked', foreignKey: 'id_product_varian'});
 db.regency.belongsTo(db.province, {as: 'province', foreignKey: 'province_id'});
 db.users.hasMany(db.tr_address,{as: 'addresses', foreignKey: 'id_user'});
 db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'id_user'});

@@ -45,7 +45,9 @@ exports.find = function(req, res){
     try{
         let param = req.query;
         let userCredential = req.user;
+        let scope = req.headers.scope;
         let encryptedData = new Array();
+        
         let findBy = "user";            
         if (typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
             encryptedData[0] = param.idProductVarian;
@@ -56,7 +58,7 @@ exports.find = function(req, res){
         security.decrypt(encryptedData)
         .then(function(data){
             let id = data[0];
-            productLike.find(security,findBy,id, function(message, status, data){
+            productLike.find(security,findBy,id,scope, function(message, status, data){
                 if(status == 200 || status == 201){
                     if(data == null || data == ""){
                         response.ok('empty result', status, data, res); 
