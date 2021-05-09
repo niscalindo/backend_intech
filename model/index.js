@@ -91,6 +91,8 @@ db.users.hasMany(db.tr_address,{as: 'addresses', foreignKey: 'id_user'});
 db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'id_user'});
 db.users.hasMany(db.follower,{as: 'follower', foreignKey: 'id_user'});
 db.users.hasMany(db.follower,{as: 'followings', foreignKey: 'id_store'});
+db.users.hasMany(db.product,{as: 'products', foreignKey: 'created_by'});
+db.follower.belongsTo(db.users,{as: 'storesFollowed', foreignKey: 'id_store'});
 db.tm_mail_in = require("./tm_mail_in.model.js")(sequelize, Sequelize);
 db.tm_mail_out = require("./tm_mail_out.model.js")(sequelize, Sequelize);
 db.tm_courier = require("./tm_courier.model.js")(sequelize, Sequelize);

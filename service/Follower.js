@@ -8,7 +8,7 @@ const follower = db.follower;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
-exports.find = function(security,findBy,id, result){
+exports.find = function(security,findBy,id,scope, result){
     let whereCondition = new Object();
     let condition = new Object();
     if(findBy == "follower"){
@@ -21,13 +21,44 @@ exports.find = function(security,findBy,id, result){
     let conditionStatus = new Object();
     conditionStatus[operator.eq]='1';
     whereCondition['status']=conditionStatus;
-    
-    follower.findAll({
+    let conditionObject = {
         attributes:{
-            exclude: ['dateCreated']
+            exclude: ['dateCreated','id_user','id_store']
         },
         where:[whereCondition]
-    }).then(data=>{
+    }
+    
+    if(scope!="null" && scope == "all"){
+        conditionObject.include={
+            model:db.users,
+            as:'storesFollowed',
+            include:[{
+                    model:db.tr_address,
+                    as:'addresses',
+                    include:[
+                        {
+                            model:db.province,
+                            as: 'province',
+                        },
+                        {
+                            model:db.regency,
+                            as: 'city'
+                        },
+                        {
+                            model:db.district,
+                            as:'district'
+                        }
+                    ],
+                    required: true
+                },
+                {
+                    model:db.product,
+                    as:'products',
+                    limit: 6
+                }]
+        }
+    }
+    follower.findAll(conditionObject).then(data=>{
         security.encrypt(data)
         .then(function(encryptedData){
             result("success", 200, encryptedData);

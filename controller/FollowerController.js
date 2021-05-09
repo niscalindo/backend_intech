@@ -45,6 +45,7 @@ exports.find = function(req, res){
     try{
         let param = req.query;
         let userCredential = req.user;
+        let scope = req.headers.scope;
         let encryptedData = new Array();
         if (typeof param != 'undefined' && typeof param != null){
             if(typeof param.by != 'undefined' && typeof param.by != null){
@@ -56,7 +57,7 @@ exports.find = function(req, res){
                 security.decrypt(encryptedData)
                 .then(function(data){
                     let id = data[0];
-                    follower.find(security,param.by,id, function(message, status, data){
+                    follower.find(security,param.by,id,scope, function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
