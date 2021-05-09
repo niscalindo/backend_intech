@@ -83,7 +83,7 @@ exports.find = function(isSameUser, field, result){
         excludeOptions[6]='phone_number'; 
         excludeOptions[7]='id_citizen';
         excludeOptions[8]='photo_id_card';
-        excludeOptions[8]='dob';
+        excludeOptions[9]='dob';
     }
     tmUsers.findAll({
         attributes: {

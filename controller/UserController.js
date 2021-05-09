@@ -33,7 +33,7 @@ exports.login = function(req, res){
 exports.find = function(req, res){
     try{
         let query = req.query;
-        let user = req.user; 
+        let userCredential = req.user; 
         if(typeof req.query === 'undefined' || typeof req.query === null){
             response.ok("bad request", 401, null, res);
         }else{
@@ -58,7 +58,7 @@ exports.find = function(req, res){
                 security.decrypt(encryptedData)
                 .then(function(data){
                     let isSameUser = false;
-                    if(query.id == user.id){
+                    if(query.id == userCredential.id){
                         isSameUser = true;
                     }
                     query.id = data[0];
