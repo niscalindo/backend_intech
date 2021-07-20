@@ -6,11 +6,23 @@
 const dbConfig = require("../utils/db.config.js");
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+    
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
     operatorAliases: false,
     define:{
         freezeTableName: true
+    },
+    
+    dialectOptions: {
+      useUTC: false, //for reading from database
+      dateStrings: true,
+      typeCast: function (field, next) { // for reading from database
+        if (field.type === 'DATETIME') {
+          return field.string()
+        }
+          return next()
+        },
     },
     pool:{
         max: dbConfig.pool.max,
