@@ -61,6 +61,16 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'buyer_address'
         },
+        receiverName:{
+            type: Sequelize.STRING(100),
+            allowNull: false,
+            field: 'receiver_name'
+        },
+        receiverPhoneNumber:{
+            type: Sequelize.STRING(30),
+            allowNull: false,
+            field: 'receiver_phone_number'
+        },
         isPaid:{
             type: Sequelize.ENUM('0','1'),
             defaultValue: '0',
