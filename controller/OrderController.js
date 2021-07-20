@@ -130,38 +130,37 @@ exports.create = function(req, res){
     }
 }
 
-//exports.update = function(req, res){
-//    try{
-//        let userToken = req.user;
-//        let newBrand = req.body.brand;
-//        if(typeof newBrand === 'undefined' || typeof newBrand === null){
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            let encryptedData = [newBrand.id, userToken.id, newBrand.idParent];
-//            security.decrypt(encryptedData)
-//                    .then(function(decryptedId){
-//                        newBrand.id = decryptedId[0];
-//                        newBrand.createdBy = decryptedId[1];
-//                        newBrand.idParent = decryptedId[2];
-//                        brand.update(newBrand, function(message,status,data){
-//                            if(status == 200 || status == 201){
-//                                if(data == null || data == ""){
-//                                    response.ok('empty result', status, data, res); 
-//                                }else{
-//                                    response.ok(message, status, data, res);                    
-//                                }
-//                            }else{
-//                                response.ok(message, status, null, res);            
-//                            }
-//                        });
-//            }).catch(function (error){
-//                response.ok("data not found : "+error, 500, null, res);   
-//            });
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
+exports.update = function(req, res){
+    try{
+        let userToken = req.user;
+        let newOrder = req.body.order;
+        if(typeof newOrder === 'undefined' || typeof newOrder === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [newOrder.id, userToken.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                        newOrder.id = decryptedId[0];
+                        newOrder.createdBy = decryptedId[1];
+                        order.update(newOrder, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+            }).catch(function (error){
+                response.ok("data not found : "+error, 500, null, res);   
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 
 exports.find = function(req, res){
     try{

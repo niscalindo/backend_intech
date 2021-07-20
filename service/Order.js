@@ -110,22 +110,22 @@ exports.create = function(newData,security, result){
     });
 };
 
-//exports.update= function(newData, result){
-//    brand.update(
-//        newData,
-//        {
-//            where: {id_brand: parseInt(newData.id)}
-//        }).then(function(data){
-//        if(data[0] == 1){
-//            result("success", 200, data[0]);
-//        }else{
-//            result("no changes", 200, data[0]);
-//        }
-//    })
-//    .catch(err=>{
-//        result(err.message, 500, null);
-//    });
-//};
+exports.update= function(newData, result){
+    order.update(
+        newData,
+        {
+            where: {id_order: parseInt(newData.id)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
+        result(err.message, 500, null);
+    });
+};
 //exports.findMaxNumerator= function( result){
 //    brand.findOne({
 //        attributes:[

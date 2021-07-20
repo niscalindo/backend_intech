@@ -53,13 +53,28 @@ module.exports = (sequelize, Sequelize)=>{
         },
         cancelReason:{
             type: Sequelize.STRING(500),
-            allowNull: false,
+            allowNull: true,
             field: 'cancel_reason'
+        },
+        receivedBy:{
+            type: Sequelize.STRING(100),
+            allowNull: true,
+            field: 'received_by'
         },
         paymentTimeLimit:{
             type: Sequelize.DATE,
             allowNull: false,
             field: 'payment_time_limit'
+        },
+        deliveryMaxDate:{
+            type: Sequelize.DATE,
+            allowNull: false,
+            field: 'delivery_max_date'
+        },
+        canceledDate:{
+            type: Sequelize.DATE,
+            allowNull: false,
+            field: 'canceled_date'
         },
         buyerAddress:{
             type: Sequelize.STRING(30),
