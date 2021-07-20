@@ -51,6 +51,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'payment_bank_number'
         },
+        cancelReason:{
+            type: Sequelize.STRING(500),
+            allowNull: false,
+            field: 'cancel_reason'
+        },
         paymentTimeLimit:{
             type: Sequelize.DATE,
             allowNull: false,
