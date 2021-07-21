@@ -50,7 +50,11 @@ exports.find = function(security,field,scope, result){
             as: 'store',
             include:{
                 model: db.order,
-                as: 'order'
+                as: 'order',
+                include:{
+                    model: db.users,
+                    as: 'buyer'
+                }
             }
         }
     }
