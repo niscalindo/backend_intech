@@ -50,6 +50,7 @@ exports.find = function(req, res){
             response.ok('Bad Request', 401, null, res);
         }else{
 //            let encryptedData = [userData.id];
+            let encryptedData = new Array();
             let index = 0;
             if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                 encryptedData[index] = param.idProductVarian;
@@ -59,7 +60,7 @@ exports.find = function(req, res){
 //                param.createdBy = data[0];
 //                console.log("test : "+data[1]);
                 if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
-                    param.idOrder = data[0];
+                    param.idProductVarian = data[0];
                 }
                 review.find(security,param, scope,function(message, status, data){
                     if(status == 200 || status == 201){
