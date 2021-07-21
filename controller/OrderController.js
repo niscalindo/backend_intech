@@ -161,7 +161,37 @@ exports.update = function(req, res){
         response.ok(exception.message, 500, null, res);
     }
 }
-
+exports.updateReview = function(req, res){
+    try{
+        let userToken = req.user;
+        let review = req.body.review;
+        if(typeof review=== 'undefined' || typeof review === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [review.id, userToken.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                        review.id = decryptedId[0];
+                        review.createdBy = decryptedId[1];
+                        order.updateReview(review, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+            }).catch(function (error){
+                response.ok("data not found : "+error, 500, null, res);   
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
 exports.find = function(req, res){
     try{
         let param = req.query;

@@ -68,6 +68,7 @@ module.exports = function(app){
     app.route('/order').post(auth.isAunthenticated,orderController.create);
     app.route('/order/find').get(auth.isAunthenticated,orderController.find);
     app.route('/order/update').put(auth.isAunthenticated,orderController.update);
+    app.route('/order/update/review').put(auth.isAunthenticated,orderController.updateReview);
     app.route('/brands').get(auth.isAunthenticated,brandController.getAll);
     app.route('/brands').post(auth.isAunthenticated,brandController.create);
     app.route('/brands').put(auth.isAunthenticated,brandController.update);

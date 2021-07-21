@@ -68,12 +68,12 @@ module.exports = (sequelize, Sequelize)=>{
         },
         deliveryMaxDate:{
             type: Sequelize.DATE,
-            allowNull: false,
+            allowNull: true,
             field: 'delivery_max_date'
         },
         canceledDate:{
             type: Sequelize.DATE,
-            allowNull: false,
+            allowNull: true,
             field: 'canceled_date'
         },
         buyerAddress:{

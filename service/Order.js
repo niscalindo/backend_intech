@@ -45,6 +45,16 @@ exports.find = function(security,field,scope, result){
             op = operator.substring;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
+        }else if(key === "transaction"){
+            if(value === "finish"){
+                op = operator.eq;
+                condition[op] = "1";
+                conditionKey['is_finish'] = condition;                
+            }else if(value === "paid"){
+                op = operator.eq;
+                condition[op] = "1";
+                conditionKey['is_paid'] = condition;
+            }
         }else{
             op = operator.eq;
             condition[op] = value;
@@ -115,6 +125,23 @@ exports.update= function(newData, result){
         newData,
         {
             where: {id_order: parseInt(newData.id)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
+        result(err.message, 500, null);
+    });
+};
+
+exports.updateReview= function(newData, result){
+    db.detailOrderProduct.update(
+        newData,
+        {
+            where: {id_order_product: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);

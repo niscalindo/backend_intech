@@ -56,6 +56,24 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'packet_weight'
         },
+        reviewScore:{
+            type: Sequelize.INTEGER,
+            field: 'review_score'
+        },
+        review:{
+            type: Sequelize.STRING(500),
+            allowNull: true
+        },
+        reviewPictures:{
+            type: Sequelize.STRING(500),
+            allowNull: true,
+            field: 'review_pictures'
+        },
+        isReviewPrivate:{
+            type: Sequelize.ENUM('0','1'),
+            defaultValue: '0',
+            field: 'is_review_private'
+        },
         packetUnit:{
             type: Sequelize.STRING(20),
             allowNull: false,
