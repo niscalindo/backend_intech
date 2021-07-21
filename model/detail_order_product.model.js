@@ -69,6 +69,21 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'review_pictures'
         },
+        reviewDate:{
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'review_date'
+        },
+        reviewResponDate:{
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'review_respon_date'
+        },
+        reviewRespon:{
+            type: Sequelize.STRING(1000),
+            allowNull: true,
+            field: 'review_respon'
+        },
         isReviewPrivate:{
             type: Sequelize.ENUM('0','1'),
             defaultValue: '0',
