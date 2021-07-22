@@ -69,7 +69,7 @@ exports.find = function(security,field,scope, result){
        result(err.message, 500, null);
     });
 }
-exports.countSelling = function(security,field,scope, result){
+exports.countSelling = function(field,scope, result){
     let parent = null;
     let op = null;
     let conditionKey = new Object();

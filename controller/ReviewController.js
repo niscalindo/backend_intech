@@ -44,6 +44,29 @@ exports.find = function(req, res){
     try{
         let param = req.query;
         let scope = req.headers.scope;
+        let order = req.headers.order;
+        let limit = req.headers.total_data;
+        let orderBy = req.headers.order_by;
+        let offset = req.headers.page;
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'review_date';
+        }
+        if(typeof order === 'undefined' || typeof order === null){
+            order = 'asc';
+        }
+        if(typeof limit === 'undefined' || typeof limit === null){
+            limit = 500;
+        }
+
+        if(typeof offset === 'undefined' || typeof offset === null){
+            offset = 0;
+        }else{
+            if(offset >= 1){
+                offset = limit * (offset-1);
+            }else{
+                offset = 0;
+            }
+        }
 //        console.log(param);
 //        let userData = req.user;  
         if((typeof param === 'undefined' || typeof param === null)) {
@@ -62,12 +85,21 @@ exports.find = function(req, res){
                 if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                     param.idProductVarian = data[0];
                 }
-                review.find(security,param, scope,function(message, status, data){
+                review.find(security,orderBy, order,parseInt(offset), parseInt(limit),param, scope,function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
+                            let resultAll = new Object();
+                            resultAll.rowCount = 0;
+                            resultAll.data = data;
+                            response.ok('empty result', status, resultAll, res); 
                         }else{
-                            response.ok(message, status, data, res);                    
+                            review.countResult(orderBy, order,param,scope, function(messageRow, statusRow,dataRow){
+                                let resultAll = new Object();
+                                resultAll.rowCount = dataRow;
+                                resultAll.data = data;
+                                response.ok(message, status, resultAll, res);                    
+                            });
+//                            response.ok(message, status, data, res);                    
                         }
                     }else{
                         response.ok(message, status, null, res);            

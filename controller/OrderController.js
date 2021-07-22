@@ -227,7 +227,7 @@ exports.find = function(req, res){
                     param.idProductVarian = data[index];
                 }
                 if(mode=="count"){
-                    order.countSelling(security,param, scope,function(message, status, data){
+                    order.countSelling(param, scope,function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
