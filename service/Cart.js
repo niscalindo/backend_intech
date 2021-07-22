@@ -12,13 +12,61 @@ const sequelize = db.sequelize;
 exports.find = function(security,field,scope, result){
     let op = null;
     let conditionKey = new Object();
+    let conditionProduct = new Object();
+    let searchProduct = false;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
-        op = operator.eq;
-        condition[op] = value;
-        conditionKey[columnDictionary(key)] = condition;
+        if(key === "idProductVarian"){
+            searchProduct = true;
+            op = operator.eq;
+            condition[op] = value;
+            conditionProduct[columnDictionary(key)] = condition;        
+        }else{
+            op = operator.eq;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;            
+        }
     }
-    
+    let currentDate = new Date();
+    let detailCartProductModel = {
+            model: detailCartProduct,
+            as: 'products',
+            attributes:{exclude:['id_product_varian']},
+            include:{
+                model: db.product_varian,
+                as: 'varian',
+                attributes:{exclude:['id','id_product','dateCreated','status','createdBy']},
+                include:{
+                    model: db.detail_promo,
+                    as: 'detailPromo',
+                    attributes:{exclude: ['createdBy', 'dateCreated']},
+                    required: false,
+                    include:[
+                        {
+                            model: db.promo,
+                            as: 'promo',
+                            attributes:{exclude: ['createdBy', 'dateCreated']},
+                            required: false,
+                            where:[
+                                    {
+                                        date_started:{
+                                            [operator.lte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    },
+                                    {
+                                        date_ended:{
+                                            [operator.gte]:Date.parse(currentDate.datetime().toString())
+                                        }
+                                    }
+                            ]
+                        }
+                     ]
+                }
+            }
+        };
+    if(searchProduct){
+        detailCartProductModel.where=[conditionProduct];
+    }
     let conditionObject = {
         where: [conditionKey]
     }
@@ -27,7 +75,6 @@ exports.find = function(security,field,scope, result){
                     {status:'1'},
                     {store_address:'1'}
                 ];
-    let currentDate = new Date();
     if(scope!= "null" && scope == "all"){
         conditionObject.include=[{
             attributes:{
@@ -73,42 +120,7 @@ exports.find = function(security,field,scope, result){
                 ]
             }
         },
-        {
-            model: detailCartProduct,
-            as: 'products',
-            attributes:{exclude:['id_product_varian']},
-            include:{
-                model: db.product_varian,
-                as: 'varian',
-                attributes:{exclude:['id','id_product','dateCreated','status','createdBy']},
-                include:{
-                    model: db.detail_promo,
-                    as: 'detailPromo',
-                    attributes:{exclude: ['createdBy', 'dateCreated']},
-                    required: false,
-                    include:[
-                        {
-                            model: db.promo,
-                            as: 'promo',
-                            attributes:{exclude: ['createdBy', 'dateCreated']},
-                            required: false,
-                            where:[
-                                    {
-                                        date_started:{
-                                            [operator.lte]:Date.parse(currentDate.datetime().toString())
-                                        }
-                                    },
-                                    {
-                                        date_ended:{
-                                            [operator.gte]:Date.parse(currentDate.datetime().toString())
-                                        }
-                                    }
-                            ]
-                        }
-                     ]
-                }
-            }
-        }]
+        detailCartProductModel]
         
     }
     conditionObject.attributes={
@@ -150,11 +162,30 @@ exports.create = function(newData,security, result){
         result(err.message, 500, null);
     });
 };
+
+exports.update = function(newData, result){
+     detailCartProduct.update(
+        newData,
+        {
+            where: {id_cart_product: parseInt(newData.idCartProduct)}
+        }).then(function(data){
+        if(data[0] == 1){
+            result("success", 200, data[0]);
+        }else{
+            result("no changes", 200, data[0]);
+        }
+    })
+    .catch(err=>{
+        result(err.message, 500, null);
+    });
+};
 function columnDictionary(key){
     if(key === 'idUser'){
         return 'id_user';
     }else if(key === 'idProductVarian'){
         return 'id_product_varian';
+    }else if(key === 'idStore'){
+        return 'id_store';
     }else{
         return key;
     }

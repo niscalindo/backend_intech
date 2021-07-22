@@ -23,12 +23,47 @@ exports.create = function(req, res){
                     newCart.idUser=decryptedData[0];
                     newCart.idStore=decryptedData[1];
                     newCart.products[0].idProductVarian=decryptedData[2];
-                    cart.create(newCart,security, function(message,status,data){
+                    let param = new Object();
+                    param.idUser = newCart.idUser;
+                    param.idStore = newCart.idStore;
+                    param.idProductVarian = newCart.products[0].idProductVarian;
+                    let scope = 'all';
+                    cart.find(security,param, scope,function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
-                                response.ok('empty result', status, data, res); 
+                                cart.create(newCart,security, function(message,status,data){
+                                    if(status == 200 || status == 201){
+                                        if(data == null || data == ""){
+                                            response.ok('empty result', status, data, res); 
+                                        }else{
+                                            response.ok(message, status, data, res);                    
+                                        }
+                                    }else{
+                                        response.ok(message, status, null, res);            
+                                    }
+                                });
                             }else{
-                                response.ok(message, status, data, res);                    
+                                encryptedData = new Array();
+                                encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
+                                security.decrypt(encryptedData)
+                                .then(function(decryptedData){
+                                    let product = new Object();
+                                    product.idCartProduct = decryptedData[0];
+                                    product.qty = newCart.products[0].qty;
+                                    cart.update(product, function(message,status,data){
+                                        if(status == 200 || status == 201){
+                                            if(data == null || data == ""){
+                                                response.ok('empty result', status, data, res); 
+                                            }else{
+                                                response.ok(message, status, data, res);                    
+                                            }
+                                        }else{
+                                            response.ok(message, status, null, res);            
+                                        }
+                                    });
+                                }).catch(function(err){
+                                    response.ok('Error occured :'+err, 500, null, res); 
+                                });
                             }
                         }else{
                             response.ok(message, status, null, res);            
