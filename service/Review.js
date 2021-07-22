@@ -36,6 +36,11 @@ exports.find = function(security,field,scope, result){
             conditionKey[columnDictionary(key)] = condition;
 //        }
     }
+    let condition = new Object();
+    op = operator.gt;
+    condition[op] = 0;
+    conditionKey['review_score'] = condition;
+    
     if(field.status === 'undefined' || field.status === null){
         op = operator.ne;
         condition[op] = '0';

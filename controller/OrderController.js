@@ -196,6 +196,10 @@ exports.find = function(req, res){
     try{
         let param = req.query;
         let scope = req.headers.scope;
+        let mode = req.headers.mode;
+        if(typeof mode === 'undefined' || typeof mode === null){
+            mode = 'read';
+        }
 //        console.log(param);
         let userData = req.user;  
         if((typeof param === 'undefined' || typeof param === null)) {
@@ -205,25 +209,48 @@ exports.find = function(req, res){
             let index = 1;
             if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
                 encryptedData[index] = param.idOrder;
+                index++
+            }
+            if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
+                encryptedData[index] = param.idProductVarian;
             }
             security.decrypt(encryptedData)
             .then(function(data){
                 param.createdBy = data[0];
 //                console.log("test : "+data[1]);
+                index=1;
                 if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
-                    param.idOrder = data[1];
+                    param.idOrder = data[index];
+                    index++;
                 }
-                order.find(security,param, scope,function(message, status, data){
-                    if(status == 200 || status == 201){
-                        if(data == null || data == ""){
-                            response.ok('empty result', status, data, res); 
+                if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
+                    param.idProductVarian = data[index];
+                }
+                if(mode=="count"){
+                    order.countSelling(security,param, scope,function(message, status, data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
                         }else{
-                            response.ok(message, status, data, res);                    
+                            response.ok(message, status, null, res);            
                         }
-                    }else{
-                        response.ok(message, status, null, res);            
-                    }
-                });
+                    });                
+                }else{
+                    order.find(security,param, scope,function(message, status, data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+                }
             }).catch(function(error){
                 response.ok(error, 400, null, res); 
             });
