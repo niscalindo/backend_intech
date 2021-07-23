@@ -36,7 +36,7 @@ exports.find = function(security,field,scope, result){
                 model: db.product_varian,
                 as: 'varian',
                 attributes:{exclude:['id','id_product','dateCreated','status','createdBy']},
-                include:{
+                include:[{
                     model: db.detail_promo,
                     as: 'detailPromo',
                     attributes:{exclude: ['createdBy', 'dateCreated']},
@@ -61,7 +61,23 @@ exports.find = function(security,field,scope, result){
                             ]
                         }
                      ]
+                },{
+                    model: db.product,
+                    as: 'product',
+                    attributes:{exclude:['dateCreated',
+                            'status',
+                            'createdBy',
+                            'id_brand',
+                            'id_category',
+                            'created_by',
+                            'id_sub_category',
+                            'brandName',
+                            'idSubCategory',
+                            'description',
+                            'idFurtherSubCategory'
+                        ]}
                 }
+                ]
             }
         };
     if(searchProduct){
@@ -95,12 +111,20 @@ exports.find = function(security,field,scope, result){
                     'gender',
                     'photoId',
                     'dob',
-                    'serialNumber'
+                    'serialNumber',
+                    'id'
                 ]
             },
             model: db.users,
             as: 'store',
             include:{
+                attributes:{
+                exclude: [
+                        'id_district',
+                        'id_city',
+                        'id_province'
+                    ]
+                },
                 model:db.tr_address,
                 as:'addresses',
                 where:productOwnerWhereCondition,
@@ -162,7 +186,21 @@ exports.create = function(newData,security, result){
         result(err.message, 500, null);
     });
 };
-
+exports.createChild = function(newData,security, result){
+    detailCartProduct.create(newData).then(data=>{
+        security.encrypt(data)
+        .then(function(encryptedData){
+            let newInsertedId = encryptedData.dataValues.id;
+            let newData = new Object();
+            newData['id'] = newInsertedId;
+            result("success",201,newData);
+        }).catch(function(error){
+            result(error,500,null);
+        });        
+    }).catch(err=>{
+        result(err.message, 500, null);
+    });
+};
 exports.delete = function (data, result){
     let condition = new Object();
     let conditionKey = new Object();

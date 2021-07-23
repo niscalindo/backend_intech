@@ -26,7 +26,6 @@ exports.create = function(req, res){
                     let param = new Object();
                     param.idUser = newCart.idUser;
                     param.idStore = newCart.idStore;
-                    param.idProductVarian = newCart.products[0].idProductVarian;
                     let scope = 'all';
                     cart.find(security,param, scope,function(message, status, data){
                         if(status == 200 || status == 201){
@@ -47,15 +46,40 @@ exports.create = function(req, res){
                                 encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
-                                    let product = new Object();
-                                    product.idCartProduct = decryptedData[0];
-                                    product.qty = newCart.products[0].qty;
-                                    cart.update(product, function(message,status,data){
+                                    param.idProductVarian = newCart.products[0].idProductVarian;
+                                    cart.find(security,param, scope,function(message, status, data){
                                         if(status == 200 || status == 201){
                                             if(data == null || data == ""){
-                                                response.ok('empty result', status, data, res); 
+                                                let childCart = new Object();
+                                                childCart.id_cart = decryptedData[0];
+                                                childCart.idProductVarian = newCart.products[0].idProductVarian;
+                                                childCart.qty=newCart.products[0].qty;
+                                                cart.createChild(childCart,security, function(message,status,data){
+                                                    if(status == 200 || status == 201){
+                                                        if(data == null || data == ""){
+                                                            response.ok('empty result', status, data, res); 
+                                                        }else{
+                                                            response.ok(message, status, data, res);                    
+                                                        }
+                                                    }else{
+                                                        response.ok(message, status, null, res);            
+                                                    }
+                                                });
                                             }else{
-                                                response.ok(message, status, data, res);                    
+                                                let product = new Object();
+                                                product.idCartProduct = decryptedData[0];
+                                                product.qty = newCart.products[0].qty;
+                                                cart.update(product, function(message,status,data){
+                                                    if(status == 200 || status == 201){
+                                                        if(data == null || data == ""){
+                                                            response.ok('empty result', status, data, res); 
+                                                        }else{
+                                                            response.ok(message, status, data, res);                    
+                                                        }
+                                                    }else{
+                                                        response.ok(message, status, null, res);            
+                                                    }
+                                                });
                                             }
                                         }else{
                                             response.ok(message, status, null, res);            
