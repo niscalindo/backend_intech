@@ -5,10 +5,12 @@
  */
 var express = require('express');
 var app = express();
+const cron = require('node-cron');
 var port = 8081;
 var bodyParser = require('body-parser');
 var cors = require('cors');
 const db = require('./model');
+var order = require("./service/Order");
 
 db.sequelize.sync();
 
@@ -19,6 +21,11 @@ var corsOption = {
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors(corsOption));
+// Schedule tasks to be run on the server.
+
+cron.schedule('* * * * *', function() {
+  order.checkExpiredOrder();
+});
 
 var routes = require('./utils/routes');
 routes(app);

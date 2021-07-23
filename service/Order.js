@@ -10,6 +10,16 @@ const detailOrderProduct = db.detailOrderProduct;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
 
+Date.prototype.datetime = function() {
+    var datetime = this.getFullYear() + "-"
+                + (this.getMonth()+1)  + "-" 
+                + this.getDate() + " "  
+                + this.getHours() + ":"  
+                + this.getMinutes() + ":" 
+                + this.getSeconds();
+        return datetime;
+};
+
 exports.find = function(security,field,scope, result){
     let parent = null;
     let op = null;
@@ -170,6 +180,54 @@ exports.update= function(newData, result){
     })
     .catch(err=>{
         result(err.message, 500, null);
+    });
+};
+
+exports.checkExpiredOrder= function(){
+    console.log("Muahahahahha");
+    let currentDate = new Date();
+    order.findAll({
+        attributes:{
+            include: ['id', 'paymentTimeLimit']
+        },
+        where: [{
+                payment_time_limit:{
+                    [operator.lte]:Date.parse(currentDate.datetime().toString())
+                }
+            },
+            {
+                is_paid:{
+                    [operator.eq]:'0'
+                }
+            }
+        ],
+        order: [
+            ['id_order', 'asc']
+        ],
+    }).then(data=>{
+        let updatedOrder;
+        console.log("Expired Order "+data.length);
+        for(let i=0; i<data.length; i++){
+            updatedOrder = new Object();
+            updatedOrder.id = data[i].dataValues.id;
+            updatedOrder.status = '2';
+            updatedOrder.cancelReason = 'Batal Otomatis';
+            updatedOrder.canceledDate = new Date();
+            order.update(
+                updatedOrder,
+                {
+                    where: {id_order: parseInt(updatedOrder.id)}
+                }).then(function(data){
+                if(data[0] == 1){
+                }
+            })
+            .catch(err=>{
+                console.log(err);
+            });
+        }
+//        console.log(data[0].dataValues);
+    }).catch(err=>{
+        console.log(err);
     });
 };
 //exports.findMaxNumerator= function( result){
