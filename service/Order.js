@@ -9,6 +9,13 @@ const detailOrderStore = db.detailOrderStore;
 const detailOrderProduct = db.detailOrderProduct;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log4js = require("log4js");
+log4js.configure({
+  appenders: { fileAppender: { type: "file", filename: "/home/guest/Documents/sample_log/intech/order_service.log" } },
+  categories: { default: { appenders: ["fileAppender"], level: "info" } }
+});
+
+const log = log4js.getLogger("fileAppender");
 
 Date.prototype.datetime = function() {
     var datetime = this.getFullYear() + "-"
@@ -184,7 +191,7 @@ exports.update= function(newData, result){
 };
 
 exports.checkExpiredOrder= function(){
-    console.log("Muahahahahha");
+    log.info("checking expired order..")
     let currentDate = new Date();
     order.findAll({
         attributes:{
@@ -199,6 +206,11 @@ exports.checkExpiredOrder= function(){
                 is_paid:{
                     [operator.eq]:'0'
                 }
+            },
+            {
+                status:{
+                    [operator.eq]:'1'
+                }
             }
         ],
         order: [
@@ -206,7 +218,7 @@ exports.checkExpiredOrder= function(){
         ],
     }).then(data=>{
         let updatedOrder;
-        console.log("Expired Order "+data.length);
+        log.info("Expired Order "+data.length);
         for(let i=0; i<data.length; i++){
             updatedOrder = new Object();
             updatedOrder.id = data[i].dataValues.id;
