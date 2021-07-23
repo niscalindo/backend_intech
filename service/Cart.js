@@ -163,6 +163,19 @@ exports.create = function(newData,security, result){
     });
 };
 
+exports.delete = function (data, result){
+    let condition = new Object();
+    let conditionKey = new Object();
+    condition[operator.eq] = data;
+    conditionKey['id_cart_product'] = condition;
+    detailCartProduct.destroy({
+        where: [conditionKey]
+    }).then(data=>{
+        result("success", 200, data[0]);
+    }).catch(err=>{
+        result(err.message, 500, null);
+    });
+}
 exports.update = function(newData, result){
      detailCartProduct.update(
         newData,

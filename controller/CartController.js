@@ -78,6 +78,63 @@ exports.create = function(req, res){
     }
 }
 
+exports.delete = function(req, res){
+    try{
+        let userToken = req.user;
+        let newCart = req.body.cart;
+        if((typeof newCart === 'undefined' || typeof newCart === null) 
+                || (typeof newCart.products === 'undefined' || typeof newCart.products === null)
+                ){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            let encryptedData = [userToken.id, newCart.idStore, newCart.products[0].idProductVarian];
+            security.decrypt(encryptedData)
+                .then(function(decryptedData){
+                    newCart.idUser=decryptedData[0];
+                    newCart.idStore=decryptedData[1];
+                    newCart.products[0].idProductVarian=decryptedData[2];
+                    let param = new Object();
+                    param.idUser = newCart.idUser;
+                    param.idStore = newCart.idStore;
+                    param.idProductVarian = newCart.products[0].idProductVarian;
+                    let scope = 'all';
+                    cart.find(security,param, scope,function(message, status, data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                encryptedData = new Array();
+                                encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
+                                security.decrypt(encryptedData)
+                                .then(function(decryptedData){
+                                    cart.delete(decryptedData[0], function(message,status,data){
+                                        if(status == 200 || status == 201){
+                                            if(data == null || data == ""){
+                                                response.ok('empty result', status, data, res); 
+                                            }else{
+                                                response.ok(message, status, data, res);                    
+                                            }
+                                        }else{
+                                            response.ok(message, status, null, res);            
+                                        }
+                                    });
+                                }).catch(function(err){
+                                    response.ok('Error occured :'+err, 500, null, res); 
+                                });
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });
+            }).catch(function(err){
+                response.ok('Error occured :'+err, 500, null, res); 
+            });
+        }
+    }catch(exception){
+        response.ok(exception.message, 500, null, res);
+    }
+}
+
 exports.find = function(req, res){
     try{
         let param = req.query;
