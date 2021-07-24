@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 const db = require('./model');
 var order = require("./service/Order");
+const log4js = require("log4js");
 
 db.sequelize.sync();
 

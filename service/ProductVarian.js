@@ -15,6 +15,7 @@ const detailPromoModel = db.detail_promo;
 const promoModel = db.promo;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 
 Date.prototype.datetime = function() {
     var datetime = this.getFullYear() + "-"
@@ -143,12 +144,12 @@ exports.countResult = function(orderBy, order,field, result){
         }).then(data=>{
             result("success", 200, data);
         }).catch(err=>{
-           console.log(err);
-           result(err.message, 500, null);
+            log.producVarian.error(err);
+            result("Internal Server Error", 500, null);
         });
     }catch(error){
-        console.log(error);
-        result(error.message, 500, null);
+        log.producVarian.error(err);
+        result("Internal Server Error", 500, null);
     }
 }
 exports.find = function(security, orderBy, order, offset, limit,field, result){
@@ -359,16 +360,16 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             .then(function(encryptedData){
                 result("success", 200, encryptedData);
             }).catch(function(error){
-                console.log(error);
-                result(error, 500, null);
+                log.producVarian.error(error);
+                result("Encryption Failed", 1000, null);
             });
         }).catch(err=>{
-           console.log(err);
-           result(err.message, 500, null);
+            log.producVarian.error(err);
+            result("Internal Server Error", 500, null);
         });
     }catch(error){
-        console.log(error);
-        result(error.message, 500, null);
+        log.producVarian.error(err);
+        result("Internal Server Error", 500, null);
     }
 }
 exports.findOne = function(security, field, result){
@@ -480,22 +481,22 @@ exports.findOne = function(security, field, result){
                     dataViewer.dateCreated = new Date();
                     dataViewer.idViewer = field.idViewer;
                     productViewModel.create(dataViewer).then(data=>{
-                        console.log("viewer incremented");
+//                        console.log("viewer incremented");
                     }).catch(err=>{
-                        console.log("error insert viewer : "+err);
+                        log.producVarian.error(err);
                     });
                     result("success", 200, encryptedData);
                 }).catch(function(error){
-                    console.log(error);
-                    result(error, 500, null);
+                    log.producVarian.error(error);
+                    result("Encryption Failed", 1000, null);
                 });
             }).catch(err=>{
-               console.log(err);
-               result(err.message, 500, null);
+                log.producVarian.error(err);
+                result("Internal Server Error", 500, null);
             });
         }catch(error){
-            console.log(error);
-            result(error.message, 500, null);
+            log.producVarian.error(err);
+            result("Internal Server Error", 500, null);
         }
     }else{
         result("Bad Request", 400, null);  

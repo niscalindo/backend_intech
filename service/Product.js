@@ -12,6 +12,7 @@ const Sequelize = db.Sequelize;
 const operator =  Sequelize.Op;
 const sequelize = db.sequelize;
 const transaction = sequelize.transaction;
+const log = require('../utils/logger');
 
 exports.countRecords = function (param, result) {
     let conditionKey = new Object();
@@ -92,7 +93,8 @@ exports.countRecords = function (param, result) {
     productModel.count(options).then(data => {
         result("success", 200, data);
     }).catch(err => {
-        result(err.message, 500, null);
+        log.product.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 exports.find = function (security, order, orderBy, offset, limit, field,scope, result) {
@@ -202,11 +204,13 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                 .then(function(encryptedData){
                     result("success", 200, encryptedData);
                 }).catch(function(error){
-                    result(error, 500, null);
+                    log.product.error(error);
+                    result("Encryption Failed", 1000, null);
                 });            
             }
         }).catch(err=>{
-           result(err.message, 500, null);
+            log.product.error(err);
+            result("Internal Server Error", 500, null);
         });
     }else{
         sequelize.query(rawQuery, {
@@ -279,10 +283,12 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                     .then(function (encryptedData) {
                         result("success", 200, encryptedData);
                     }).catch(function (error) {
-                result(error, 500, null);
+            log.product.error(error);
+            result("Encryption Failed", 1000, null);
             });
         }).catch(err => {
-            result(err.message, 500, null);
+            log.product.error(err);
+            result("Internal Server Error", 500, null);
         });
     }
 }
@@ -326,10 +332,12 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
                 .then(function (encryptedData) {
                     result("success", 200, encryptedData);
                 }).catch(function (error) {
-            result(error, 500, null);
+            log.product.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err => {
-        result(err.message, 500, null);
+        log.product.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 
@@ -370,10 +378,12 @@ exports.create = function (newData, security, result) {
                 .then(function (encryptedData) {
                     result("success", 201, encryptedData.dataValues.id);
                 }).catch(function (error) {
-            result(error, 500, null);
+            log.product.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err => {
-        result(err.message, 500, null);
+        log.product.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 exports.update = function (newData, type, result) {
@@ -412,19 +422,22 @@ exports.update = function (newData, type, result) {
                         pictures.bulkCreate(arrayPictures,{updateOnDuplicate: Object.keys(pictures.rawAttributes)}).then(response => {
                             result("success", 200, null);
                         }).catch(err => {
-                            result("failed to update pictures : " + err.message, 500, null);
+                            log.product.error(err);
+                            result("Internal Server Error", 500, null);
                         })            
                     }else{
                         result("success", 200, null);
                     }
                 }).catch(err => {
-                    result("failed to update varian : " + err.message, 500, null);
+                    log.product.error(err);
+                    result("Internal Server Error", 500, null);
                 });                
             }else{
                 result("success", 200, null);                
             }
         }).catch(err => {
-            result(err.message, 500, null);
+            log.product.error(err);
+            result("Internal Server Error", 500, null);
         });
     } else if (type === "varian") {
         productVarianModel.update(
@@ -438,7 +451,8 @@ exports.update = function (newData, type, result) {
                 result("success, nothing to change", 200, null);
             }
         }).catch(err => {
-            result(err.message, 500, null);
+            log.product.error(err);
+            result("Internal Server Error", 500, null);
         });
     }
 }

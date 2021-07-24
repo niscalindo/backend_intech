@@ -7,6 +7,7 @@ const db = require("../model");
 const captchaModel = db.captcha;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 //
 //exports.get = function(result){
 //    
@@ -17,7 +18,8 @@ exports.create = function(newData, result){
     captchaModel.create(newData).then(data=>{
         result("success",201,null);       
     }).catch(err=>{
-        result(err.message, 500, null);
+        log.captcha.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 
@@ -51,7 +53,8 @@ exports.find = function(ipAddress, key, time, result){
             result("Not Found", 404, null);
         }
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.captcha.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 
@@ -74,10 +77,11 @@ function deleteCaptcha(condition, data, result){
     captchaModel.destroy({
         where: [conditionKey]
     }).then(data=>{
-        console.log("delete captcha success");
+        log.captcha.info("delete captcha success");
 //        result("success", 200, null);
     }).catch(err=>{
-        console.log(err.message);
+        log.captcha.error(err);
+        result("Internal Server Error", 500, null);
 //        result(err.message, 500, null);
     });
 }

@@ -7,6 +7,7 @@ const db = require("../model");
 const regency = db.regency;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 
 exports.find = function(security,id, result){
     let condition = new Object();
@@ -31,9 +32,11 @@ exports.find = function(security,id, result){
         .then(function(encryptedData){
             result("success", 200, encryptedData);
         }).catch(function(error){
-            result(error, 500, null);
+            log.regency.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.regency.error(err);
+        result("Internal Server Error", 500, null);
     });
 }

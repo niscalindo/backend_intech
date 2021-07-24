@@ -10,6 +10,7 @@ const productModel = db.product;
 const productVarianModel = db.product_varian;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 
 Date.prototype.datetime = function() {
     var datetime = this.getFullYear() + "-"
@@ -148,10 +149,12 @@ exports.find = function(security,order,source,id,field,orderBy, result){
         .then(function(encryptedData){
             result("success", 200, encryptedData);
         }).catch(function(error){
-            result(error, 500, null);
+            log.promo.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.promo.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 //exports.find = function(security,field, result){
@@ -247,10 +250,12 @@ exports.create = function (newData, security, result) {
                 .then(function (encryptedData) {
                     result("success", 201, encryptedData.dataValues.id);
                 }).catch(function (error) {
-            result(error, 500, null);
+                log.promo.error(error);
+                result("Encryption Failed", 1000, null);
         });
     }).catch(err => {
-        result(err.message, 500, null);
+        log.promo.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 exports.joinPromo = function (newData, security, result) {
@@ -265,22 +270,22 @@ exports.joinPromo = function (newData, security, result) {
             }
         ]
     }).then(rowsAffected=>{
-        console.log(rowsAffected);
+        log.promo.info("affected row : "+rowsAffected)
         detailPromoModel.bulkCreate(newData).then(data => {
             security.encrypt(data)
                 .then(function (encryptedData) {
                     result("success", 201, null);
             }).catch(function (error) {
-                console.log(error);
-                result(error, 500, null);
+                log.promo.error(error);
+                result("Encryption Failed", 1000, null);
             });
         }).catch(err => {
-        console.log(err);
-            result(err.message, 500, null);
+            log.promo.error(err);
+            result("Internal Server Error", 500, null);
         });
     }).catch(err => {
-        console.log(err);
-        result(err.message, 500, null);
+        log.promo.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 
@@ -311,7 +316,8 @@ exports.findMaxNumerator= function( result){
     }).then(data=>{
         result("success", 200, data);
     }).catch(err=>{
-        result(err.message, 500, null);
+        log.promo.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 function columnDictionary(key){

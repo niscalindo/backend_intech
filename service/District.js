@@ -7,6 +7,7 @@ const db = require("../model");
 const district = db.district;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 
 exports.find = function(security,id, result){
     district.findAll({
@@ -23,10 +24,12 @@ exports.find = function(security,id, result){
         .then(function(encryptedData){
             result("success", 200, encryptedData);
         }).catch(function(error){
-            result(error, 500, null);
+            log.district.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.district.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 
@@ -45,9 +48,11 @@ exports.getById = function(security,id, result){
         .then(function(encryptedData){
             result("success", 200, encryptedData);
         }).catch(function(error){
-            result(error, 500, null);
+            log.district.error(error);
+            result("Encryption Failed", 1000, null);
         });
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.district.error(err);
+        result("Internal Server Error", 500, null);
     });
 }

@@ -10,6 +10,7 @@ const regency= db.regency;
 const district= db.district;
 const operator = db.Sequelize.Op;
 const sequelize = db.sequelize;
+const log = require('../utils/logger');
 
 exports.find = function(security,field, result){
     let op = null;
@@ -57,11 +58,13 @@ exports.find = function(security,field, result){
             .then(function(encryptedData){
                 result("success", 200, encryptedData);
             }).catch(function(error){
-                result(error, 500, null);
+                log.address.error(error);
+                result("Encryption Failed", 1000, null);
             });            
         }
     }).catch(err=>{
-       result(err.message, 500, null);
+        log.address.error(err);
+        result("Internal Server Error", 500, null);
     });
 }
 
@@ -76,10 +79,12 @@ exports.create = function(newData,security, result){
             newData['id'] = newInsertedId;
             result("success",201,newData);
         }).catch(function(error){
-            result(error,500,null);
+            log.error(error);
+            result("Encryption Failed", 1000, null);
         });        
     }).catch(err=>{
-        result(err.message, 500, null);
+        log.address.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 
@@ -92,11 +97,12 @@ exports.update= function(newData, result){
         if(data[0] == 1){
             result("success", 200, data[0]);
         }else{
-            result("no changes", 200, data[0]);
+            result("no changes", 1001, data[0]);
         }
     })
     .catch(err=>{
-        result(err.message, 500, null);
+        log.address.error(err);
+        result("Internal Server Error", 500, null);
     });
 };
 
