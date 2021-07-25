@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const cart = require("../service/Cart");
+const log = require('../utils/logger');
 
 exports.create = function(req, res){
     try{
+        log.cart.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newCart = req.body.cart;
         if((typeof newCart === 'undefined' || typeof newCart === null) 
@@ -86,7 +88,8 @@ exports.create = function(req, res){
                                         }
                                     });
                                 }).catch(function(err){
-                                    response.ok('Error occured :'+err, 500, null, res); 
+                                    log.cart.error(exception);
+                                    response.ok('Internal Server Error', 500, null, res); 
                                 });
                             }
                         }else{
@@ -94,16 +97,19 @@ exports.create = function(req, res){
                         }
                     });
             }).catch(function(err){
-                response.ok('Error occured :'+err, 500, null, res); 
+                log.cart.error(exception);
+                response.ok('Internal Server Error', 500, null, res); 
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.cart.error(exception);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
 exports.delete = function(req, res){
     try{
+        log.cart.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newCart = req.body.cart;
         if((typeof newCart === 'undefined' || typeof newCart === null) 
@@ -143,7 +149,8 @@ exports.delete = function(req, res){
                                         }
                                     });
                                 }).catch(function(err){
-                                    response.ok('Error occured :'+err, 500, null, res); 
+                                    log.cart.error(exception);
+                                    response.ok('Internal Server Error', 500, null, res); 
                                 });
                             }
                         }else{
@@ -151,16 +158,19 @@ exports.delete = function(req, res){
                         }
                     });
             }).catch(function(err){
-                response.ok('Error occured :'+err, 500, null, res); 
+                log.cart.error(exception);
+                response.ok('Internal Server Error', 500, null, res); 
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.cart.error(exception);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.cart.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         let scope = req.headers.scope;
 //        console.log(param);
@@ -181,9 +191,11 @@ exports.find = function(req, res){
                 }
             });
         }).catch(function(error){
-            response.ok(error, 400, null, res); 
+            log.cart.error(exception);
+            response.ok("Internal Server Error", 400, null, res); 
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.cart.error(exception);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }

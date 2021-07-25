@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const bankAccount = require("../service/BankAccount");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
         let order = req.headers.order;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
@@ -30,12 +32,14 @@ exports.getAll = function(req, res){
             }
         });
     }catch(exception){
+        log.bankAccount.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBankAccount = req.body.bank;
         if((typeof newBankAccount === 'undefined' || typeof newBankAccount === null)){
@@ -57,16 +61,19 @@ exports.create = function(req, res){
                         }
                     });
             }).catch(function(err){
-                response.ok('failed to generate code :'+err, 500, null, res); 
+                log.bankAccount.error(err);
+                response.ok('Internal Server Error', 500, null, res); 
             });
         }
     }catch(exception){
+        log.bankAccount.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBankAccount = req.body.bank;
         if(typeof newBankAccount === 'undefined' || typeof newBankAccount === null){
@@ -89,10 +96,12 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.bankAccount.error(error);
+                response.ok("Internal Server Error", 500, null, res);   
             });
         }
     }catch(exception){
+        log.bankAccount.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }

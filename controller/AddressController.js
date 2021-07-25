@@ -7,36 +7,49 @@
 var response = require('../model/response');
 var address = require('../service/Address');
 var security = require('../utils/Security');
+const log = require('../utils/logger');
 
 exports.find = function(req, res){
     try{
+        log.address.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
-        param.idUser = req.user.id;
-        let encryptedData = [param.idUser];
-        security.decrypt(encryptedData)
-                    .then(function(decryptedId){
-            param.idUser = decryptedId[0];
-            address.find(security,param, function(message, status, data){
-                if(status == 200 || status == 201){
-                    if(data == null || data == ""){
-                        response.ok('empty result', status, data, res); 
-                    }else{
-                        response.ok(message, status, data, res);                    
-                    }
-                }else{
-                    response.ok(message, status, null, res);            
-                }
-            });       
-        }).catch(function (error){
-            response.ok(error, 500, null, res);   
-        });
+        if(typeof param === 'undefined' || typeof param === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            param.idUser = req.user.id;
+            if(typeof param.idUser === 'undefined' || typeof param.idUser === ""){
+                response.ok('Bad Request', 401, null, res);                
+            }else{
+                let encryptedData = [param.idUser];
+                security.decrypt(encryptedData)
+                            .then(function(decryptedId){
+                    param.idUser = decryptedId[0];
+                    address.find(security,param, function(message, status, data){
+                        if(status == 200 || status == 201){
+                            if(data == null || data == ""){
+                                response.ok('empty result', status, data, res); 
+                            }else{
+                                response.ok(message, status, data, res);                    
+                            }
+                        }else{
+                            response.ok(message, status, null, res);            
+                        }
+                    });       
+                }).catch(function (error){
+                    log.address.error(error);
+                    response.ok("Internal Server Error", 500, null, res);   
+                });                
+            }
+        }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.address.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 };
 
 exports.update = function(req, res){
     try{
+        log.address.info("Controller request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newAddress = req.body.address;
         if(typeof newAddress === 'undefined' || typeof newAddress === null){
@@ -59,7 +72,6 @@ exports.update = function(req, res){
             // console.log(encryptedData)
             security.decrypt(encryptedData)
             .then(function(decryptedId){
-                console.log(decryptedId)
                 newAddress.id = decryptedId[0];
                 newAddress.createdBy = decryptedId[1];
                 // console.log(decryptedId);
@@ -89,16 +101,19 @@ exports.update = function(req, res){
                     }
                 });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.address.error(error);
+                response.ok("Internal Server Error", 500, null, res);   
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.address.error(error);
+        response.ok("Internal Server Error", 500, null, res);
     }
 };
 
 exports.create = function(req, res){
     try{
+        log.address.info("Controller request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newAddress = req.body.address;
         if(typeof newAddress === 'undefined' || typeof newAddress === null){
@@ -124,10 +139,12 @@ exports.create = function(req, res){
                         }
                     });
             }).catch(function(err){
-                response.ok('failed to generate code :'+err, 500, null, res); 
+                log.address.error(err);
+                response.ok('Internal Server Error', 500, null, res); 
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.address.error(exception);
+        response.ok('Internal Server Error', 500, null, res);
     }
 };

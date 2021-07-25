@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const brand = require("../service/Brand");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.brand.info("Controller - request from : "+req.connection.remoteAddress);
         let order = req.headers.order;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
@@ -30,12 +32,14 @@ exports.getAll = function(req, res){
             }
         });
     }catch(exception){
+        log.brand.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.brand.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBrand = req.body.brand;
         if((typeof newBrand === 'undefined' || typeof newBrand === null) || (typeof newBrand.idParent === 'undefined' || typeof newBrand.idParent === null)){
@@ -66,7 +70,8 @@ exports.create = function(req, res){
                                     }
                                 });
                         }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
+                            log.brand.error(err);
+                            response.ok('Internal Server Error', 500, null, res); 
                         });
                         
                     }
@@ -74,12 +79,14 @@ exports.create = function(req, res){
             });
         }
     }catch(exception){
+        log.brand.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.brand.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBrand = req.body.brand;
         if(typeof newBrand === 'undefined' || typeof newBrand === null){
@@ -103,18 +110,20 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.brand.error(error);
+                response.ok("Internal Server Error", 500, null, res);   
             });
         }
     }catch(exception){
+        log.brand.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.brand.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
-        console.log(param);
         if((typeof param === 'undefined' || typeof param === null) || (typeof param.parent === 'undefined' || typeof param.parent === null)) {
             response.ok('Bad Request', 401, null, res);
         }else{
@@ -162,11 +171,13 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    response.ok(error, 400, null, res); 
+                    log.brand.error(exception);
+                    response.ok("Internal Server Error", 500, null, res); 
                 });
             }
         }
     }catch(exception){
+        log.brand.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }

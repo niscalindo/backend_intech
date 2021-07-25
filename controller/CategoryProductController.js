@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const categoryProduct = require("../service/CategoryProduct");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.categoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let headers = req.headers;
         let order = headers.order;
         if(typeof order === 'undefined' && typeof order === null){
@@ -35,12 +37,14 @@ exports.getAll = function(req, res){
             }
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.categoryProduct.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.categoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newCategory = req.body.category;
         if(typeof newCategory === 'undefined' || typeof newCategory === null){
@@ -70,7 +74,8 @@ exports.create = function(req, res){
                                     }
                                 });
                         }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
+                            log.categoryProduct.error(exception);
+                            response.ok('Internal Server Error', 500, null, res); 
                         });
                         
                     }
@@ -78,12 +83,14 @@ exports.create = function(req, res){
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.categoryProduct.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.categoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let newCategory = req.body.category;
         if(typeof newCategory === 'undefined' || typeof newCategory === null){
             response.ok('Bad Request', 401, null, res);
@@ -105,18 +112,20 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.categoryProduct.error(exception);
+                response.ok("Internal Server Error", 500, null, res);   
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.categoryProduct.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.categoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let scope = req.headers.scope_all;
-        console.log(scope);
         if(typeof scope === 'undefined' || typeof scope === null){
             scope = false;
         }
@@ -153,12 +162,14 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    response.ok(error, 400, null, res); 
+                    log.categoryProduct.error(exception);
+                    response.ok("Internal Server Error", 400, null, res); 
                 });
             }
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.categoryProduct.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 

@@ -167,7 +167,7 @@ module.exports = {
   order: log4js.getLogger('order'),
   bankAccount: log4js.getLogger('bankAccount'),
   brand: log4js.getLogger('brand'),
-  captcha: log4js.getLogger('captchar'),
+  captcha: log4js.getLogger('captcha'),
   cart: log4js.getLogger('cart'),
   categoryProduct: log4js.getLogger('categoryProduct'),
   courier: log4js.getLogger('courier'),

@@ -5,9 +5,11 @@
  */
 const response = require("../model/response");
 const captchaService = require("../service/Captcha");
+const log = require('../utils/logger');
 
 exports.create = function(req,res){
     try{
+        log.captcha.info("Controller - request from : "+req.connection.remoteAddress);
         let captcha = req.body.captcha;
         captchaService.create(captcha, function(message, status, data){
             if(status == 200 || status == 201){
@@ -21,11 +23,13 @@ exports.create = function(req,res){
             }
         })
     }catch(exception){
+        log.captcha.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
 exports.find = function(req,res){
     try{
+        log.captcha.info("Controller - request from : "+req.connection.remoteAddress);
         let guessedKey = req.query.key;
         let ipAddress = req.query.ip;
         let time = req.query.time;
@@ -41,6 +45,7 @@ exports.find = function(req,res){
             }
         })
     }catch(exception){
+        log.captcha.error(exception);
         response.ok(exception.message, 500, null, res);
     }
 }
