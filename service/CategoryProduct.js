@@ -26,6 +26,7 @@ exports.getAll = function(security,order,scope, result){
             },
             include:[{
                     model: subCategoryProduct,
+                    attributes:{exclude:['id_category']},
                     as: 'subCategories',
                     required:false,
                     include:[{
