@@ -106,7 +106,7 @@ exports.update = function(req, res){
             });
         }
     }catch(exception){
-        log.address.error(error);
+        log.address.error(exception);
         response.ok("Internal Server Error", 500, null, res);
     }
 };

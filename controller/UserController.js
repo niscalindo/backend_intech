@@ -7,8 +7,10 @@
 var response = require('../model/response');
 var user = require('../service/User');
 var security = require('../utils/Security');
+const log = require('../utils/logger');
 
 exports.login = function(req, res){
+    log.user.info("Controller - request from : "+req.connection.remoteAddress);
     if(typeof req.body.credential === 'undefined' || typeof req.body.credential === null){
         response.ok("bad request", 401, null, res);
     }else{
@@ -26,12 +28,14 @@ exports.login = function(req, res){
                 }
             });
         }catch(exception){
-            response.ok(exception.message, 500, null, res);
+            log.user.error(exception);
+            response.ok('Internal Server Error',500,null);
         }
     }
 };
 exports.find = function(req, res){
     try{
+        log.user.info("Controller - request from : "+req.connection.remoteAddress);
         let query = req.query;
         let userCredential = req.user; 
         if(typeof req.query === 'undefined' || typeof req.query === null){
@@ -76,17 +80,20 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    response.ok(error, 400, null, res); 
+                    log.user.error(error);
+                    response.ok('Internal Server Error',500,null);
                 });
             }            
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);        
+        log.user.error(exception);
+        response.ok('Internal Server Error',500,null);    
     }
 };
 
 exports.update = function(req, res){
     try{
+        log.user.info("Controller - request from : "+req.connection.remoteAddress);
         let newUser = req.body.user;
         let userToken = req.user;
         if((typeof newUser === 'undefined' || typeof newUser === null) || (typeof newUser.id === 'undefined' || typeof newUser.id === null)){
@@ -109,10 +116,12 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.user.error(error);
+                response.ok('Internal Server Error',500,null);  
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.user.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 };

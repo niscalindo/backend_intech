@@ -7,6 +7,7 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const order = require("../service/Order");
+const log = require('../utils/logger');
 
 //exports.getAll = function(req, res){
 //    try{
@@ -36,6 +37,7 @@ const order = require("../service/Order");
 
 exports.create = function(req, res){
     try{
+        log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newOrder = req.body.order;
 //        console.log(newOrder);
@@ -48,7 +50,6 @@ exports.create = function(req, res){
             let index = 1;
             let isProductExist = true;
             for(let i=0; i<newOrder.stores.length; i++){
-                console.log(newOrder.stores[i].idStore);
                 encryptedData[index]=newOrder.stores[i].idStore;
                 index++;
                 if(typeof newOrder.stores[i].products === "undefined" || typeof newOrder.stores[i].products === null){
@@ -68,7 +69,6 @@ exports.create = function(req, res){
                         newOrder.createdBy=decryptedData[0];
                         index = 1;
                         for(let i=0; i<newOrder.stores.length; i++){
-                            console.log(decryptedData[index]);
                             newOrder.stores[i].idStore = decryptedData[index];
                             index++;
                             for(let j=0; j<newOrder.stores[i].products.length; j++){
@@ -89,7 +89,8 @@ exports.create = function(req, res){
                             }
                         });
                 }).catch(function(err){
-                    response.ok('Error occured :'+err, 500, null, res); 
+                    log.order.error(err);
+                    response.ok('Internal Server Error',500,null);
                 });
             }else{
                 response.ok('Bad Request', 401, null, res);
@@ -126,12 +127,14 @@ exports.create = function(req, res){
 //            });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.order.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newOrder = req.body.order;
         if(typeof newOrder === 'undefined' || typeof newOrder === null){
@@ -154,15 +157,18 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.order.error(error);
+                response.ok('Internal Server Error',500,null); 
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.order.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 exports.updateReview = function(req, res){
     try{
+        log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let review = req.body.review;
         if(typeof review=== 'undefined' || typeof review === null){
@@ -185,15 +191,18 @@ exports.updateReview = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.order.error(error);
+                response.ok('Internal Server Error',500,null); 
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.order.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 exports.find = function(req, res){
     try{
+        log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         let scope = req.headers.scope;
         let mode = req.headers.mode;
@@ -252,11 +261,13 @@ exports.find = function(req, res){
                     });
                 }
             }).catch(function(error){
-                response.ok(error, 400, null, res); 
+                log.order.error(error);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.order.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 

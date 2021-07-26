@@ -88,7 +88,7 @@ exports.create = function(req, res){
                                         }
                                     });
                                 }).catch(function(err){
-                                    log.cart.error(exception);
+                                    log.cart.error(err);
                                     response.ok('Internal Server Error', 500, null, res); 
                                 });
                             }
@@ -97,7 +97,7 @@ exports.create = function(req, res){
                         }
                     });
             }).catch(function(err){
-                log.cart.error(exception);
+                log.cart.error(err);
                 response.ok('Internal Server Error', 500, null, res); 
             });
         }
@@ -149,7 +149,7 @@ exports.delete = function(req, res){
                                         }
                                     });
                                 }).catch(function(err){
-                                    log.cart.error(exception);
+                                    log.cart.error(err);
                                     response.ok('Internal Server Error', 500, null, res); 
                                 });
                             }
@@ -158,7 +158,7 @@ exports.delete = function(req, res){
                         }
                     });
             }).catch(function(err){
-                log.cart.error(exception);
+                log.cart.error(err);
                 response.ok('Internal Server Error', 500, null, res); 
             });
         }
@@ -191,7 +191,7 @@ exports.find = function(req, res){
                 }
             });
         }).catch(function(error){
-            log.cart.error(exception);
+            log.cart.error(error);
             response.ok("Internal Server Error", 400, null, res); 
         });
     }catch(exception){

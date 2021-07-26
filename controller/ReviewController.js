@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const review = require("../service/Review");
+const log = require('../utils/logger');
 
 exports.create = function(req, res){
     try{
+        log.review.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newReview = req.body.review;
         if(typeof newReview=== 'undefined' || typeof newReview === null){
@@ -32,16 +34,19 @@ exports.create = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.review.error(error);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.review.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.review.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         let scope = req.headers.scope;
         let order = req.headers.order;
@@ -106,10 +111,12 @@ exports.find = function(req, res){
                     }
                 });
             }).catch(function(error){
-                response.ok(error, 400, null, res); 
+                log.review.error(error);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.review.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

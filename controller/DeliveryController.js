@@ -7,6 +7,7 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const delivery = require("../service/Delivery");
+const log = require('../utils/logger');
 
 // exports.getAll = function(req, res){
 //     try{
@@ -36,6 +37,7 @@ const delivery = require("../service/Delivery");
 
 exports.getAll = function(req, res){
     try{
+        log.delivery.info("Controller - request from : "+req.connection.remoteAddress);
         let headers = req.headers;
         let userData = req.user;
         let encryptedData = [userData.id];
@@ -53,15 +55,18 @@ exports.getAll = function(req, res){
                 }
             });
         }).catch(function (error){
-            response.ok("data not found : "+error, 500, null, res);   
+            log.delivery.error(error);
+            response.ok("Internal Server Error", 500, null, res);
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.delivery.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.delivery.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newDelivery = req.body.delivery;
         if(typeof newDelivery === 'undefined' || typeof newDelivery === null){
@@ -85,16 +90,19 @@ exports.create = function(req, res){
                         }
                     });
             }).catch(function(err){
-                response.ok('failed to generate code :'+err, 500, null, res); 
+                log.delivery.error(err);
+                response.ok("Internal Server Error", 500, null, res);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.delivery.error(exception);
+        response.ok("Internal Server Error", 500, null, res);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.delivery.info("Controller - request from : "+req.connection.remoteAddress);
         let newDelivery = req.body.delivery;
         if(typeof newDelivery === 'undefined' || typeof newDelivery === null){
             response.ok('Bad Request', 401, null, res);
@@ -117,16 +125,19 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.delivery.error(error);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.delivery.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.delivery.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
@@ -160,11 +171,13 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    response.ok(error, 400, null, res); 
+                    log.delivery.error(error);
+                    response.ok('Internal Server Error',500,null); 
                 });
             }
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.delivery.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

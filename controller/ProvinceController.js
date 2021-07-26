@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const province = require("../service/Province");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.province.info("Controller - request from : "+req.connection.remoteAddress);
         province.getAll(security,function(message, status,data){
             if(status == 200 || status == 201){
                 if(data == null || data == ""){
@@ -22,6 +24,7 @@ exports.getAll = function(req, res){
             }
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.province.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

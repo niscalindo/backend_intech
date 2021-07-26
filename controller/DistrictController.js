@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const district = require("../service/District");
+const log = require('../utils/logger');
 
 exports.find = function(req, res){
     try{
+        log.district.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
@@ -32,17 +34,20 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(err){
-                    response.ok('failed to generate code :'+err, 500, null, res); 
+                    log.district.error(err);
+                    response.ok('Internal Server Error',500,null);  
                 });                
             }          
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.district.error(exception);
+        response.ok('Internal Server Error',500,null); 
     }
 }
 
 exports.getById = function(req, res){
     try{
+        log.district.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
@@ -65,11 +70,13 @@ exports.getById = function(req, res){
                         }
                     });
                 }).catch(function(err){
-                    response.ok('failed to generate code :'+err, 500, null, res); 
+                    log.district.error(err);
+                    response.ok('Internal Server Error',500,null); 
                 });                
             }          
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.district.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

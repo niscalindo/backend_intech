@@ -33,7 +33,7 @@ exports.getAll = function(req, res){
         });
     }catch(exception){
         log.brand.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
@@ -51,7 +51,8 @@ exports.create = function(req, res){
                     response.ok(message, 400, null, res);
                 }else if(status == 200){
                     if(numerator == null || numerator == ""){
-                        response.ok('failed to generate code', 400, numerator, res); 
+                        log.brand.error('Failed to generate code');
+                        response.ok('Internal Server Error', 1003, numerator, res); 
                     }else{
                         security.decrypt(encryptedData)
                             .then(function(decryptedLastNumerator){
@@ -80,7 +81,7 @@ exports.create = function(req, res){
         }
     }catch(exception){
         log.brand.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
@@ -116,7 +117,7 @@ exports.update = function(req, res){
         }
     }catch(exception){
         log.brand.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
@@ -171,14 +172,14 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    log.brand.error(exception);
+                    log.brand.error(error);
                     response.ok("Internal Server Error", 500, null, res); 
                 });
             }
         }
     }catch(exception){
         log.brand.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 

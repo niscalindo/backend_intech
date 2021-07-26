@@ -24,7 +24,7 @@ exports.create = function(req,res){
         })
     }catch(exception){
         log.captcha.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 exports.find = function(req,res){
@@ -46,6 +46,6 @@ exports.find = function(req,res){
         })
     }catch(exception){
         log.captcha.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }

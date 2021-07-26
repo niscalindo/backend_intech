@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const subCategoryProduct = require("../service/SubCategoryProduct");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.subCategoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let order = req.headers.order;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
@@ -30,12 +32,14 @@ exports.getAll = function(req, res){
             }
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.subCategoryProduct.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.subCategoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newSubCategory = req.body.subCategory;
         if(typeof newSubCategory === 'undefined' || typeof newSubCategory === null){
@@ -66,7 +70,8 @@ exports.create = function(req, res){
                                     }
                                 });
                         }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
+                            log.subCategoryProduct.error(err);
+                            response.ok('Internal Server Error',500,null);
                         });
                         
                     }
@@ -74,12 +79,14 @@ exports.create = function(req, res){
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.subCategoryProduct.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.update = function(req, res){
     try{
+        log.subCategoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newSubCategory = req.body.subCategory;
         if(typeof newSubCategory === 'undefined' || typeof newSubCategory === null){
@@ -103,16 +110,19 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                response.ok("data not found : "+error, 500, null, res);   
+                log.subCategoryProduct.error(error);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.subCategoryProduct.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.subCategoryProduct.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             response.ok('Bad Request', 401, null, res);
@@ -149,7 +159,8 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    response.ok(error, 400, null, res); 
+                    log.slider.error(error);
+                    response.ok('Internal Server Error',500,null);
                 });                
             }else{
                 subCategoryProduct.find(security,param, function(message, status, data){
@@ -166,7 +177,8 @@ exports.find = function(req, res){
             }
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.subCategoryProduct.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 

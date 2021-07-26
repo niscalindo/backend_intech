@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const productLike = require("../service/ProductLike");
+const log = require('../utils/logger');
 
 exports.create = function(req, res){
     try{
+        log.productLike.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newLike = req.body.like;
         if((typeof newLike === 'undefined' || typeof newLike === null) || (typeof newLike.idProductVarian === 'undefined' || typeof newLike.idProductVarian === null)){
@@ -32,17 +34,20 @@ exports.create = function(req, res){
                     }
                 });
             }).catch(function(err){
-                response.ok('failed to generate code :'+err, 500, null, res); 
+                log.productLike.error(err);
+                response.ok('Internal Server Error',500,null); 
             });
                         
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.productLike.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.find = function(req, res){
     try{
+        log.productLike.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         let userCredential = req.user;
         let scope = req.headers.scope;
@@ -70,9 +75,11 @@ exports.find = function(req, res){
                 }
             });
         }).catch(function(error){
-            response.ok(error, 400, null, res); 
+            log.productLike.error(error);
+            response.ok('Internal Server Error',500,null);
         });
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.productLike.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

@@ -74,7 +74,7 @@ exports.create = function(req, res){
                                     }
                                 });
                         }).catch(function(err){
-                            log.categoryProduct.error(exception);
+                            log.categoryProduct.error(err);
                             response.ok('Internal Server Error', 500, null, res); 
                         });
                         
@@ -112,7 +112,7 @@ exports.update = function(req, res){
                             }
                         });
             }).catch(function (error){
-                log.categoryProduct.error(exception);
+                log.categoryProduct.error(error);
                 response.ok("Internal Server Error", 500, null, res);   
             });
         }
@@ -162,7 +162,7 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(error){
-                    log.categoryProduct.error(exception);
+                    log.categoryProduct.error(error);
                     response.ok("Internal Server Error", 400, null, res); 
                 });
             }

@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const regency = require("../service/Regency");
+const log = require('../utils/logger');
 
 exports.find = function(req, res){
     try{
+        log.regency.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         if((typeof param === 'undefined' || typeof param === null) || (typeof param.idProvince === 'undefined' || typeof param.idProvince === null)){
             regency.find(security,null,function(message, status,data){
@@ -42,11 +44,13 @@ exports.find = function(req, res){
                         }
                     });
                 }).catch(function(err){
-                    response.ok('failed to generate code :'+err, 500, null, res); 
+                    log.regency.error(err);
+                    response.ok('Internal Server Error',500,null);
                 });                
             }          
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.regency.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }

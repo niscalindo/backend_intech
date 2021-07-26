@@ -33,7 +33,7 @@ exports.getAll = function(req, res){
         });
     }catch(exception){
         log.bankAccount.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
@@ -67,7 +67,7 @@ exports.create = function(req, res){
         }
     }catch(exception){
         log.bankAccount.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }
 
@@ -102,6 +102,6 @@ exports.update = function(req, res){
         }
     }catch(exception){
         log.bankAccount.error(exception);
-        response.ok(exception.message, 500, null, res);
+        response.ok('Internal Server Error', 500, null, res);
     }
 }

@@ -7,9 +7,11 @@
 const response = require("../model/response");
 const security = require("../utils/Security");
 const promo = require("../service/Promo");
+const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
+        log.promo.info("Controller - request from : "+req.connection.remoteAddress);
         let order = req.headers.order;
         let orderBy = req.headers.orderby;
         let userToken = req.user;
@@ -56,12 +58,14 @@ exports.getAll = function(req, res){
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.promo.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 
 exports.create = function(req, res){
     try{
+        log.promo.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newPromo = req.body.promo;
         if((typeof newPromo === 'undefined' || typeof newPromo === null)){
@@ -116,7 +120,8 @@ exports.create = function(req, res){
                                     }
                                 });
                         }).catch(function(err){
-                            response.ok('failed to generate code :'+err, 500, null, res); 
+                            log.promo.error(err);
+                            response.ok('Internal Server Error',500,null);    
                         });
                         
                     }
@@ -124,11 +129,13 @@ exports.create = function(req, res){
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.promo.error(exception);
+        response.ok('Internal Server Error',500,null);
     }
 }
 exports.joinPromo = function(req, res){
     try{
+        log.promo.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newPromo = req.body.detailsPromo;
         if((typeof newPromo === 'undefined' || typeof newPromo === null)){
@@ -180,108 +187,20 @@ exports.joinPromo = function(req, res){
                             }
                         });
                     }else{
-                        response.ok('Failed to decode id', 500, null, res);                         
+                        log.promo.error('Failed to decode id');
+                        response.ok('Internal Server Error',500,null);                        
                     }
             }).catch(function(err){
-                response.ok('failed to generate code :'+err, 500, null, res); 
+                log.promo.error(err);
+                response.ok('Internal Server Error',500,null);
             });
         }
     }catch(exception){
-        response.ok(exception.message, 500, null, res);
+        log.promo.error(exception);
+        response.ok('Internal Server Error',500,null);     
     }
 }
 
-//exports.update = function(req, res){
-//    try{
-//        let userToken = req.user;
-//        let newBrand = req.body.brand;
-//        if(typeof newBrand === 'undefined' || typeof newBrand === null){
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            let encryptedData = [newBrand.id, userToken.id, newBrand.idParent];
-//            security.decrypt(encryptedData)
-//                    .then(function(decryptedId){
-//                        newBrand.id = decryptedId[0];
-//                        newBrand.createdBy = decryptedId[1];
-//                        newBrand.idParent = decryptedId[2];
-//                        brand.update(newBrand, function(message,status,data){
-//                            if(status == 200 || status == 201){
-//                                if(data == null || data == ""){
-//                                    response.ok('empty result', status, data, res); 
-//                                }else{
-//                                    response.ok(message, status, data, res);                    
-//                                }
-//                            }else{
-//                                response.ok(message, status, null, res);            
-//                            }
-//                        });
-//            }).catch(function (error){
-//                response.ok("data not found : "+error, 500, null, res);   
-//            });
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
-//
-//exports.find = function(req, res){
-//    try{
-//        let param = req.query;
-//        if((typeof param === 'undefined' || typeof param === null) || (typeof param.parent === 'undefined' || typeof param.parent === null)) {
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
-//            if((typeof param.id === 'undefined' || typeof param.id === null) && (typeof param.idParent === 'undefined' || typeof param.idParent === null)){
-//                brand.find(security,param, function(message, status, data){
-//                    if(status == 200 || status == 201){
-//                        if(data == null || data == ""){
-//                            response.ok('empty result', status, data, res); 
-//                        }else{
-//                            response.ok(message, status, data, res);                    
-//                        }
-//                    }else{
-//                        response.ok(message, status, null, res);            
-//                    }
-//                });
-//            }else{
-//                let encryptedData = new Array();
-//                let index = 0;
-//                if(typeof param.id != 'undefined' && typeof param.id != null){
-//                    encryptedData[index] = param.id;
-//                    index++;
-//                }
-//                if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
-//                    encryptedData[index] = param.idParent;
-//                }
-//                security.decrypt(encryptedData)
-//                .then(function(data){
-//                    index = 0;
-//                    if(typeof param.id != 'undefined' && typeof param.id != null){
-//                        param.id = data[index];
-//                        index++;
-//                    }
-//                    if(typeof param.idParent != 'undefined' && typeof param.idParent != null){
-//                        param.idParent = data[index];
-//                    }
-//                    brand.find(security,param, function(message, status, data){
-//                        if(status == 200 || status == 201){
-//                            if(data == null || data == ""){
-//                                response.ok('empty result', status, data, res); 
-//                            }else{
-//                                response.ok(message, status, data, res);                    
-//                            }
-//                        }else{
-//                            response.ok(message, status, null, res);            
-//                        }
-//                    });
-//                }).catch(function(error){
-//                    response.ok(error, 400, null, res); 
-//                });
-//            }
-//        }
-//    }catch(exception){
-//        response.ok(exception.message, 500, null, res);
-//    }
-//}
 
 function generateCode(lastNumerator){
     if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {
