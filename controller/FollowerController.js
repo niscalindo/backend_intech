@@ -35,13 +35,13 @@ exports.create = function(req, res){
                 });
             }).catch(function(err){
                 log.follower.error(err);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
                         
         }
     }catch(exception){
         log.follower.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -75,7 +75,7 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                     log.follower.error(error);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });
             }else{
                 response.ok('Bad Request', 401, null, res);
@@ -85,6 +85,6 @@ exports.find = function(req, res){
         }
     }catch(exception){
         log.follower.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

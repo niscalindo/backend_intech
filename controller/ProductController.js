@@ -59,12 +59,12 @@ exports.create = function(req, res){
                 });
             }).catch(function(err){
                 log.product.error(err);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }     
     }catch(exception){
         log.product.error(exception);
-        response.ok('Internal Server Error',500,null);        
+        response.ok('Internal Server Error',500,null, res);        
     }
        
 }
@@ -178,12 +178,12 @@ exports.find = function (req,res){
                     }
                 }).catch(function(error){
                     log.product.error(error);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });
         }
     }catch(exception){
         log.product.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -230,7 +230,7 @@ exports.getAll = function (req,res){
         });
     }catch(exception){
         log.product.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 exports.update = function(req, res){
@@ -321,12 +321,12 @@ exports.update = function(req, res){
                 });
             }).catch(function(err){
                 log.product.error(err);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             }); 
         }
     }catch(exception){
         log.product.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
     
 }
@@ -439,11 +439,11 @@ exports.getAllByVarian = function (req,res){
             });
         }).catch(function(err){
             log.productVarian.error(err);
-            response.ok('Internal Server Error',500,null);
+            response.ok('Internal Server Error',500,null, res);
         }); 
     }catch(exception){
         log.productVarian.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 exports.findOne = function (req,res){
@@ -472,11 +472,11 @@ exports.findOne = function (req,res){
                 });                    
             }).catch(function(err){
                 log.productVarian.error(err);
-                response.ok('Internal Server Error',500,null); 
+                response.ok('Internal Server Error',500,null, res); 
             });
         }
     }catch(exception){
         log.productVarian.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

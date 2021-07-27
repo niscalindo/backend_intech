@@ -90,7 +90,7 @@ exports.create = function(req, res){
                         });
                 }).catch(function(err){
                     log.order.error(err);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });
             }else{
                 response.ok('Bad Request', 401, null, res);
@@ -128,7 +128,7 @@ exports.create = function(req, res){
         }
     }catch(exception){
         log.order.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -158,12 +158,12 @@ exports.update = function(req, res){
                         });
             }).catch(function (error){
                 log.order.error(error);
-                response.ok('Internal Server Error',500,null); 
+                response.ok('Internal Server Error',500,null, res); 
             });
         }
     }catch(exception){
         log.order.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 exports.updateReview = function(req, res){
@@ -192,12 +192,12 @@ exports.updateReview = function(req, res){
                         });
             }).catch(function (error){
                 log.order.error(error);
-                response.ok('Internal Server Error',500,null); 
+                response.ok('Internal Server Error',500,null, res); 
             });
         }
     }catch(exception){
         log.order.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 exports.find = function(req, res){
@@ -262,12 +262,12 @@ exports.find = function(req, res){
                 }
             }).catch(function(error){
                 log.order.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.order.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 

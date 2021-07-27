@@ -33,7 +33,7 @@ exports.getAll = function(req, res){
         });
     }catch(exception){
         log.subCategoryProduct.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -71,7 +71,7 @@ exports.create = function(req, res){
                                 });
                         }).catch(function(err){
                             log.subCategoryProduct.error(err);
-                            response.ok('Internal Server Error',500,null);
+                            response.ok('Internal Server Error',500,null, res);
                         });
                         
                     }
@@ -80,7 +80,7 @@ exports.create = function(req, res){
         }
     }catch(exception){
         log.subCategoryProduct.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -111,12 +111,12 @@ exports.update = function(req, res){
                         });
             }).catch(function (error){
                 log.subCategoryProduct.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.subCategoryProduct.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -160,7 +160,7 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                     log.slider.error(error);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });                
             }else{
                 subCategoryProduct.find(security,param, function(message, status, data){
@@ -178,7 +178,7 @@ exports.find = function(req, res){
         }
     }catch(exception){
         log.subCategoryProduct.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 

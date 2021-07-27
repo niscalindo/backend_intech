@@ -126,12 +126,12 @@ exports.update = function(req, res){
                         });
             }).catch(function (error){
                 log.delivery.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.delivery.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -172,12 +172,12 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                     log.delivery.error(error);
-                    response.ok('Internal Server Error',500,null); 
+                    response.ok('Internal Server Error',500,null, res); 
                 });
             }
         }
     }catch(exception){
         log.delivery.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

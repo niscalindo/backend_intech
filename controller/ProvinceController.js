@@ -25,6 +25,6 @@ exports.getAll = function(req, res){
         });
     }catch(exception){
         log.province.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

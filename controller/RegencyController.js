@@ -45,12 +45,12 @@ exports.find = function(req, res){
                     });
                 }).catch(function(err){
                     log.regency.error(err);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });                
             }          
         }
     }catch(exception){
         log.regency.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

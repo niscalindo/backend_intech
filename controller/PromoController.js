@@ -59,7 +59,7 @@ exports.getAll = function(req, res){
         }
     }catch(exception){
         log.promo.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -121,7 +121,7 @@ exports.create = function(req, res){
                                 });
                         }).catch(function(err){
                             log.promo.error(err);
-                            response.ok('Internal Server Error',500,null);    
+                            response.ok('Internal Server Error',500,null, res);    
                         });
                         
                     }
@@ -130,7 +130,7 @@ exports.create = function(req, res){
         }
     }catch(exception){
         log.promo.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 exports.joinPromo = function(req, res){
@@ -188,16 +188,16 @@ exports.joinPromo = function(req, res){
                         });
                     }else{
                         log.promo.error('Failed to decode id');
-                        response.ok('Internal Server Error',500,null);                        
+                        response.ok('Internal Server Error',500,null, res);                        
                     }
             }).catch(function(err){
                 log.promo.error(err);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.promo.error(exception);
-        response.ok('Internal Server Error',500,null);     
+        response.ok('Internal Server Error',500,null, res);     
     }
 }
 

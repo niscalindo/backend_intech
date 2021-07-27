@@ -29,7 +29,7 @@ exports.login = function(req, res){
             });
         }catch(exception){
             log.users.error(exception);
-            response.ok('Internal Server Error',500,null);
+            response.ok('Internal Server Error',500,null, res);
         }
     }
 };
@@ -76,13 +76,13 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                         log.users.error(error);
-                        response.ok('Internal Server Error',500,null);
+                        response.ok('Internal Server Error',500,null, res);
                 });
             }            
         }
     }catch(exception){
         log.users.error(exception);
-        response.ok('Internal Server Error',500,null);      
+        response.ok('Internal Server Error',500,null, res);      
     }
 };
 
@@ -112,12 +112,12 @@ exports.update = function(req, res){
                         });
             }).catch(function (error){
                 log.users.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.users.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 };
 
@@ -153,14 +153,14 @@ exports.addVerificationCode = function(req, res){
                                 });
                     }).catch(function (error){
                         log.users.error(error);
-                        response.ok('Internal Server Error',500,null);   
+                        response.ok('Internal Server Error',500,null, res);   
                     });
                 }
             }
         }
     }catch(exception){
         log.users.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 };
 
@@ -194,13 +194,13 @@ exports.findVerificationCode = function(req, res){
                                 });
                     }).catch(function (error){
                         log.users.error(error);
-                        response.ok('Internal Server Error',500,null);  
+                        response.ok('Internal Server Error',500,null, res);  
                     });
                 }
             }
         }
     }catch(exception){
         log.users.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 };

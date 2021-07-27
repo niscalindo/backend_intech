@@ -35,12 +35,12 @@ exports.create = function(req, res){
                         });
             }).catch(function (error){
                 log.review.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.review.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -112,11 +112,11 @@ exports.find = function(req, res){
                 });
             }).catch(function(error){
                 log.review.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.review.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

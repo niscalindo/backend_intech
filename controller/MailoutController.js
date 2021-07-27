@@ -33,7 +33,7 @@ exports.getAll = function(req, res){
         });
     }catch(exception){
         log.mailout.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -63,12 +63,12 @@ exports.create = function(req, res){
                     });
             }).catch(function(err){
                 log.mailout.error(err);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.mailout.error(eexception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -97,12 +97,12 @@ exports.update = function(req, res){
                         });
             }).catch(function (error){
                 log.mailout.error(error);
-                response.ok('Internal Server Error',500,null);
+                response.ok('Internal Server Error',500,null, res);
             });
         }
     }catch(exception){
         log.mailout.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -143,12 +143,12 @@ exports.find = function(req, res){
                     });
                 }).catch(function(error){
                     log.mailout.error(error);
-                    response.ok('Internal Server Error',500,null);
+                    response.ok('Internal Server Error',500,null, res);
                 });
             }
         }
     }catch(exception){
         log.mailout.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

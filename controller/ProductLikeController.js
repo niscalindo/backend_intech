@@ -35,13 +35,13 @@ exports.create = function(req, res){
                 });
             }).catch(function(err){
                 log.productLike.error(err);
-                response.ok('Internal Server Error',500,null); 
+                response.ok('Internal Server Error',500,null, res); 
             });
                         
         }
     }catch(exception){
         log.productLike.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
 
@@ -76,10 +76,10 @@ exports.find = function(req, res){
             });
         }).catch(function(error){
             log.productLike.error(error);
-            response.ok('Internal Server Error',500,null);
+            response.ok('Internal Server Error',500,null, res);
         });
     }catch(exception){
         log.productLike.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }

@@ -35,13 +35,13 @@ exports.find = function(req, res){
                     });
                 }).catch(function(err){
                     log.district.error(err);
-                    response.ok('Internal Server Error',500,null);  
+                    response.ok('Internal Server Error',500,null, res);  
                 });                
             }          
         }
     }catch(exception){
         log.district.error(exception);
-        response.ok('Internal Server Error',500,null); 
+        response.ok('Internal Server Error',500,null, res); 
     }
 }
 
@@ -71,12 +71,12 @@ exports.getById = function(req, res){
                     });
                 }).catch(function(err){
                     log.district.error(err);
-                    response.ok('Internal Server Error',500,null); 
+                    response.ok('Internal Server Error',500,null, res); 
                 });                
             }          
         }
     }catch(exception){
         log.district.error(exception);
-        response.ok('Internal Server Error',500,null);
+        response.ok('Internal Server Error',500,null, res);
     }
 }
