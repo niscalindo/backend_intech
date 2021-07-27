@@ -11,7 +11,7 @@ const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
-        log.userPaymentController.info("Controller - request from : "+req.connection.remoteAddress);
+        log.userPaymentAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let headers = req.headers;
         let userData = req.user;
         let encryptedData = [userData.id];
@@ -39,7 +39,7 @@ exports.getAll = function(req, res){
 }
 exports.create = function(req, res){
     try{
-        log.userPaymentController.info("Controller - request from : "+req.connection.remoteAddress);
+        log.userPaymentAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let userData = req.user;
         let newPaymentAccount = req.body.paymentAccount;
         if(typeof newPaymentAccount=== 'undefined' || typeof newPaymentAccount === null){
@@ -74,7 +74,7 @@ exports.create = function(req, res){
 }
 exports.update = function(req, res){
     try{
-        log.userPaymentController.info("Controller - request from : "+req.connection.remoteAddress);
+        log.userPaymentAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let newPaymentAccount = req.body.paymentAccount;
         if(typeof newPaymentAccount === 'undefined' || typeof newPaymentAccount === null){
             response.ok('Bad Request', 401, null, res);
@@ -107,7 +107,7 @@ exports.update = function(req, res){
 
 exports.find = function(req, res){
     try{
-        log.userPaymentController.info("Controller - request from : "+req.connection.remoteAddress);
+        log.userPaymentAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let param = req.query;
         param.idUser = req.user.id;
         let encryptedData = [param.idUser];
