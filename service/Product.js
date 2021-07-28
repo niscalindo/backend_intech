@@ -324,7 +324,20 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
                         [operator.ne]: '0'
                     }
                 },
-                attributes: {exclude: ['createdBy', 'dateCreated']}
+                attributes: {exclude: ['createdBy', 'dateCreated']},
+                include:[
+                    {
+                        model: db.product_viewed,
+                        as: 'viewer',
+                        required: false,
+                        attributes: {exclude: ['id_product_varian', ]}
+                    },
+                    {
+                        model: db.product_like,
+                        as: 'likes',
+                        attributes:{exclude: ['dateCreated']},
+                        required: false
+                    }]
             }
         ]
     }).then(data => {
