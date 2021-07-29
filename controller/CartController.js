@@ -45,6 +45,7 @@ exports.create = function(req, res){
                                 });
                             }else{
                                 encryptedData = new Array();
+                                console.log(data);
                                 encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
@@ -135,9 +136,10 @@ exports.delete = function(req, res){
                             }else{
                                 encryptedData = new Array();
                                 encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
+                                encryptedData[1]=data[0].dataValues.id;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
-                                    cart.delete(decryptedData[0], function(message,status,data){
+                                    cart.delete(decryptedData[0],decryptedData[1], function(message,status,data){
                                         if(status == 200 || status == 201){
                                             if(data == null || data == ""){
                                                 response.ok('empty result', status, data, res); 

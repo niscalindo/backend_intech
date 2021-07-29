@@ -208,15 +208,25 @@ exports.createChild = function(newData,security, result){
         result("Internal Server Error", 500, null);
     });
 };
-exports.delete = function (data, result){
+exports.delete = function (idDetailProduct, idDetailStore, result){
     let condition = new Object();
     let conditionKey = new Object();
-    condition[operator.eq] = data;
+    condition[operator.eq] = idDetailProduct;
     conditionKey['id_cart_product'] = condition;
     detailCartProduct.destroy({
         where: [conditionKey]
     }).then(data=>{
-        result("success", 200, data[0]);
+        conditionKey = new Object();
+        condition[operator.eq] = idDetailStore;
+        conditionKey['id'] = condition;
+        db.cart.destroy({
+            where: [conditionKey]
+        }).then(data=>{
+            result("success", 200, data[0]);
+        }).catch(err=>{
+            log.cart.error(err);
+            result("Internal Server Error", 500, null);
+        });
     }).catch(err=>{
         log.cart.error(err);
         result("Internal Server Error", 500, null);
