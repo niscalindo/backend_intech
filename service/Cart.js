@@ -216,17 +216,33 @@ exports.delete = function (idDetailProduct, idDetailStore, result){
     detailCartProduct.destroy({
         where: [conditionKey]
     }).then(data=>{
-        conditionKey = new Object();
-        condition[operator.eq] = idDetailStore;
-        conditionKey['id'] = condition;
-        db.cart.destroy({
-            where: [conditionKey]
-        }).then(data=>{
-            result("success", 200, data[0]);
+        detailCartProduct.findAll({
+            where:{
+                id_cart: {
+                    [operator.eq]: idDetailStore
+                }
+            }
+        }).then(data_delete =>{
+            if(data_delete.length != 0){
+                result("success", 200, data[0]);
+            }else{
+                conditionKey = new Object();
+                condition[operator.eq] = idDetailStore;
+                conditionKey['id'] = condition;
+                db.cart.destroy({
+                    where: [conditionKey]
+                }).then(data=>{
+                    result("success", 200, data[0]);
+                }).catch(err=>{
+                    log.cart.error(err);
+                    result("Internal Server Error", 500, null);
+                });
+            }
         }).catch(err=>{
             log.cart.error(err);
             result("Internal Server Error", 500, null);
         });
+        
     }).catch(err=>{
         log.cart.error(err);
         result("Internal Server Error", 500, null);
