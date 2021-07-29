@@ -108,6 +108,11 @@ exports.find = function (req,res){
                     encryptedData[index] = param.id;
                     index++
                 }
+                
+                if(typeof param.createdBy != 'undefined' && typeof param.createdBy != null){
+                    encryptedData[index] = param.createdBy;
+                    index++
+                }
 
                 if(typeof param.idVarian != 'undefined' && typeof param.idVarian != null){
                     encryptedData[index] = param.idVarian;
@@ -131,6 +136,10 @@ exports.find = function (req,res){
                     index = 0;
                     if(typeof param.id != 'undefined' && typeof param.id != null){
                         param.id = decryptedData[index];
+                        index++
+                    }
+                    if(typeof param.createdBy != 'undefined' && typeof param.createdBy != null){
+                        param.createdBy = decryptedData[index];
                         index++
                     }
 

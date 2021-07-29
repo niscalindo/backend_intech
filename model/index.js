@@ -80,6 +80,7 @@ db.product_varian.belongsTo(db.product, {as: 'product', foreignKey: 'id_product'
 db.product_varian.hasMany(db.detail_promo, {as: 'detailPromo', foreignKey: 'id_product_varian'});
 db.product_varian.hasMany(db.product_viewed, {as: 'viewer', foreignKey: 'id_product_varian'});
 db.product_varian.hasMany(db.product_like, {as: 'likes', foreignKey: 'id_product_varian'});
+db.product_varian.hasMany(db.detailOrderProduct, {as: 'solds', foreignKey: 'id_product_varian'});
 db.product.belongsTo(db.brand, {as: 'brand', foreignKey: 'id_brand'});
 db.product.belongsTo(db.sub_category_product,{as: 'subCategory', foreignKey: 'id_sub_category'});
 db.product.belongsTo(db.users, {as: 'owner', foreignKey: 'created_by'});
