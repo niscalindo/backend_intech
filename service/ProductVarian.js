@@ -167,6 +167,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let condition = new Object();
     condition[op] = '1';
     conditionForProduct['status'] = condition;
+//    console.log(conditionForProduct);
     let productOwnerObject = new Object();
     productOwnerObject['model']= userModel;
     productOwnerObject['as']='owner';
@@ -197,8 +198,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                     conditionName['product_name'] = findInName;
                     populateCondition[i] = conditionName;
                 }
-                condition[operator.or] = populateCondition;
-                conditionForProduct= condition;
+                conditionForProduct[operator.or]= populateCondition;
             }else if(key == "dateCreated"){
                 if(field.dateOp != "undefined" && isValidDate(value)){
                     if(field.dateOp == "lt"){
@@ -327,6 +327,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     categoryIncludeArray[indexCategoryArray] = productOwnerObject;
     productObject['include'] = categoryIncludeArray;
 //    productObject['include']=productOwnerObject
+//    console.log(conditionForProduct);
     productObject['where']=conditionForProduct;
     
     try{
