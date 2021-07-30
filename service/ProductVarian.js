@@ -162,6 +162,7 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
     let provinceArray;
     let deliveryArray;
     let indexCategoryArray = 0;
+    let skipAddingPriceCondition = false;
     op = operator.eq;
     let condition = new Object();
     condition[op] = '1';
@@ -232,13 +233,31 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
                 conditionCategory[op] = value;
                 conditionForProduct['id_sub_category'] = conditionCategory;
             }else if(key == "minPrice"){
-                op = operator.gte;
-                condition[op] = value;
-                conditionForVarian['price'] = condition;
+                if(!skipAddingPriceCondition){
+                    if(typeof field.maxPrice != 'undefined' && typeof field.maxPrice != ""){
+                        op = operator.between;
+                        condition[op] = [value, field.maxPrice];
+                        conditionForVarian['price'] = condition;
+                        skipAddingPriceCondition = true;
+                    }else{
+                        op = operator.gte;
+                        condition[op] = value;
+                        conditionForVarian['price'] = condition;
+                    }
+                }
             }else if(key == "maxPrice"){
-                op = operator.lte;
-                condition[op] = value;
-                conditionForVarian['price'] = condition;
+                if(!skipAddingPriceCondition){
+                    if(typeof field.minPrice != 'undefined' && typeof field.minPrice != ""){
+                        op = operator.between;
+                        condition[op] = [field.minPrice,value];
+                        conditionForVarian['price'] = condition;
+                        skipAddingPriceCondition = true;
+                    }else{
+                        op = operator.lte;
+                        condition[op] = value;
+                        conditionForVarian['price'] = condition;
+                    }
+                }
             }else if(key == "idStore"){
                 op = operator.eq;
                 let conditionForOwner= new Object();
