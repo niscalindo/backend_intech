@@ -45,8 +45,8 @@ exports.create = function(req, res){
                                 });
                             }else{
                                 encryptedData = new Array();
-                                console.log(data);
                                 encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
+                                encryptedData[1]=data[0].dataValues.products[0].dataValues.id_cart;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
                                     param.idProductVarian = newCart.products[0].idProductVarian;
@@ -54,7 +54,7 @@ exports.create = function(req, res){
                                         if(status == 200 || status == 201){
                                             if(data == null || data == ""){
                                                 let childCart = new Object();
-                                                childCart.id_cart = decryptedData[0];
+                                                childCart.id_cart = decryptedData[1];
                                                 childCart.idProductVarian = newCart.products[0].idProductVarian;
                                                 childCart.qty=newCart.products[0].qty;
                                                 cart.createChild(childCart,security, function(message,status,data){
