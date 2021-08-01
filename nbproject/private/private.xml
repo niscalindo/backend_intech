@@ -3,23 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/detail_order_store.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/index.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/ProductLike.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/ProductVarian.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product_varian.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Address.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/UserPaymentAccountController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/order.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/ProductController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Cart.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/DeliveryController.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/CartController.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/cart.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/product.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/BankAccount.js</file>
         </group>
     </open-files>
 </project-private>
