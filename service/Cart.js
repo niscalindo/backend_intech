@@ -32,6 +32,7 @@ exports.find = function(security,field,scope, result){
     let detailCartProductModel = {
             model: detailCartProduct,
             as: 'products',
+            required: false,
             attributes:{exclude:['id_product_varian']},
             include:{
                 model: db.product_varian,

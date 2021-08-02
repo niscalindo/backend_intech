@@ -28,6 +28,7 @@ exports.create = function(req, res){
                     let param = new Object();
                     param.idUser = newCart.idUser;
                     param.idStore = newCart.idStore;
+                    param.idProductVarian = decryptedData[2];
                     let scope = 'all';
                     cart.find(security,param, scope,function(message, status, data){
                         if(status == 200 || status == 201){
@@ -49,6 +50,8 @@ exports.create = function(req, res){
                                 encryptedData[1]=data[0].dataValues.products[0].dataValues.id_cart;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
+                                    console.log("idp: "+decryptedData[0]);
+                                    console.log("ic : "+decryptedData[1]);
                                     param.idProductVarian = newCart.products[0].idProductVarian;
                                     cart.find(security,param, scope,function(message, status, data){
                                         if(status == 200 || status == 201){
