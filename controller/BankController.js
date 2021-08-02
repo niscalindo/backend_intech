@@ -11,7 +11,7 @@ const log = require('../utils/logger');
 
 exports.getAll = function(req, res){
     try{
-        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
+        log.bankAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let order = req.headers.order;
         if(typeof order === 'undefined' && typeof order === null){
             order = 'desc';
@@ -39,7 +39,7 @@ exports.getAll = function(req, res){
 
 exports.create = function(req, res){
     try{
-        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
+        log.bankAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBankAccount = req.body.bank;
         if((typeof newBankAccount === 'undefined' || typeof newBankAccount === null)){
@@ -73,7 +73,7 @@ exports.create = function(req, res){
 
 exports.update = function(req, res){
     try{
-        log.bankInfo.info("Controller - request from : "+req.connection.remoteAddress);
+        log.bankAccount.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let newBankAccount = req.body.bank;
         if(typeof newBankAccount === 'undefined' || typeof newBankAccount === null){
