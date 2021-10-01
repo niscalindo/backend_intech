@@ -60,15 +60,22 @@ exports.find = function(security,field,scope, result){
     let conditionObject = {
         where: [conditionKey]
     }
-    conditionObject.include={
-        model: db.detailOrderStore,
-        as: 'stores',
-        where: [conditionStore],
-        include:{
-            model: db.detailOrderProduct,
-            as: 'products'
+    conditionObject.include=[
+        {
+            model: db.detailOrderStore,
+            as: 'stores',
+            where: [conditionStore],
+            include:{
+                model: db.detailOrderProduct,
+                as: 'products'
+            }
+        },
+        {
+            model: db.users,
+            as: 'buyer',
+            attributes:['fullName']
         }
-    }
+    ]
     order.findAll(conditionObject).then(data=>{
         if(data == null){
             result("Not Found", 404, null);
