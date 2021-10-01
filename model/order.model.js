@@ -30,6 +30,10 @@ module.exports = (sequelize, Sequelize)=>{
             autoIncrement: true,
             field: 'id_order'
         },
+        invoice:{
+            type: Sequelize.STRING(50),
+            allowNull: false,
+        },
         paymentType:{
             type: Sequelize.ENUM('manual','virtual'),
             allowNull: false,
