@@ -21,6 +21,10 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'id_product_varian'
         },
+        sku:{
+            type: Sequelize.STRING(50),
+            allowNull: true
+        },
         productName:{
             type: Sequelize.STRING(250),
             allowNull: false,

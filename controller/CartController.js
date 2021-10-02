@@ -33,6 +33,7 @@ exports.create = function(req, res){
                     cart.find(security,param, scope,function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
+                                log.cart.info("cart not found. creating new cart");
                                 cart.create(newCart,security, function(message,status,data){
                                     if(status == 200 || status == 201){
                                         if(data == null || data == ""){
@@ -45,20 +46,21 @@ exports.create = function(req, res){
                                     }
                                 });
                             }else{
+                                log.cart.info("Existing cart found");
                                 encryptedData = new Array();
-                                encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
-                                encryptedData[1]=data[0].dataValues.products[0].dataValues.id_cart;
+                                //encryptedData[0]=data[0].dataValues.products[0].dataValues.idCartProduct;
+                                encryptedData[1]=data[0].dataValues.id;
                                 security.decrypt(encryptedData)
                                 .then(function(decryptedData){
                                     param.idProductVarian = newCart.products[0].idProductVarian;
                                     cart.find(security,param, scope,function(message, status, data){
                                         if(status == 200 || status == 201){
-                                            if(data == null || data == ""){
-                                                let childCart = new Object();
-                                                childCart.id_cart = decryptedData[1];
-                                                childCart.idProductVarian = newCart.products[0].idProductVarian;
-                                                childCart.qty=newCart.products[0].qty;
-                                                cart.createChild(childCart,security, function(message,status,data){
+                                            if(typeof data[0].dataValues.products[0] === 'object' && typeof data[0].dataValues.products[0].dataValues != 'undefined'){
+                                                log.cart.info("Existing product found");                                                
+                                                let product = new Object();
+                                                product.idCartProduct = newCart.products[0].idProductVarian;
+                                                product.qty = newCart.products[0].qty;
+                                                cart.update(product, function(message,status,data){
                                                     if(status == 200 || status == 201){
                                                         if(data == null || data == ""){
                                                             response.ok('empty result', status, data, res); 
@@ -70,10 +72,12 @@ exports.create = function(req, res){
                                                     }
                                                 });
                                             }else{
-                                                let product = new Object();
-                                                product.idCartProduct = decryptedData[0];
-                                                product.qty = newCart.products[0].qty;
-                                                cart.update(product, function(message,status,data){
+                                                log.cart.info("Product not found. save new product");
+                                                let childCart = new Object();
+                                                childCart.id_cart = decryptedData[1];
+                                                childCart.idProductVarian = newCart.products[0].idProductVarian;
+                                                childCart.qty=newCart.products[0].qty;
+                                                cart.createChild(childCart,security, function(message,status,data){
                                                     if(status == 200 || status == 201){
                                                         if(data == null || data == ""){
                                                             response.ok('empty result', status, data, res); 
