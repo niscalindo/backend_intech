@@ -21,35 +21,43 @@ Date.prototype.datetime = function() {
         return datetime;
 };
 
-exports.find = function(security,field,scope, result){
+exports.find = function(security,field,sort, orderBy, scope, result){
+    let orderOption = Array();
+    orderOption[0] = [columnDictionary(orderBy), sort];
     let parent = null;
     let op = null;
     let conditionKey = new Object();
     let conditionStore = new Object();
+    let conditionProduct = new Object();
+    let productIncludeObject = {
+            model: db.detailOrderProduct,
+            as: 'products'
+        }
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
         if(key === "productName"){
             op = operator.substring;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
-        }else if(key === "transaction"){
-            if(value === "finish"){
-                op = operator.eq;
-                condition[op] = "1";
-                conditionKey['is_finish'] = condition;                
-            }else if(value === "paid"){
-                op = operator.eq;
-                condition[op] = "1";
-                conditionKey['is_paid'] = condition;
-            }
+        }else if(key === "keyword"){
+            op = operator.like;
+            condition[op] = '%'+value+'%';
+            conditionProduct['product_name'] = condition;
+            productIncludeObject.where = conditionForProduct;
         }else if(key === "idStore"){
             op = operator.eq;
             condition[op] = value;
             conditionStore['id_store'] = condition;
+        }else if(key === "startDate"){
+            op = operator.between;
+            condition[op] = [Date.parse(value),Date.parse(field.endDate)];
+            conditionKey['date_created'] = condition;
         }else{
-            op = operator.eq;
-            condition[op] = value;
-            conditionKey[columnDictionary(key)] = condition;
+            if(key != "endDate"){
+                op = operator.eq;
+                condition[op] = value;
+                conditionKey[columnDictionary(key)] = condition;
+            }
         }
     }
     if(field.status === 'undefined' || field.status === null){
@@ -58,17 +66,15 @@ exports.find = function(security,field,scope, result){
         conditionKey['status'] = condition;
     }
     let conditionObject = {
-        where: [conditionKey]
+        where: [conditionKey],
+        order: orderOption
     }
     conditionObject.include=[
         {
             model: db.detailOrderStore,
             as: 'stores',
             where: [conditionStore],
-            include:{
-                model: db.detailOrderProduct,
-                as: 'products'
-            }
+            include:productIncludeObject
         },
         {
             model: db.users,
@@ -277,8 +283,12 @@ function columnDictionary(key){
         return 'id_product_varian';
     }else if(key === 'productName'){
         return 'product_name';
-    }else if(key === 'paid'){
+    }else if(key === 'isPaid'){
         return 'is_paid';
+    }else if(key === 'isFinish'){
+        return 'is_finish';
+    }else if(key === 'isDelivered'){
+        return 'is_delivered';
     }else{
         return key;
     }

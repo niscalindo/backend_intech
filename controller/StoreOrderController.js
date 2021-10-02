@@ -83,8 +83,16 @@ exports.find = function(req, res){
         let param = req.query;
         let scope = req.headers.scope;
         let mode = req.headers.mode;
+        let orderBy = req.headers.order_by;
+        let sort = req.headers.order;
+        if(typeof sort === 'undefined' || typeof sort === null){
+            sort = 'desc';
+        }
         if(typeof mode === 'undefined' || typeof mode === null){
             mode = 'read';
+        }
+        if(typeof orderBy === 'undefined' || typeof orderBy === null){
+            orderBy = 'id_order';
         }
 //        console.log(param);
         let userData = req.user;  
@@ -125,7 +133,7 @@ exports.find = function(req, res){
                         }
                     });                
                 }else{
-                    order.find(security,param, scope,function(message, status, data){
+                    order.find(security,param,sort,orderBy, scope,function(message, status, data){
                         if(status == 200 || status == 201){
                             if(data == null || data == ""){
                                 response.ok('empty result', status, data, res); 
