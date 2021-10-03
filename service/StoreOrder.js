@@ -79,7 +79,7 @@ exports.find = function(security,field,sort, orderBy, scope, result){
         {
             model: db.users,
             as: 'buyer',
-            attributes:['fullName']
+            attributes:['fullName','photoAccount']
         }
     ]
     order.findAll(conditionObject).then(data=>{
