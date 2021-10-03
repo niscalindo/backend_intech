@@ -65,6 +65,10 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'received_by'
         },
+        resi:{
+            type: Sequelize.STRING(100),
+            allowNull: true
+        },
         paymentTimeLimit:{
             type: Sequelize.DATE,
             allowNull: false,
