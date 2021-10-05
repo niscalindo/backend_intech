@@ -60,6 +60,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: true,
             field: 'cancel_reason'
         },
+        cancelBy:{
+            type: Sequelize.ENUM('buyer','seller'),
+            allowNull: true,
+            field: 'cancel_by'
+        },
         receivedBy:{
             type: Sequelize.STRING(100),
             allowNull: true,
