@@ -25,6 +25,7 @@ exports.find = function(security,field,scope, result){
     let parent = null;
     let op = null;
     let conditionKey = new Object();
+    let conditionStoreKey = new Object();
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
         if(key === "productName"){
@@ -35,22 +36,39 @@ exports.find = function(security,field,scope, result){
             if(value === "finish"){
                 op = operator.eq;
                 condition[op] = "1";
-                conditionKey['is_finish'] = condition;                
+                conditionStoreKey['is_finish'] = condition;                
             }else if(value === "paid"){
                 op = operator.eq;
                 condition[op] = "1";
-                conditionKey['is_paid'] = condition;
+                conditionStoreKey['is_paid'] = condition;
             }
+        }else if(key === "paid"){
+                op = operator.eq;
+                condition[op] = value;
+                conditionStoreKey['is_paid'] = condition;            
+        }else if(key === "idOrderStore"){
+                op = operator.eq;
+                condition[op] = value;
+                conditionStoreKey[columnDictionary(key)] = condition;            
         }else{
             op = operator.eq;
             condition[op] = value;
             conditionKey[columnDictionary(key)] = condition;
+            if(key === "status"){
+                op = operator.eq;
+                condition[op] = value;
+                conditionStoreKey['is_paid'] = condition;   
+            }
         }
     }
     if(field.status === 'undefined' || field.status === null){
         op = operator.ne;
         condition[op] = '0';
         conditionKey['status'] = condition;
+
+        op = operator.eq;
+        condition[op] = "1";
+        conditionStoreKey['is_paid'] = condition;  
     }
     let conditionObject = {
         where: [conditionKey]
@@ -62,7 +80,8 @@ exports.find = function(security,field,scope, result){
             include:{
                 model: db.detailOrderProduct,
                 as: 'products'
-            }
+            },
+            where: [conditionStoreKey]
         }
     }
     order.findAll(conditionObject).then(data=>{
@@ -203,35 +222,55 @@ exports.checkExpiredOrder= function(){
                 }
             },
             {
-                is_paid:{
-                    [operator.eq]:'0'
-                }
-            },
-            {
                 status:{
                     [operator.eq]:'1'
                 }
             }
         ],
+        include: {
+            model: db.detailOrderStore,
+            attributes: [],
+            as: 'stores',
+            where: [
+                {
+                    is_paid:{
+                        [operator.eq]:'0'
+                    }
+                }
+            ]
+        },
         order: [
             ['id_order', 'asc']
         ],
+        group: 'order.id_order',
     }).then(data=>{
         let updatedOrder;
         log.order.info("Expired Order "+data.length);
         for(let i=0; i<data.length; i++){
             updatedOrder = new Object();
-            updatedOrder.id = data[i].dataValues.id;
+            updatedOrder.idOrder = data[i].dataValues.id;
             updatedOrder.status = '2';
             updatedOrder.cancelReason = 'Batal Otomatis';
             updatedOrder.canceledDate = new Date();
-            order.update(
+            detailOrderStore.update(
                 updatedOrder,
-                {
-                    where: {id_order: parseInt(updatedOrder.id)}
-                }).then(function(data){
+            {
+                    where: {id_order: parseInt(updatedOrder.idOrder)}
+            }).then(function(data){
                 if(data[0] == 0){
-                    log.info("No changes");
+                    log.order.info("No changes");
+                }
+            })
+            .catch(err=>{
+                log.order.error(err);
+            });
+            order.update(
+            {status: '2', cancelReason: 'Batal Otomatis', canceledDate: new Date() },
+            {
+                where: {id_order: parseInt(updatedOrder.idOrder)}
+            }).then(function(data){
+                if(data[0] == 0){
+                    log.order.info("No changes : "+updatedOrder.idOrder);
                 }
             })
             .catch(err=>{
@@ -262,6 +301,8 @@ function columnDictionary(key){
         return 'created_by';
     }else if(key === 'idOrder'){
         return 'id_order';
+    }else if(key === 'idOrderStore'){
+        return 'id_order_store';
     }else if(key === 'idProductVarian'){
         return 'id_product_varian';
     }else if(key === 'productName'){

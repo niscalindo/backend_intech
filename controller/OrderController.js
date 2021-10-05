@@ -223,6 +223,11 @@ exports.find = function(req, res){
             }
             if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                 encryptedData[index] = param.idProductVarian;
+                index++
+            }
+            if(typeof param.idOrderStore != 'undefined' && typeof param.idOrderStore != null){
+                encryptedData[index] = param.idOrderStore;
+                index++
             }
             security.decrypt(encryptedData)
             .then(function(data){
@@ -235,6 +240,10 @@ exports.find = function(req, res){
                 }
                 if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                     param.idProductVarian = data[index];
+                    index++;
+                }
+                if(typeof param.idOrderStore != 'undefined' && typeof param.idOrderStore != null){
+                    param.idOrderStore = data[index];
                 }
                 if(mode=="count"){
                     order.countSelling(param, scope,function(message, status, data){
