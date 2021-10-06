@@ -13,14 +13,14 @@ exports.update = function(req, res){
     try{
         log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
-        let newOrder = req.body.order;
+        let newOrder = req.body.orderStore;
         if(typeof newOrder === 'undefined' || typeof newOrder === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newOrder.id, userToken.id];
+            let encryptedData = [newOrder.idOrderStore, userToken.id];
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
-                        newOrder.id = decryptedId[0];
+                        newOrder.idOrderStore = decryptedId[0];
                         newOrder.createdBy = decryptedId[1];
                         order.update(newOrder, function(message,status,data){
                             if(status == 200 || status == 201){

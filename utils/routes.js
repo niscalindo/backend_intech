@@ -147,5 +147,6 @@ module.exports = function(app){
     app.route('/virtual-account').put(auth.isAunthenticated,virtualAccountController.update);
     app.route('/virtual-account/find').get(auth.isAunthenticated,virtualAccountController.find);
     app.route('/store-order/find').get(auth.isAunthenticated,storeOrderController.find);
+    app.route('/store-order').put(auth.isAunthenticated,storeOrderController.update);
 }
 

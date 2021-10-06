@@ -66,9 +66,9 @@ exports.find = function(security,field,scope, result){
         condition[op] = '0';
         conditionKey['status'] = condition;
 
-        op = operator.eq;
-        condition[op] = "1";
-        conditionStoreKey['is_paid'] = condition;  
+        op = operator.ne;
+        condition[op] = "0";
+        conditionStoreKey['status'] = condition;  
     }
     let conditionObject = {
         where: [conditionKey]
@@ -105,7 +105,7 @@ exports.countSelling = function(field,scope, result){
     let parent = null;
     let op = null;
     let conditionKey = new Object();
-    let orderCondition = new Object();
+    let storeOrderCondition = new Object();
     let searchInOrder = false;
     for (let [key, value] of Object.entries(field)) {
         let condition = new Object();
@@ -117,11 +117,11 @@ exports.countSelling = function(field,scope, result){
             if(value === "finish"){
                 op = operator.eq;
                 condition[op] = "1";
-                orderCondition['is_finish'] = condition;                
+                storeOrderCondition['is_finish'] = condition;                
             }else if(value === "paid"){
                 op = operator.eq;
                 condition[op] = "1";
-                orderConditionKey['is_paid'] = condition;
+                storeOrderCondition['is_paid'] = condition;
             }
         }else{
             if(key!="createdBy"){
@@ -136,25 +136,20 @@ exports.countSelling = function(field,scope, result){
         op = operator.ne;
         condition[op] = '0';
         conditionKey['status'] = condition;
+        
+        op = operator.ne;
+        condition[op] = "0";
+        storeOrderCondition['status'] = condition;  
     }
+    
     let conditionObject = {
         where: [conditionKey]
-    }
-    let includeOrderObject = {
-        model: db.order,
-        as: 'order'
-    }
-    if(searchInOrder){
-       let conditionOrder = {
-           where: [orderCondition]
-       } 
-       includeOrderObject['include']=conditionOrder;
     }
     if(scope!= "null" && scope == "all"){
         conditionObject.include={
             model: db.detailOrderStore,
             as: 'store',
-            include:includeOrderObject
+            where: [storeOrderCondition]
         }
     }
     detailOrderProduct.count(conditionObject).then(data=>{
@@ -192,13 +187,36 @@ exports.create = function(newData,security, result){
 };
 
 exports.update= function(newData, result){
+    let dataStores = null;
+    if(newData.stores != 'undefined'){
+        dataStores = newData.stores;
+        delete newData.stores;
+    }
     order.update(
         newData,
         {
             where: {id_order: parseInt(newData.id)}
         }).then(function(data){
         if(data[0] == 1){
-            result("success", 200, data[0]);
+            if(dataStores != null){
+                detailOrderStore.update(
+                    dataStores,
+                    {
+                        where: {id_order: parseInt(newData.id)}
+                    }).then(function(data){
+                    if(data[0] == 1){
+                            result("success", 200, data[0]);
+                    }else{
+                        result("no changes", 1001, data[0]);
+                    }
+                })
+                .catch(err=>{
+                    log.order.error(err);
+                    result("Internal Server Error", 500, null);
+                });
+            }else{
+                result("success", 200, data[0]);
+            }
         }else{
             result("no changes", 1001, data[0]);
         }

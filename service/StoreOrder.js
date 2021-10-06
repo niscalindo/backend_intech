@@ -190,10 +190,10 @@ exports.create = function(newData,security, result){
 };
 
 exports.update= function(newData, result){
-    order.update(
+    detailOrderStore.update(
         newData,
         {
-            where: {id_order: parseInt(newData.id)}
+            where: {id_order_store: parseInt(newData.idOrderStore)}
         }).then(function(data){
         if(data[0] == 1){
             result("success", 200, data[0]);

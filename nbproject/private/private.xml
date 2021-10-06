@@ -3,8 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/StoreOrder.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/StoreOrderController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/detail_order_store.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/order.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/model/detail_order_product.model.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Mailout.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Order.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/OrderController.js</file>
         </group>
     </open-files>
 </project-private>
