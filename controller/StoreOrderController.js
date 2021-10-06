@@ -17,11 +17,10 @@ exports.update = function(req, res){
         if(typeof newOrder === 'undefined' || typeof newOrder === null){
             response.ok('Bad Request', 401, null, res);
         }else{
-            let encryptedData = [newOrder.idOrderStore, userToken.id];
+            let encryptedData = [newOrder.idOrderStore];
             security.decrypt(encryptedData)
                     .then(function(decryptedId){
                         newOrder.idOrderStore = decryptedId[0];
-                        newOrder.createdBy = decryptedId[1];
                         order.update(newOrder, function(message,status,data){
                             if(status == 200 || status == 201){
                                 if(data == null || data == ""){
@@ -103,7 +102,7 @@ exports.find = function(req, res){
             let index = 1;
             if(typeof param.idOrder != 'undefined' && typeof param.idOrder != null){
                 encryptedData[index] = param.idOrder;
-                index++
+                index++;
             }
             if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                 encryptedData[index] = param.idProductVarian;
