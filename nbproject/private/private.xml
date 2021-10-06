@@ -6,7 +6,10 @@
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/detail_order_store.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/order.model.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/model/detail_order_product.model.js</file>
-            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Mailout.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/StoreOrderController.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/StoreOrder.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/utils/routes.js</file>
+            <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Product.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/service/Order.js</file>
             <file>file:/home/guest/NetBeansProjects/BackendIntech/controller/OrderController.js</file>
         </group>

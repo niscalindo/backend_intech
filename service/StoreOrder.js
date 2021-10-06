@@ -52,16 +52,27 @@ exports.find = function(security,field,sort, orderBy, scope, result){
             op = operator.between;
             condition[op] = [Date.parse(value),Date.parse(field.endDate)];
             conditionKey['date_created'] = condition;
+        }else if(key == "status"){
+            op = operator.eq;
+            condition[op] = value;
+            conditionStore['status'] = condition;
         }else{
             if(key != "endDate"){
-                op = operator.eq;
-                condition[op] = value;
-                conditionKey[columnDictionary(key)] = condition;
-                if(key == "status"){
+//                if(key == "status"){
+//                    op = operator.or;
+//                    conditionKey[op] = {
+//                        status: {
+//                            [operator.eq]: value
+//                        },
+//                        '$stores.status$': {
+//                            [operator.eq]: value
+//                        }
+//                    };
+//                }else{
                     op = operator.eq;
                     condition[op] = value;
-                    conditionStore[columnDictionary(key)] = condition;
-                }
+                    conditionKey[columnDictionary(key)] = condition;                    
+//                }
             }
             
         }
@@ -110,6 +121,76 @@ exports.find = function(security,field,sort, orderBy, scope, result){
     });
 }
 
+exports.countSelling = function(field,scope, result){
+    let parent = null;
+    let op = null;
+    let conditionKey = new Object();
+    let storeOrderCondition = new Object();
+    let searchInOrder = false;
+    for (let [key, value] of Object.entries(field)) {
+        let condition = new Object();
+        if(key === "productName"){
+            op = operator.substring;
+            condition[op] = value;
+            conditionKey[columnDictionary(key)] = condition;
+        }else if(key === "transaction"){
+            if(value === "finish"){
+                op = operator.eq;
+                condition[op] = "1";
+                storeOrderCondition['is_finish'] = condition;                
+            }else if(value === "paid"){
+                op = operator.eq;
+                condition[op] = "1";
+                storeOrderCondition['is_paid'] = condition;
+            }else if(value === "delivered"){
+                op = operator.eq;
+                condition[op] = "1";
+                storeOrderCondition['is_delivered'] = condition;
+            }else if(value === "new"){
+                op = operator.eq;
+                condition[op] = "0";
+                storeOrderCondition['is_paid'] = condition;
+            }
+        }else if(key == "idStore"){
+            op = operator.eq;
+            condition[op] = value;
+            storeOrderCondition[columnDictionary(key)] = condition;
+        }else if(key == 'status'){
+            op = operator.eq;
+            condition[op] = value;
+            storeOrderCondition['status'] = condition;
+        }else{
+            if(key!="createdBy"){
+                op = operator.eq;
+                condition[op] = value;
+                conditionKey[columnDictionary(key)] = condition;                    
+            }
+        }
+    }
+    
+    if(field.status === 'undefined' || field.status === null){        
+        op = operator.ne;
+        condition[op] = "0";
+        storeOrderCondition['status'] = condition;  
+    }
+    
+    let conditionObject = {
+        where: [conditionKey]
+    }
+    if(scope!= "null" && scope == "all"){
+        conditionObject.include={
+            model: db.detailOrderStore,
+            as: 'store',
+            where: [storeOrderCondition]
+        }
+    }
+    detailOrderProduct.count(conditionObject).then(data=>{
+        result("success", 200, data);
+    }).catch(err=>{
+        log.order.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
 exports.update= function(newData, result){
     detailOrderStore.update(
         newData,
