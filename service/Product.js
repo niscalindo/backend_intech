@@ -196,20 +196,13 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                         as: 'store',
                                         attributes:{exclude: ['dateCreated']},
                                         required: false,
-                                        include:
+                                        where:[
                                             {
-                                                model: db.order,
-                                                as: 'order',
-                                                attributes:{exclude: ['dateCreated']},
-                                                where:[
-                                                    {
-                                                        is_finish: {
-                                                            [operator.eq]: '1'
-                                                        }
-                                                    }
-                                                ],
-                                                required: false
+                                                is_finish: {
+                                                    [operator.eq]: '1'
+                                                }
                                             }
+                                        ]
                                     }
 
                             }]
@@ -266,20 +259,13 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                         as: 'store',
                                         attributes:{exclude: ['dateCreated']},
                                         required: false,
-                                        include:
+                                        where:[
                                             {
-                                                model: db.order,
-                                                as: 'order',
-                                                attributes:{exclude: ['dateCreated']},
-                                                where:[
-                                                    {
-                                                        is_finish: {
-                                                            [operator.eq]: '1'
-                                                        }
-                                                    }
-                                                ],
-                                                required: false
+                                                is_finish: {
+                                                    [operator.eq]: '1'
+                                                }
                                             }
+                                        ]
                                     }
 
                             }]
@@ -442,20 +428,13 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
                                 as: 'store',
                                 attributes:{exclude: ['dateCreated']},
                                 required: false,
-                                include:
+                                where:[
                                     {
-                                        model: db.order,
-                                        as: 'order',
-                                        attributes:{exclude: ['dateCreated']},
-                                        where:[
-                                            {
-                                                is_finish: {
-                                                    [operator.eq]: '1'
-                                                }
-                                            }
-                                        ],
-                                        required: false
+                                        is_finish: {
+                                            [operator.eq]: '1'
+                                        }
                                     }
+                                ]
                             }
                         
                     }]
