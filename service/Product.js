@@ -200,6 +200,9 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                             {
                                                 is_finish: {
                                                     [operator.eq]: '1'
+                                                },
+                                                status: {
+                                                    [operator.eq]: '1'
                                                 }
                                             }
                                         ]
@@ -436,6 +439,9 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
                                 where:[
                                     {
                                         is_finish: {
+                                            [operator.eq]: '1'
+                                        },
+                                        status: {
                                             [operator.eq]: '1'
                                         }
                                     }
