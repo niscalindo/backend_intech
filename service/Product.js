@@ -195,7 +195,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                         model: db.detailOrderStore,
                                         as: 'store',
                                         attributes:{exclude: ['dateCreated']},
-                                        required: false,
+                                        required: true,
                                         where:[
                                             {
                                                 is_finish: {
@@ -203,6 +203,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                                 }
                                             }
                                         ]
+                                        
                                     }
 
                             }]
@@ -258,16 +259,20 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                         model: db.detailOrderStore,
                                         as: 'store',
                                         attributes:{exclude: ['dateCreated']},
-                                        required: false,
+                                        required: true,
                                         where:[
                                             {
                                                 is_finish: {
                                                     [operator.eq]: '1'
                                                 }
+                                            },
+                                            {
+                                                is_status: {
+                                                    [operator.eq]: '1'
+                                                }
                                             }
                                         ]
                                     }
-
                             }]
                     }
                 ]
@@ -427,7 +432,7 @@ exports.getAll = function (security, orderBy, order, offset, limit, id, result) 
                                 model: db.detailOrderStore,
                                 as: 'store',
                                 attributes:{exclude: ['dateCreated']},
-                                required: false,
+                                required: true,
                                 where:[
                                     {
                                         is_finish: {
