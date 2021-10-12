@@ -234,7 +234,7 @@ exports.countOrderInStore= function(security,field,result){
     
     condition = new Object();
     op = operator.eq;
-    condition[op] = '0';
+    condition[op] = field.finish;
     conditionKey['is_finish'] = condition;
 
     let currentDate = new Date();
@@ -246,7 +246,11 @@ exports.countOrderInStore= function(security,field,result){
     condition = new Object();
     op = operator.between;
     condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-    conditionKey['paid_date'] = condition;
+    if(field.finish == '1'){
+        conditionKey['finish_date'] = condition;
+    }else{
+        conditionKey['paid_date'] = condition;
+    }
 
     detailOrderStoreAttributes.where = [conditionKey];
     detailOrderStore.count(detailOrderStoreAttributes).then(dataCurrent=>{
@@ -256,7 +260,11 @@ exports.countOrderInStore= function(security,field,result){
             condition = new Object();
             op = operator.between;
             condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
-            conditionKey['paid_date'] = condition;
+            if(field.finish == '1'){
+                conditionKey['finish_date'] = condition;
+            }else{
+                conditionKey['paid_date'] = condition;
+            }
             detailOrderStoreAttributes.where = [conditionKey];
             detailOrderStore.count(detailOrderStoreAttributes).then(dataOld=>{
                 if(dataOld == null){
