@@ -680,12 +680,6 @@ exports.countViewer = function(security,field,result){
             let m = currentDateMonthAgo.getMonth();
             currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
             let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
-            
-//            console.log(currentDate.datetime());
-//            console.log(last.datetime());
-//            console.log(currentDateMonthAgo.datetime());
-//            console.log(lastMonthAgo.datetime());
-            
             condition = new Object();
             op = operator.between;
             condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
@@ -696,14 +690,6 @@ exports.countViewer = function(security,field,result){
                 if(dataCurrent == null){
                     result("Not Found", 404, null);
                 }else{
-//                    security.encrypt(data)
-//                    .then(function(encryptedData){
-//                        result("success", 200, data);
-//                    }).catch(function(error){
-//                        log.order.error(error);
-//                        result("Encryption Failed", 1000, null);
-//                    });
-//                    console.log(dataCurrent);
                     condition = new Object();
                     op = operator.between;
                     condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];

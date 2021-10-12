@@ -213,6 +213,67 @@ exports.update= function(newData, result){
     });
 };
 
+exports.countOrderInStore= function(security,field,result){
+    
+    let detailOrderStoreAttributes = new Object();
+    let conditionKey = new Object();
+    let condition = new Object();
+    op = operator.eq;
+    condition[op] = field.idStore;
+    conditionKey['id_store'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = '1';
+    conditionKey['status'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = '1';
+    conditionKey['is_paid'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = '0';
+    conditionKey['is_finish'] = condition;
+
+    let currentDate = new Date();
+    let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
+    let currentDateMonthAgo = new Date();
+    let m = currentDateMonthAgo.getMonth();
+    currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
+    let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
+    condition = new Object();
+    op = operator.between;
+    condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+    conditionKey['paid_date'] = condition;
+
+    detailOrderStoreAttributes.where = [conditionKey];
+    detailOrderStore.count(detailOrderStoreAttributes).then(dataCurrent=>{
+        if(dataCurrent == null){
+            result("Not Found", 404, null);
+        }else{
+            condition = new Object();
+            op = operator.between;
+            condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+            conditionKey['paid_date'] = condition;
+            detailOrderStoreAttributes.where = [conditionKey];
+            detailOrderStore.count(detailOrderStoreAttributes).then(dataOld=>{
+                if(dataOld == null){
+                    result("Not Found", 404, null);
+                }else{
+                        result("success", 200, {currentOrder: dataCurrent, lastMonthOrder: dataOld});
+                }
+            }).catch(err=>{
+                log.order.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.order.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
 function columnDictionary(key){
     if(key === 'createdBy'){
         return 'created_by';
