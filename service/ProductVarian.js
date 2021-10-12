@@ -144,11 +144,11 @@ exports.countResult = function(orderBy, order,field, result){
         }).then(data=>{
             result("success", 200, data);
         }).catch(err=>{
-            log.producVarian.error(err);
+            log.productVarian.error(err);
             result("Internal Server Error", 500, null);
         });
     }catch(error){
-        log.producVarian.error(err);
+        log.productVarian.error(err);
         result("Internal Server Error", 500, null);
     }
 }
@@ -380,15 +380,15 @@ exports.find = function(security, orderBy, order, offset, limit,field, result){
             .then(function(encryptedData){
                 result("success", 200, encryptedData);
             }).catch(function(error){
-                log.producVarian.error(error);
+                log.productVarian.error(error);
                 result("Encryption Failed", 1000, null);
             });
         }).catch(err=>{
-            log.producVarian.error(err);
+            log.productVarian.error(err);
             result("Internal Server Error", 500, null);
         });
     }catch(error){
-        log.producVarian.error(err);
+        log.productVarian.error(err);
         result("Internal Server Error", 500, null);
     }
 }
@@ -503,19 +503,19 @@ exports.findOne = function(security, field, result){
                     productViewModel.create(dataViewer).then(data=>{
 //                        console.log("viewer incremented");
                     }).catch(err=>{
-                        log.producVarian.error(err);
+                        log.productVarian.error(err);
                     });
                     result("success", 200, encryptedData);
                 }).catch(function(error){
-                    log.producVarian.error(error);
+                    log.productVarian.error(error);
                     result("Encryption Failed", 1000, null);
                 });
             }).catch(err=>{
-                log.producVarian.error(err);
+                log.productVarian.error(err);
                 result("Internal Server Error", 500, null);
             });
         }catch(error){
-            log.producVarian.error(err);
+            log.productVarian.error(err);
             result("Internal Server Error", 500, null);
         }
     }else{
@@ -646,6 +646,89 @@ function columnDictionary(key){
     }else{
         return key;
     }
+}
+
+exports.countViewer = function(security,field,result){
+    productVarianModel.findAll({
+        attributes:['id_product_varian'],
+        where:[
+            {
+                created_by:{
+                    [operator.eq]: field.idStore
+                }
+            }
+        ]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            let idObject = JSON.parse(JSON.stringify(data));
+            let idArray = new Array();
+            for(let i = 0; i<idObject.length; i++){
+                idArray[i] = idObject[i].id_product_varian;
+            }
+            let productViewAttributes = new Object();
+            let conditionKey = new Object();
+            let condition = new Object();
+            op = operator.in;
+            condition[op] = idArray;
+            conditionKey['id_product_varian'] = condition;
+            
+            let currentDate = new Date();
+            let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
+            let currentDateMonthAgo = new Date();
+            let m = currentDateMonthAgo.getMonth();
+            currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
+            let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
+            
+//            console.log(currentDate.datetime());
+//            console.log(last.datetime());
+//            console.log(currentDateMonthAgo.datetime());
+//            console.log(lastMonthAgo.datetime());
+            
+            condition = new Object();
+            op = operator.between;
+            condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+            conditionKey['date_created'] = condition;
+            
+            productViewAttributes.where = [conditionKey];
+            productViewModel.count(productViewAttributes).then(dataCurrent=>{
+                if(dataCurrent == null){
+                    result("Not Found", 404, null);
+                }else{
+//                    security.encrypt(data)
+//                    .then(function(encryptedData){
+//                        result("success", 200, data);
+//                    }).catch(function(error){
+//                        log.order.error(error);
+//                        result("Encryption Failed", 1000, null);
+//                    });
+//                    console.log(dataCurrent);
+                    condition = new Object();
+                    op = operator.between;
+                    condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+                    conditionKey['date_created'] = condition;
+                    productViewAttributes.where = [conditionKey];
+                    productViewModel.count(productViewAttributes).then(dataOld=>{
+                        if(dataOld == null){
+                            result("Not Found", 404, null);
+                        }else{
+                                result("success", 200, {currentViewer: dataCurrent, lastMonthViewer: dataOld});
+                        }
+                    }).catch(err=>{
+                        log.productVarian.error(err);
+                        result("Internal Server Error", 500, null);
+                    });
+                }
+            }).catch(err=>{
+                log.productVarian.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.productVarian.error(err);
+        result("Internal Server Error", 500, null);
+    });
 }
 function isValidDate(dateString) {
   var regEx = /^\d{4}-\d{2}-\d{2}$/;

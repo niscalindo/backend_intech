@@ -90,6 +90,7 @@ module.exports = function(app){
     app.route('/products/varian/find-one').get(auth.isAunthenticated,productController.findOne);
     app.route('/products/varian/like').post(auth.isAunthenticated,productLikeController.create);
     app.route('/products/varian/like/find').get(auth.isAunthenticated,productLikeController.find);
+    app.route('/products/varian/view/count').get(auth.isAunthenticated,productController.countViewer);
     app.route('/follower').post(auth.isAunthenticated,followerController.create);
     app.route('/follower/find').get(auth.isAunthenticated,followerController.find);
     app.route('/products').post(auth.isAunthenticated,productController.create);

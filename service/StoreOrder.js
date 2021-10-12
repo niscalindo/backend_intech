@@ -151,6 +151,10 @@ exports.countSelling = function(field,scope, result){
                 condition[op] = "0";
                 storeOrderCondition['is_paid'] = condition;
             }
+        }else if(key === "isDelivered"){
+            op = operator.eq;
+            condition[op] = value;
+            storeOrderCondition[columnDictionary(key)] = condition;
         }else if(key == "idStore"){
             op = operator.eq;
             condition[op] = value;
