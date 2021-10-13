@@ -283,7 +283,7 @@ exports.countOrderInStore= function(security,field,result){
     });
 }
 
-exports.countOrderInStore= function(security,field,result){
+exports.countOmzet = function(security,field,result){
     
     let detailOrderStoreAttributes = new Object();
     let conditionKey = new Object();
@@ -304,7 +304,7 @@ exports.countOrderInStore= function(security,field,result){
     
     condition = new Object();
     op = operator.eq;
-    condition[op] = field.finish;
+    condition[op] = "1";
     conditionKey['is_finish'] = condition;
 
     let currentDate = new Date();
@@ -316,31 +316,67 @@ exports.countOrderInStore= function(security,field,result){
     condition = new Object();
     op = operator.between;
     condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-    if(field.finish == '1'){
-        conditionKey['finish_date'] = condition;
-    }else{
-        conditionKey['paid_date'] = condition;
-    }
+    conditionKey['finish_date'] = condition;
 
     detailOrderStoreAttributes.where = [conditionKey];
-    detailOrderStore.count(detailOrderStoreAttributes).then(dataCurrent=>{
+    detailOrderStoreAttributes.include={
+        model: detailOrderProduct,
+        as : 'products',
+        attributes: ['product_price','discount_amount', 'price_after_discount','quantity']
+    }
+    detailOrderStore.findAll(detailOrderStoreAttributes).then(dataCurrent=>{
         if(dataCurrent == null){
             result("Not Found", 404, null);
         }else{
+            let objectResponse = new Object();
+            let dataLast7Days = JSON.parse(JSON.stringify(dataCurrent));
+//            console.log("Data : "+dataLast7Days);
+            if(dataLast7Days.length > 0){
+                let sumPrice = 0;
+                for(let i=0; i<dataLast7Days.length;i++){
+                    for(let j=0; j<dataLast7Days.length;j++){
+                        if(dataLast7Days[i].products[j].discount_amount != null && dataLast7Days[i].products[j].discount_amount > 0){
+                            sumPrice = sumPrice + (dataLast7Days[i].products[j].price_after_discount * dataLast7Days[i].products[j].quantity);
+                        }else{
+                            sumPrice = sumPrice + (dataLast7Days[i].products[j].product_price * dataLast7Days[i].products[j].quantity);
+                        }
+                    }
+                }
+                objectResponse.currentOmzet = sumPrice;
+            }else{
+                objectResponse.currentOmzet = 0;
+            }
             condition = new Object();
             op = operator.between;
             condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
-            if(field.finish == '1'){
-                conditionKey['finish_date'] = condition;
-            }else{
-                conditionKey['paid_date'] = condition;
-            }
+            conditionKey['finish_date'] = condition;
             detailOrderStoreAttributes.where = [conditionKey];
-            detailOrderStore.count(detailOrderStoreAttributes).then(dataOld=>{
+            detailOrderStoreAttributes.include={
+                model: detailOrderProduct,
+                as : 'products',
+                attributes: ['product_price','discount_amount', 'price_after_discount','quantity']
+            }
+            detailOrderStore.findAll(detailOrderStoreAttributes).then(dataOld=>{
                 if(dataOld == null){
                     result("Not Found", 404, null);
                 }else{
-                        result("success", 200, {currentOrder: dataCurrent, lastMonthOrder: dataOld});
+                    let dataLastMonth = JSON.parse(JSON.stringify(dataOld));
+                    if(dataLastMonth.length > 0){
+                        sumPrice = 0;
+                        for(let i=0; i<dataLastMonth.length;i++){
+                            for(let j=0; j<dataLastMonth.length;j++){
+                                if(dataLastMonth[i].products[j].discount_amount != null && dataLastMonth[i].products[j].discount_amount > 0){
+                                    sumPrice = sumPrice + (dataLastMonth[i].products[j].price_after_discount * dataLastMonth[i].products[j].quantity);
+                                }else{
+                                    sumPrice = sumPrice + (dataLastMonth[i].products[j].product_price * dataLastMonth[i].products[j].quantity);
+                                }
+                            }
+                        }
+                        objectResponse.lastOmzet = sumPrice;
+                    }else{
+                        objectResponse.lastOmzet = 0;
+                    }
+                    result("success", 200, objectResponse);
                 }
             }).catch(err=>{
                 log.order.error(err);
