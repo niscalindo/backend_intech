@@ -282,6 +282,208 @@ exports.countOrderInStore= function(security,field,result){
         result("Internal Server Error", 500, null);
     });
 }
+
+exports.countOrderInStore= function(security,field,result){
+    
+    let detailOrderStoreAttributes = new Object();
+    let conditionKey = new Object();
+    let condition = new Object();
+    op = operator.eq;
+    condition[op] = field.idStore;
+    conditionKey['id_store'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = '1';
+    conditionKey['status'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = '1';
+    conditionKey['is_paid'] = condition;
+    
+    condition = new Object();
+    op = operator.eq;
+    condition[op] = field.finish;
+    conditionKey['is_finish'] = condition;
+
+    let currentDate = new Date();
+    let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
+    let currentDateMonthAgo = new Date();
+    let m = currentDateMonthAgo.getMonth();
+    currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
+    let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
+    condition = new Object();
+    op = operator.between;
+    condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+    if(field.finish == '1'){
+        conditionKey['finish_date'] = condition;
+    }else{
+        conditionKey['paid_date'] = condition;
+    }
+
+    detailOrderStoreAttributes.where = [conditionKey];
+    detailOrderStore.count(detailOrderStoreAttributes).then(dataCurrent=>{
+        if(dataCurrent == null){
+            result("Not Found", 404, null);
+        }else{
+            condition = new Object();
+            op = operator.between;
+            condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+            if(field.finish == '1'){
+                conditionKey['finish_date'] = condition;
+            }else{
+                conditionKey['paid_date'] = condition;
+            }
+            detailOrderStoreAttributes.where = [conditionKey];
+            detailOrderStore.count(detailOrderStoreAttributes).then(dataOld=>{
+                if(dataOld == null){
+                    result("Not Found", 404, null);
+                }else{
+                        result("success", 200, {currentOrder: dataCurrent, lastMonthOrder: dataOld});
+                }
+            }).catch(err=>{
+                log.order.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.order.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
+exports.countStoreScore = function(security,field,result){
+    db.product_varian.findAll({
+        attributes:['id_product_varian'],
+        where:[
+            {
+                created_by:{
+                    [operator.eq]: field.idStore
+                }
+            }
+        ]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            let idObject = JSON.parse(JSON.stringify(data));
+            let idArray = new Array();
+            for(let i = 0; i<idObject.length; i++){
+                idArray[i] = idObject[i].id_product_varian;
+            }
+            let orderProductAttributes = new Object();
+            let conditionKey = new Object();
+            let conditionProductKey = new Object();
+            let condition = new Object();
+            
+            op = operator.in;
+            condition[op] = idArray;
+            conditionProductKey['id_product_varian'] = condition;
+            
+            condition = new Object();
+            op = operator.not;
+            condition[op] = null;
+            conditionProductKey['review_score'] = condition;
+            
+            condition = new Object();
+            op = operator.gt;
+            condition[op] = 0;
+            conditionProductKey['review_score'] = condition;
+            
+            let currentDate = new Date();
+            let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
+            let currentDateMonthAgo = new Date();
+            let m = currentDateMonthAgo.getMonth();
+            currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
+            let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
+            condition = new Object();
+            op = operator.between;
+            condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+            conditionKey['finish_date'] = condition;
+            
+            condition = new Object();
+            op = operator.eq;
+            condition[op] = "1";
+            conditionKey['status'] = condition;
+            
+            condition = new Object();
+            op = operator.eq;
+            condition[op] = "1";
+            conditionKey['is_finish'] = condition;
+            
+            orderProductAttributes.where = [conditionProductKey];
+            orderProductAttributes.attributes=['review_score'];
+            orderProductAttributes.include={
+                model: db.detailOrderStore,
+                as: 'store',
+                attributes: [],
+                where: [conditionKey]
+            };
+            db.detailOrderProduct.findAll(orderProductAttributes).then(dataCurrent=>{
+                let objectResponse = new Object();
+                objectResponse.maxScore = 5;
+                if(dataCurrent == null){
+                    objectResponse.currentScore = 0;
+                    log.order.info("Review not found");
+                }else{
+                    let dataCurrentScore = JSON.parse(JSON.stringify(dataCurrent));
+                    if(dataCurrentScore.length > 0){
+                        let sumCurrentReviewScore = 0;
+                        for(let i = 0; i<dataCurrentScore.length; i++){
+                            sumCurrentReviewScore = sumCurrentReviewScore+dataCurrentScore[i].review_score;
+                        }
+                        objectResponse.currentScore = sumCurrentReviewScore/dataCurrentScore.length;
+                    }else{
+                        objectResponse.currentScore = 0;                        
+                    }
+                    condition = new Object();
+                    op = operator.between;
+                    condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+                    conditionKey['finish_date'] = condition;
+                    
+                    orderProductAttributes.where = [conditionProductKey];
+                    orderProductAttributes.attributes=['review_score'];
+                    orderProductAttributes.include={
+                        model: db.detailOrderStore,
+                        as: 'store',
+                        attributes: [],
+                        where: [conditionKey]
+                    };
+                    
+                    db.detailOrderProduct.findAll(orderProductAttributes).then(dataBefore=>{
+                        if(dataBefore == null){
+                            objectResponse.scoreBefore = 0;
+                            log.order.info("Review not found");
+                        }else{
+                            let dataScoreBefore = JSON.parse(JSON.stringify(dataBefore));
+                            if(dataScoreBefore.length > 0){
+                                let sumReviewScoreBefore = 0;
+                                for(let i = 0; i<dataScoreBefore.length; i++){
+                                    sumReviewScoreBefore = sumReviewScoreBefore+dataCurrentScore[i].review_score;
+                                }
+                                objectResponse.scoreBefore = sumReviewScoreBefore/dataScoreBefore.length;
+                            }else{
+                                objectResponse.scoreBefore = 0;                        
+                            }
+                        }
+                        result("success", 200, objectResponse);
+                    }).catch(err=>{
+                        log.order.error(err);
+                        result("Internal Server Error", 500, null);
+                    });
+                    
+                }
+            }).catch(err=>{
+                log.order.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.order.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
+
 function columnDictionary(key){
     if(key === 'createdBy'){
         return 'created_by';

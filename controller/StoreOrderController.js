@@ -186,6 +186,38 @@ exports.countOrder = function (req,res){
         log.order.error(exception);
         response.ok('Internal Server Error',500,null, res);
     }
+}
+exports.countStoreScore = function (req,res){
+    try{
+        log.order.info("Controller - request from : "+req.connection.remoteAddress);
+        let userToken = req.user;
+        let param = req.query;
+//        if(typeof param === 'undefined' || typeof param === null){
+//            param.finish='0';
+//        }
+        let encryptedData = [userToken.id];
+        security.decrypt(encryptedData)
+        .then(function(decryptedData){
+            param.idStore = decryptedData[0];
+            order.countStoreScore(security,param,function(message, status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });                    
+        }).catch(function(err){
+            log.order.error(err);
+            response.ok('Internal Server Error',500,null, res); 
+        });
+    }catch(exception){
+        log.order.error(exception);
+        response.ok('Internal Server Error',500,null, res);
+    }
 }  
 //function generateCode(lastNumerator){
 //    if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {

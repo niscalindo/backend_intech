@@ -149,6 +149,7 @@ module.exports = function(app){
     app.route('/virtual-account/find').get(auth.isAunthenticated,virtualAccountController.find);
     app.route('/store-order/find').get(auth.isAunthenticated,storeOrderController.find);
     app.route('/store-order').put(auth.isAunthenticated,storeOrderController.update);
-    app.route('/store-order/stat').get(auth.isAunthenticated,storeOrderController.countOrder);
+    app.route('/store-order/stat/order').get(auth.isAunthenticated,storeOrderController.countOrder);
+    app.route('/store-order/stat/score').get(auth.isAunthenticated,storeOrderController.countStoreScore);
 }
 
