@@ -495,9 +495,13 @@ exports.countViewer = function (req,res){
         log.productVarian.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let param = req.query;
-//        if(typeof param === 'undefined' || typeof param === null){
-//            response.ok('Bad Request', 401, null, res);
-//        }else{
+        if(typeof param === 'undefined' || typeof param === null){
+            param.range = 'week';
+        }else{
+            if(typeof param.range === 'undefined' || typeof param.range === null){
+                param.range = 'week';
+            }
+        }
             let encryptedData = [userToken.id];
             security.decrypt(encryptedData)
             .then(function(decryptedData){

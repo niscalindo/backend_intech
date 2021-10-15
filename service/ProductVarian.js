@@ -681,25 +681,47 @@ exports.countViewer = function(security,field,result){
             currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
             let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
             condition = new Object();
-            op = operator.between;
-            condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-            conditionKey['date_created'] = condition;
+            if(field.range == 'week'){
+                op = operator.between;
+                condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+                conditionKey['date_created'] = condition;
+            }else{
+                let currentMonth = currentDate.getMonth();
+                let currentYear = currentDate.getFullYear();
+                currentMonth = currentMonth+1;
+                op = operator.and;
+                condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("date_created")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("date_created")), currentYear)]
+                conditionKey[''] = condition;
+            }
             
             productViewAttributes.where = [conditionKey];
             productViewModel.count(productViewAttributes).then(dataCurrent=>{
                 if(dataCurrent == null){
                     result("Not Found", 404, null);
                 }else{
-                    condition = new Object();
-                    op = operator.between;
-                    condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
-                    conditionKey['date_created'] = condition;
+                    
+                    if(field.range == 'week'){
+                        condition = new Object();
+                        op = operator.between;
+                        condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+                        conditionKey['date_created'] = condition;
+                    }else{
+                        let currentMonth = currentDate.getMonth();
+                        let currentYear = currentDate.getFullYear();
+                        if(currentMonth == 0){
+                            currentMonth = 12;
+                            currentYear = currentYear-1;
+                        }
+                        op = operator.and;
+                        condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("date_created")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("date_created")), currentYear)]
+                        conditionKey[''] = condition;
+                    }
                     productViewAttributes.where = [conditionKey];
                     productViewModel.count(productViewAttributes).then(dataOld=>{
                         if(dataOld == null){
                             result("Not Found", 404, null);
                         }else{
-                                result("success", 200, {currentViewer: dataCurrent, lastMonthViewer: dataOld});
+                            result("success", 200, {currentViewer: dataCurrent, lastMonthViewer: dataOld});
                         }
                     }).catch(err=>{
                         log.productVarian.error(err);

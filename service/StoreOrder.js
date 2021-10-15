@@ -243,13 +243,28 @@ exports.countOrderInStore= function(security,field,result){
     let m = currentDateMonthAgo.getMonth();
     currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
     let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
-    condition = new Object();
-    op = operator.between;
-    condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-    if(field.finish == '1'){
-        conditionKey['finish_date'] = condition;
+    if(field.range == 'week'){
+        condition = new Object();
+        op = operator.between;
+        condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+    
+        if(field.finish == '1'){
+            conditionKey['finish_date'] = condition;
+        }else{
+            conditionKey['paid_date'] = condition;
+        }
     }else{
-        conditionKey['paid_date'] = condition;
+        condition = new Object();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        currentMonth = currentMonth+1;
+        op = operator.and;
+        if(field.finish == '1'){
+            condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)]
+        }else{
+            condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("paid_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("paid_date")), currentYear)]
+        }
+        conditionKey[''] = condition;
     }
 
     detailOrderStoreAttributes.where = [conditionKey];
@@ -257,15 +272,32 @@ exports.countOrderInStore= function(security,field,result){
         if(dataCurrent == null){
             result("Not Found", 404, null);
         }else{
-            condition = new Object();
-            op = operator.between;
-            condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
-            if(field.finish == '1'){
-                conditionKey['finish_date'] = condition;
+            if(field.range == 'week'){
+                condition = new Object();
+                op = operator.between;
+                condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+                if(field.finish == '1'){
+                    conditionKey['finish_date'] = condition;
+                }else{
+                    conditionKey['paid_date'] = condition;
+                }
+                detailOrderStoreAttributes.where = [conditionKey];                
             }else{
-                conditionKey['paid_date'] = condition;
+                condition = new Object();
+                let currentMonth = currentDate.getMonth();
+                let currentYear = currentDate.getFullYear();
+                if(currentMonth == 0){
+                    currentMonth = 12;
+                    currentYear = currentYear-1;
+                }
+                op = operator.and;
+                if(field.finish == '1'){
+                    condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)]
+                }else{
+                    condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("paid_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("paid_date")), currentYear)]
+                }
+                conditionKey[''] = condition;
             }
-            detailOrderStoreAttributes.where = [conditionKey];
             detailOrderStore.count(detailOrderStoreAttributes).then(dataOld=>{
                 if(dataOld == null){
                     result("Not Found", 404, null);
@@ -313,10 +345,20 @@ exports.countOmzet = function(security,field,result){
     let m = currentDateMonthAgo.getMonth();
     currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
     let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
-    condition = new Object();
-    op = operator.between;
-    condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-    conditionKey['finish_date'] = condition;
+    if(field.range == 'week'){
+        condition = new Object();
+        op = operator.between;
+        condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+        conditionKey['finish_date'] = condition;
+    }else{
+        condition = new Object();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        currentMonth = currentMonth+1;
+        op = operator.and;
+        condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)]
+        conditionKey[''] = condition;
+    }
 
     detailOrderStoreAttributes.where = [conditionKey];
     detailOrderStoreAttributes.include={
@@ -346,10 +388,23 @@ exports.countOmzet = function(security,field,result){
             }else{
                 objectResponse.currentOmzet = 0;
             }
-            condition = new Object();
-            op = operator.between;
-            condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
-            conditionKey['finish_date'] = condition;
+            if(field.range == 'week'){
+                condition = new Object();
+                op = operator.between;
+                condition[op] = [Date.parse(lastMonthAgo.datetime().toString()), Date.parse(currentDateMonthAgo.datetime().toString())];
+                conditionKey['finish_date'] = condition;
+            }else{
+                condition = new Object();
+                let currentMonth = currentDate.getMonth();
+                let currentYear = currentDate.getFullYear();
+                if(currentMonth == 0){
+                    currentMonth = 12;
+                    currentYear = currentYear-1;
+                }
+                op = operator.and;
+                condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)]
+                conditionKey[''] = condition;
+            }
             detailOrderStoreAttributes.where = [conditionKey];
             detailOrderStoreAttributes.include={
                 model: detailOrderProduct,

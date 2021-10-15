@@ -162,6 +162,14 @@ exports.countOrder = function (req,res){
         let param = req.query;
         if(typeof param === 'undefined' || typeof param === null){
             param.finish='0';
+            param.range = 'week';
+        }else{
+            if(typeof param.range === 'undefined' || typeof param.range === null){
+                param.range = 'week';
+            }
+            if(typeof param.finish === 'undefined' || typeof param.finish === null){
+                param.finish = '0';
+            }
         }
         let encryptedData = [userToken.id];
         security.decrypt(encryptedData)
@@ -193,6 +201,13 @@ exports.countOmzet = function (req,res){
         log.order.info("Controller - request from : "+req.connection.remoteAddress);
         let userToken = req.user;
         let param = req.query;
+        if(typeof param === 'undefined' || typeof param === null){
+            param.range = 'week';
+        }else{
+            if(typeof param.range === 'undefined' || typeof param.range === null){
+                param.range = 'week';
+            }
+        }
         let encryptedData = [userToken.id];
         security.decrypt(encryptedData)
         .then(function(decryptedData){
