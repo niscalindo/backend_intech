@@ -152,6 +152,7 @@ module.exports = function(app){
     app.route('/store-order/stat/order').get(auth.isAunthenticated,storeOrderController.countOrder);
     app.route('/store-order/stat/order/omzet').get(auth.isAunthenticated,storeOrderController.countOmzet);
     app.route('/store-order/stat/order/best-seller').get(auth.isAunthenticated,storeOrderController.countBestSeller);
+    app.route('/store-order/stat/order/best-category').get(auth.isAunthenticated,storeOrderController.countBestCategory);
     app.route('/store-order/stat/score').get(auth.isAunthenticated,storeOrderController.countStoreScore);
 }
 

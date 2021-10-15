@@ -662,6 +662,146 @@ exports.countProductBestSeller = function(security,field,result){
     });
 }
 
+exports.countCategoryBestSeller = function(security,field,result){
+    db.product_varian.findAll({
+        attributes:['id_product_varian'],
+        where:[
+            {
+                created_by:{
+                    [operator.eq]: field.idStore
+                }
+            }
+        ]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            let idObject = JSON.parse(JSON.stringify(data));
+            let idArray = new Array();
+            for(let i = 0; i<idObject.length; i++){
+                idArray[i] = idObject[i].id_product_varian;
+            }
+            let orderProductAttributes = new Object();
+            let conditionKey = new Object();
+            let conditionProductKey = new Object();
+            let condition = new Object();
+            
+            op = operator.in;
+            condition[op] = idArray;
+            conditionProductKey['id_product_varian'] = condition;
+            
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth()+1;
+            let currentYear = currentDate.getFullYear();
+            condition = new Object();
+            op = operator.between;
+            condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)];
+            conditionKey[''] = condition;
+            
+            condition = new Object();
+            op = operator.eq;
+            condition[op] = "1";
+            conditionKey['status'] = condition;
+            
+            condition = new Object();
+            op = operator.eq;
+            condition[op] = "1";
+            conditionKey['is_finish'] = condition;
+            
+            condition = new Object();
+            op = operator.eq;
+            condition[op] = "1";
+            conditionKey['is_paid'] = condition;
+            
+            orderProductAttributes.where = [conditionProductKey];
+//            orderProductAttributes.attributes={include:[[sequelize.fn('COUNT', sequelize.col('id_product_varian')), 'total_selling']],exclude:['id_order_product','id', 'id_order_store']};
+            orderProductAttributes.attributes=['id_order_product'];
+            orderProductAttributes.include={
+                model: db.detailOrderStore,
+                as: 'store',
+                attributes: [],
+                where: [conditionKey]
+            };
+//            ,{
+//                model: db.product_varian,
+//                as: 'varian',
+//                attributes: ['id_product_varian'],
+//                include:{
+//                    model: db.product,
+//                    as: 'product',
+//                    attributes:['id_product'],
+//                    include:{
+//                        model: db.sub_category_product,
+//                        as: 'subCategory',
+//                        attributes:['id_sub_category',[sequelize.fn('COUNT', sequelize.col('varian->product->subCategory.id_sub_category')), 'total_selling']],
+//                        group: ['id_sub_category']
+//                    }
+//                }
+//            }
+            let categoryAttributes = new Object();
+            categoryAttributes.attributes=['categoryName', [sequelize.fn('COUNT', sequelize.col('tm_category_product.id_category')), 'total_selling']];
+            categoryAttributes.group=['tm_category_product.id_category'];
+            categoryAttributes.include=[{
+                model: db.sub_category_product,
+                as: 'subCategories',
+                required: true,
+                attributes: ['id_sub_category'],
+                include: {
+                    model: db.product,
+                    as: 'products',
+                    required: true,
+                    attributes:['id_product'],
+                    include: {
+                        model: db.product_varian,
+                        as: 'varian',
+                        required: true,
+                        attributes: ['id_product_varian'],
+                        include:{
+                            model: detailOrderProduct,
+                            as: 'solds',
+                            required: true,
+                            where: [conditionProductKey],
+                            include: {
+                                model: db.detailOrderStore,
+                                as: 'store',
+                                attributes: [],
+                                where: [conditionKey]
+                            },
+                            attributes: ['id_order_product']
+                        }
+                    }
+                }
+            }]
+//            orderProductAttributes.group = ['id_product_varian'];
+            orderProductAttributes.limit = 5;
+//            db.detailOrderProduct.findAll(orderProductAttributes).then(dataCurrent=>{
+                
+            db.category_product.findAll(categoryAttributes).then(dataCurrent=>{
+                let objectResponse = new Object();
+                if(dataCurrent == null){
+                    log.order.info("Data not found");
+                }else{
+//                    let dataCurrentBestSeller = JSON.parse(JSON.stringify(dataCurrent));
+//                    console.log(dataCurrentBestSeller);
+                    security.encrypt(dataCurrent)
+                    .then(function(encryptedData){
+                        result("success", 200, encryptedData);
+                    }).catch(function(error){
+                        log.order.error(error);
+                        result("Encryption Failed", 1000, null);
+                    }); 
+                }
+            }).catch(err=>{
+                log.order.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.order.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
+
 function columnDictionary(key){
     if(key === 'createdBy'){
         return 'created_by';

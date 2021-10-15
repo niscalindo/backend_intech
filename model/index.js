@@ -86,6 +86,7 @@ db.product.belongsTo(db.sub_category_product,{as: 'subCategory', foreignKey: 'id
 db.product.belongsTo(db.users, {as: 'owner', foreignKey: 'created_by'});
 db.detailOrderStore.belongsTo(db.order, {as: 'order', foreignKey: 'id_order'});
 db.detailOrderProduct.belongsTo(db.detailOrderStore, {as: 'store', foreignKey: 'id_order_store'});
+db.detailOrderProduct.belongsTo(db.product_varian, {as: 'varian', foreignKey: 'id_product_varian'});
 db.order.hasMany(db.detailOrderStore, {as: 'stores', foreignKey: 'id_order'});
 db.cart.hasMany(db.detailCartProduct, {as: 'products', foreignKey: 'id_cart'});
 db.cart.belongsTo(db.users, {as: 'store', foreignKey: 'id_store'});
@@ -99,6 +100,7 @@ db.brand.belongsTo(db.further_sub_category_product,{as: 'furtherSubCategory', fo
 db.sub_category_product.belongsTo(db.category_product,{as: 'category', foreignKey: 'id_category'});
 db.category_product.hasMany(db.sub_category_product,{as: 'subCategories', foreignKey: 'id_category'});
 db.sub_category_product.hasMany(db.further_sub_category_product,{as: 'furtherSubCategories', foreignKey: 'id_sub_category'});
+db.sub_category_product.hasMany(db.product,{as: 'products', foreignKey: 'id_sub_category'});
 db.tr_address = require("./tr_address.model.js")(sequelize, Sequelize);
 db.tr_address.belongsTo(db.province, {as: 'province', foreignKey: 'id_province'});
 db.tr_address.belongsTo(db.regency, {as: 'city', foreignKey: 'id_city'});
