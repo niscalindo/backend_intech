@@ -101,23 +101,114 @@ exports.find = function(security,orderBy, order, offset, limit,field,scope, resu
     conditionObject.offset = parseInt(offset);
     conditionObject.limit = limit;
     conditionObject.order = orderOption;
-    
-    detailOrderProduct.findAll(conditionObject).then(data=>{
-        if(data == null){
-            result("Not Found", 404, null);
-        }else{
-            security.encrypt(data)
-            .then(function(encryptedData){
-                result("success", 200, encryptedData);
-            }).catch(function(error){
-                log.review.error(error);
-                result("Encryption Failed", 1000, null);
-            });            
-        }
-    }).catch(err=>{
-        log.review.error(err);
-        result("Internal Server Error", 500, null);
-    });
+    if(typeof field.idStore == 'undefined' || typeof field.idStore == null){
+        detailOrderProduct.findAll(conditionObject).then(data=>{
+            if(data == null){
+                result("Not Found", 404, null);
+            }else{
+                security.encrypt(data)
+                .then(function(encryptedData){
+                    result("success", 200, encryptedData);
+                }).catch(function(error){
+                    log.review.error(error);
+                    result("Encryption Failed", 1000, null);
+                });            
+            }
+        }).catch(err=>{
+            log.review.error(err);
+            result("Internal Server Error", 500, null);
+        });
+    }else{
+        db.product_varian.findAll({
+        attributes:['id_product_varian'],
+            where:[
+                {
+                    created_by:{
+                        [operator.eq]: field.idStore
+                    }
+                }
+            ]
+        }).then(data=>{
+            if(data == null){
+                result("Not Found", 404, null);
+            }else{
+                let idObject = JSON.parse(JSON.stringify(data));
+                let idArray = new Array();
+                for(let i = 0; i<idObject.length; i++){
+                    idArray[i] = idObject[i].id_product_varian;
+                }
+                let orderProductAttributes = new Object();
+                let conditionKey = new Object();
+                let conditionProductKey = new Object();
+                let condition = new Object();
+
+                op = operator.in;
+                condition[op] = idArray;
+                conditionProductKey['id_product_varian'] = condition;
+
+                condition = new Object();
+                op = operator.not;
+                condition[op] = null;
+                conditionProductKey['review_score'] = condition;
+
+                condition = new Object();
+                op = operator.gt;
+                condition[op] = 0;
+                conditionProductKey['review_score'] = condition;
+
+                condition = new Object();
+                op = operator.eq;
+                condition[op] = "1";
+                conditionKey['status'] = condition;
+
+                condition = new Object();
+                op = operator.eq;
+                condition[op] = "1";
+                conditionKey['is_finish'] = condition;
+
+                orderProductAttributes.where = [conditionProductKey];
+                orderProductAttributes.attributes={exclude:['idOrderStore','id_order_store','idProductVarian','discountAmount','priceAfterDiscount','packetWeight','packetUnit','sku']};
+                orderProductAttributes.include={
+                    model: db.detailOrderStore,
+                    as: 'store',
+                    attributes: [['id_store','idStore']],
+                    where: [conditionKey],
+                    include:{
+                        model: db.order,
+                        as: 'order',
+                        attributes: [['id_order','idOrder'],'invoice'],
+                        include: {
+                            model: db.users,
+                            attributes: [['full_name','fullName'],['photo_account','photoAccount']],
+                            as: 'buyer'
+                        }
+                    }
+                };
+                db.detailOrderProduct.findAll(orderProductAttributes).then(dataCurrent=>{
+                    if(dataCurrent == null){
+                        log.review.info("Data not found");
+                        result("Not Found", 404, null);
+                    }else{
+                        security.encrypt(dataCurrent)
+                        .then(function(encryptedData){
+                            result("success", 200, encryptedData);
+                        }).catch(function(error){
+                            log.review.error(error);
+                            result("Encryption Failed", 1000, null);
+                        }); 
+                    }
+                    
+                }).catch(err=>{
+                    log.review.error(err);
+                    result("Internal Server Error", 500, null);
+                });
+            }
+
+        }).catch(err=>{
+            log.review.error(err);
+            result("Internal Server Error", 500, null);
+        });
+    }
 }
 
 exports.create = function(newData, result){

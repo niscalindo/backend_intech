@@ -53,6 +53,7 @@ exports.find = function(req, res){
         let limit = req.headers.total_data;
         let orderBy = req.headers.order_by;
         let offset = req.headers.page;
+        let userCredential = req.user;
         if(typeof orderBy === 'undefined' || typeof orderBy === null){
             orderBy = 'review_date';
         }
@@ -82,14 +83,24 @@ exports.find = function(req, res){
             let index = 0;
             if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
                 encryptedData[index] = param.idProductVarian;
+                index++
+            }
+            if(typeof param.store != 'undefined' && typeof param.store != null){
+                encryptedData[index] = userCredential.id;
             }
             security.decrypt(encryptedData)
             .then(function(data){
 //                param.createdBy = data[0];
 //                console.log("test : "+data[1]);
+                index = 0;
                 if(typeof param.idProductVarian != 'undefined' && typeof param.idProductVarian != null){
-                    param.idProductVarian = data[0];
+                    param.idProductVarian = data[index];
+                    index++;
                 }
+                if(typeof param.store != 'undefined' && typeof param.store != null){
+                    param.idStore = data[index];
+                }
+                
                 review.find(security,orderBy, order,parseInt(offset), parseInt(limit),param, scope,function(message, status, data){
                     if(status == 200 || status == 201){
                         if(data == null || data == ""){

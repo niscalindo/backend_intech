@@ -481,16 +481,19 @@ exports.countStoreScore = function(security,field,result){
             condition[op] = 0;
             conditionProductKey['review_score'] = condition;
             
+            
             let currentDate = new Date();
             let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
             let currentDateMonthAgo = new Date();
             let m = currentDateMonthAgo.getMonth();
             currentDateMonthAgo.setMonth(currentDateMonthAgo.getMonth() - 1);
             let lastMonthAgo = new Date(currentDateMonthAgo.getTime() - (7 * 24 * 60 * 60 * 1000));
-            condition = new Object();
-            op = operator.between;
-            condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
-            conditionKey['finish_date'] = condition;
+            if(field.range == 'week'){
+                condition = new Object();
+                op = operator.between;
+                condition[op] = [Date.parse(last.datetime().toString()), Date.parse(currentDate.datetime().toString())];
+                conditionKey['finish_date'] = condition;
+            }
             
             condition = new Object();
             op = operator.eq;
@@ -638,9 +641,9 @@ exports.countProductBestSeller = function(security,field,result){
             orderProductAttributes.group = ['id_product_varian'];
             orderProductAttributes.limit = 5;
             db.detailOrderProduct.findAll(orderProductAttributes).then(dataCurrent=>{
-                let objectResponse = new Object();
                 if(dataCurrent == null){
                     log.order.info("Data not found");
+                    result("Not Found", 404, null);
                 }else{
 //                    let dataCurrentBestSeller = JSON.parse(JSON.stringify(dataCurrent));
                     security.encrypt(dataCurrent)
