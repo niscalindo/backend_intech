@@ -67,6 +67,7 @@ db.category_product = require("./category_product.model.js")(sequelize, Sequeliz
 db.sub_category_product = require("./sub_category_product.model.js")(sequelize, Sequelize);
 db.further_sub_category_product = require("./further_sub_category_product.model.js")(sequelize, Sequelize);
 db.product_varian = require("./product_varian.model.js")(sequelize, Sequelize);
+db.tm_store_visitor = require("./tm_store_visitor.model.js")(sequelize, Sequelize);
 db.product.hasMany(db.product_varian,{as: 'varian', foreignKey: 'id_product'});
 db.product.hasMany(db.pictures,{as: 'pictures', foreignKey: 'id_product'});
 db.chat.hasMany(db.detail_chat,{as: 'histories', foreignKey: 'id_chat'});
@@ -110,6 +111,7 @@ db.regency.belongsTo(db.province, {as: 'province', foreignKey: 'province_id'});
 db.users.hasMany(db.tr_address,{as: 'addresses', foreignKey: 'id_user'});
 db.users.hasMany(db.product_like,{as: 'likes', foreignKey: 'id_user'});
 db.users.hasMany(db.follower,{as: 'follower', foreignKey: 'id_user'});
+db.users.hasMany(db.tm_store_visitor,{as: 'visitors', foreignKey: 'id_store'});
 db.users.hasMany(db.follower,{as: 'followings', foreignKey: 'id_store'});
 db.users.hasMany(db.product,{as: 'products', foreignKey: 'created_by'});
 db.follower.belongsTo(db.users,{as: 'storesFollowed', foreignKey: 'id_store'});

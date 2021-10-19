@@ -481,7 +481,6 @@ exports.countStoreScore = function(security,field,result){
             condition[op] = 0;
             conditionProductKey['review_score'] = condition;
             
-            
             let currentDate = new Date();
             let last = new Date(currentDate.getTime() - (7 * 24 * 60 * 60 * 1000));
             let currentDateMonthAgo = new Date();
@@ -611,7 +610,7 @@ exports.countProductBestSeller = function(security,field,result){
             let currentMonth = currentDate.getMonth()+1;
             let currentYear = currentDate.getFullYear();
             condition = new Object();
-            op = operator.between;
+            op = operator.and;
             condition[op] = [sequelize.where(sequelize.fn("month", sequelize.col("finish_date")), currentMonth), sequelize.where(sequelize.fn("year", sequelize.col("finish_date")), currentYear)];
             conditionKey[''] = condition;
             
