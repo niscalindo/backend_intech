@@ -7,6 +7,7 @@ var security = require('../utils/Security');
 var db = require("../model");
 var users = db.users;
 var operator = db.Sequelize.Op;
+const sequelize = db.sequelize;
 const log = require('../utils/logger');
 
 exports.login = function(field, result){
@@ -104,6 +105,44 @@ exports.update= function(newData, result){
         result("Internal Server Error", 500, null);
     });
 };
+
+exports.create = function(newData,security, result){
+    newData['status'] = '2';  
+    newData['createdAt'] = new Date();   
+    users.create(newData).then(data=>{
+        security.encrypt(data)
+        .then(function(encryptedData){
+            let newInsertedId = encryptedData.dataValues.id;
+            let newData = new Object();
+            newData['id'] = newInsertedId;
+            result("success",201,newData);
+        }).catch(function(error){
+            log.users.error(error);
+            result("Encryption Failed", 1000, null);
+        });        
+    }).catch(err=>{
+        log.users.error(err);
+        result("Internal Server Error", 500, null);
+    });
+};
+
+
+exports.findMaxNumerator= function( result){
+    users.findOne({
+        attributes:[
+            [sequelize.fn('max', sequelize.col('id_user')), 'numerator']
+        ],
+        order: [
+            ['id_user', 'desc']
+        ]
+    }).then(data=>{
+        result("success", 200, data);
+    }).catch(err=>{
+        log.users.error(err);
+        result("Internal Server Error", 500, null);
+    });
+};
+
 function columnDictionary(alias){
      if(alias === "id"){
         return "id_user";        

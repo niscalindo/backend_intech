@@ -204,3 +204,58 @@ exports.findVerificationCode = function(req, res){
         response.ok('Internal Server Error',500,null, res);
     }
 };
+
+exports.create = function(req, res){
+    try{
+        log.users.info("Controller - request from : "+req.connection.remoteAddress);
+        let newUser = req.body.user;
+        if(typeof newUser === 'undefined' || typeof newUser === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            users.findMaxNumerator(function(message, status, numerator){
+                if(status == 400){
+                    response.ok(message, 400, null, res);
+                }else if(status == 200){
+                    if(numerator == null || numerator == ""){
+                        log.users.error('Failed to generate code');
+                        response.ok('Internal Server Error', 1003, numerator, res); 
+                    }else{
+                        newUser.code = generateCode(numerator.dataValues.numerator);
+                        users.create(newUser,security, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }catch(exception){
+        log.users.error(exception);
+        response.ok('Internal Server Error', 500, null, res);
+    }
+}
+
+
+function generateCode(lastNumerator){
+    if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {
+        lastNumerator = 0;
+    }
+    lastNumerator++;
+    if (lastNumerator < 10) {
+        lastNumerator = "000" + lastNumerator;
+    } else if (lastNumerator >= 10 && lastNumerator < 100) {
+        lastNumerator = "00" + lastNumerator;
+    } else if (lastNumerator >= 100 && lastNumerator < 1000) {
+        lastNumerator = "0" + lastNumerator;
+    } else if (lastNumerator >= 1000 && lastNumerator < 10000) {
+        lastNumerator = "" +lastNumerator;
+    }
+    return "CUS-" + lastNumerator;
+}

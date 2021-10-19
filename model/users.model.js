@@ -33,12 +33,12 @@ module.exports = (sequelize, Sequelize)=>{
         },
         fullName: {
             type: Sequelize.STRING(50),
-            allowNull: false,
+            allowNull: true,
             field: 'full_name'
         },
         idCitizen: {
             type: Sequelize.STRING(100),
-            allowNull: false,
+            allowNull: true,
             field: 'id_citizen'
         },
         code: {
@@ -58,7 +58,7 @@ module.exports = (sequelize, Sequelize)=>{
         },
         customerStar: {
             type: Sequelize.STRING(100),
-            allowNull: false,
+            allowNull: true,
             field: 'customer_star'
         },
         status:{
@@ -111,7 +111,7 @@ module.exports = (sequelize, Sequelize)=>{
         },
         storeDescription: {
             type: Sequelize.TEXT,
-            allowNull: false,
+            allowNull: true,
             field: 'store_description'
         }
         

@@ -130,6 +130,10 @@ log4js.configure({
     visitor: {
       type: 'dateFile',
       filename: `${LOG_PATH}visitor.log`
+    },
+    userVerification: {
+      type: 'dateFile',
+      filename: `${LOG_PATH}user_verification.log`
     }
   },
   categories: {
@@ -162,6 +166,7 @@ log4js.configure({
     user: { appenders: ['user'], level: 'info' },
     userPaymentAccount: { appenders: ['userPaymentAccount'], level: 'info' },
     users: { appenders: ['users'], level: 'info' },
+    userVerification: { appenders: ['userVerification'], level: 'info' },
     virtualAccount: { appenders: ['virtualAccount'], level: 'info' }
   },
 });
@@ -173,6 +178,7 @@ module.exports = {
   bankAccount: log4js.getLogger('bankAccount'),
   brand: log4js.getLogger('brand'),
   visitor: log4js.getLogger('visitor'),
+  userVerification: log4js.getLogger('userVerification'),
   captcha: log4js.getLogger('captcha'),
   cart: log4js.getLogger('cart'),
   categoryProduct: log4js.getLogger('categoryProduct'),
