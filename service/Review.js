@@ -145,17 +145,24 @@ exports.find = function(security,orderBy, order, offset, limit,field,scope, resu
                 op = operator.in;
                 condition[op] = idArray;
                 conditionProductKey['id_product_varian'] = condition;
-
+                
                 condition = new Object();
                 op = operator.not;
                 condition[op] = null;
-                conditionProductKey['review_score'] = condition;
-
-                condition = new Object();
-                op = operator.gt;
-                condition[op] = 0;
-                conditionProductKey['review_score'] = condition;
-
+                conditionProductKey['review_score'] = condition;  
+                if(typeof field.star == 'undefined' || typeof field.star == null){
+                    console.log("here");
+                    condition = new Object();
+                    op = operator.gt;
+                    condition[op] = 0;
+                    conditionProductKey['review_score'] = condition;
+                }else{
+                    console.log("hore");
+                    condition = new Object();
+                    op = operator.eq;
+                    condition[op] = field.star;
+                    conditionProductKey['review_score'] = condition;                    
+                }
                 condition = new Object();
                 op = operator.eq;
                 condition[op] = "1";
@@ -211,6 +218,146 @@ exports.find = function(security,orderBy, order, offset, limit,field,scope, resu
     }
 }
 
+exports.countByStars = function(idStore, result){
+    let parent = null;
+    let op = null;
+    let conditionKey = new Object();
+    let conditionStoreKey = new Object();
+    
+    db.product_varian.findAll({
+    attributes:['id_product_varian'],
+        where:[
+            {
+                created_by:{
+                    [operator.eq]: idStore
+                }
+            }
+        ]
+    }).then(data=>{
+        if(data == null){
+            result("Not Found", 404, null);
+        }else{
+            let idObject = JSON.parse(JSON.stringify(data));
+            let idArray = new Array();
+            for(let i = 0; i<idObject.length; i++){
+                idArray[i] = idObject[i].id_product_varian;
+            }
+            let condition = new Object();
+            op = operator.in;
+            condition[op] = idArray;
+            conditionKey['id_product_varian'] = condition;
+            
+            condition = new Object();
+            op = operator.gt;
+            condition[op] = 0;
+            conditionKey['review_score'] = condition;
+
+            let conditionObject = {
+                where: [conditionKey]
+            }
+            detailOrderProduct.count(conditionObject).then(data=>{
+                if(data == null){
+                    result("Not Found", 404, null);
+                }else{
+                    let objectResponse = new Object();
+                    objectResponse.countAll = data;
+                    condition = new Object();
+                    op = operator.eq;
+                    condition[op] = 1;
+                    conditionKey['review_score'] = condition;
+                    conditionObject = {
+                        where: [conditionKey]
+                    }
+                    detailOrderProduct.count(conditionObject).then(data=>{
+                        if(data == null){
+                            result("Not Found", 404, null);
+                        }else{
+                            objectResponse.countOne = data;
+                            condition = new Object();
+                            op = operator.eq;
+                            condition[op] = 2;
+                            conditionKey['review_score'] = condition;
+                            conditionObject = {
+                                where: [conditionKey]
+                            }
+                            detailOrderProduct.count(conditionObject).then(data=>{
+                                if(data == null){
+                                    result("Not Found", 404, null);
+                                }else{
+                                    objectResponse.countTwo = data;
+                                    condition = new Object();
+                                    op = operator.eq;
+                                    condition[op] = 3;
+                                    conditionKey['review_score'] = condition;
+                                    conditionObject = {
+                                        where: [conditionKey]
+                                    }
+                                    detailOrderProduct.count(conditionObject).then(data=>{
+                                        if(data == null){
+                                            result("Not Found", 404, null);
+                                        }else{
+                                            objectResponse.countThree = data;
+                                            condition = new Object();
+                                            op = operator.eq;
+                                            condition[op] = 4;
+                                            conditionKey['review_score'] = condition;
+                                            conditionObject = {
+                                                where: [conditionKey]
+                                            }
+                                            detailOrderProduct.count(conditionObject).then(data=>{
+                                                if(data == null){
+                                                    result("Not Found", 404, null);
+                                                }else{
+                                                    objectResponse.countFour = data;
+                                                    condition = new Object();
+                                                    op = operator.eq;
+                                                    condition[op] = 5;
+                                                    conditionKey['review_score'] = condition;
+                                                    conditionObject = {
+                                                        where: [conditionKey]
+                                                    }
+                                                    detailOrderProduct.count(conditionObject).then(data=>{
+                                                        if(data == null){
+                                                            result("Not Found", 404, null);
+                                                        }else{
+                                                            objectResponse.countFive = data;
+                                                            result("Success", 200, objectResponse);
+                                                        }
+                                                    }).catch(err=>{
+                                                        log.review.error(err);
+                                                        result("Internal Server Error", 500, null);
+                                                    });
+                                                }
+                                            }).catch(err=>{
+                                                log.review.error(err);
+                                                result("Internal Server Error", 500, null);
+                                            });
+                                        }
+                                    }).catch(err=>{
+                                        log.review.error(err);
+                                        result("Internal Server Error", 500, null);
+                                    });
+                                }
+                            }).catch(err=>{
+                                log.review.error(err);
+                                result("Internal Server Error", 500, null);
+                            });
+                        }
+                    }).catch(err=>{
+                        log.review.error(err);
+                        result("Internal Server Error", 500, null);
+                    });
+                }
+            }).catch(err=>{
+                log.review.error(err);
+                result("Internal Server Error", 500, null);
+            });
+        }
+    }).catch(err=>{
+        log.review.error(err);
+        result("Internal Server Error", 500, null);
+    });
+}
 exports.create = function(newData, result){
      detailOrderProduct.update(
         newData,
@@ -228,6 +375,7 @@ exports.create = function(newData, result){
         result("Internal Server Error", 500, null);
     });
 };
+
 //exports.findMaxNumerator= function( result){
 //    brand.findOne({
 //        attributes:[

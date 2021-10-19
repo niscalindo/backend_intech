@@ -131,3 +131,32 @@ exports.find = function(req, res){
         response.ok('Internal Server Error',500,null, res);
     }
 }
+    
+    exports.countStars = function(req, res){
+        try{
+            log.review.info("Controller - request from : "+req.connection.remoteAddress);
+            let userToken = req.user;
+            let encryptedData = [userToken.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                        let idStore = decryptedId[0];
+                        review.countByStars(idStore, function(message,status,data){
+                            if(status == 200 || status == 201){
+                                if(data == null || data == ""){
+                                    response.ok('empty result', status, data, res); 
+                                }else{
+                                    response.ok(message, status, data, res);                    
+                                }
+                            }else{
+                                response.ok(message, status, null, res);            
+                            }
+                        });
+            }).catch(function (error){
+                log.review.error(error);
+                response.ok('Internal Server Error',500,null, res);
+            });
+        }catch(exception){
+            log.review.error(exception);
+            response.ok('Internal Server Error',500,null, res);
+        }
+    }
