@@ -143,6 +143,30 @@ exports.findMaxNumerator= function( result){
     });
 };
 
+exports.checkExisting= function(field, result){
+    let op = null;
+    let conditionKey = new Object();
+    for (let [key, value] of Object.entries(field)) {
+        let condition = new Object();
+        op = operator.eq;
+        condition[op] = value;
+        conditionKey[columnDictionary(key)] = condition;        
+    }
+    
+    users.count({
+        where: [conditionKey]
+    }).then(data=>{
+        if(typeof data == 'undefined' || typeof data == null){
+            result('not found',404,null);
+        }else{
+            result("success",200,data); 
+        }      
+    }).catch(err=>{
+        log.users.error(err);
+        result("Internal Server Error", 500, null);
+    });
+};
+
 function columnDictionary(alias){
      if(alias === "id"){
         return "id_user";        

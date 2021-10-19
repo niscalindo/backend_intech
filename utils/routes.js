@@ -50,6 +50,7 @@ module.exports = function(app){
     
     app.route('/users/customer/login').post(usersController.login);
     app.route('/users/customer/register').post(usersController.create);
+    app.route('/users/customer/register/check').get(usersController.checkExisting);
     app.route('/users/customer/find').get(auth.isAunthenticated,usersController.find);
     app.route('/users/customer').put(auth.isAunthenticated,usersController.update);
     app.route('/users/customer/verification-code').put(usersController.addVerificationCode);

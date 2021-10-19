@@ -243,6 +243,31 @@ exports.create = function(req, res){
 }
 
 
+exports.checkExisting = function(req, res){
+    try{
+        log.users.info("Controller - request from : "+req.connection.remoteAddress);
+        let param = req.query;
+        if(typeof param === 'undefined' || typeof apram === null){
+            response.ok('Bad Request', 401, null, res);
+        }else{
+            users.checkExisting(param, function(message,status,data){
+                if(status == 200 || status == 201){
+                    if(data == null || data == ""){
+                        response.ok('empty result', status, data, res); 
+                    }else{
+                        response.ok(message, status, data, res);                    
+                    }
+                }else{
+                    response.ok(message, status, null, res);            
+                }
+            });
+        }
+    }catch(exception){
+        log.users.error(exception);
+        response.ok('Internal Server Error',500,null, res);
+    }
+};
+
 function generateCode(lastNumerator){
     if (typeof lastNumerator === 'undefined' || typeof lastNumerator === null ) {
         lastNumerator = 0;
