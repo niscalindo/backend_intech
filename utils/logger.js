@@ -134,6 +134,10 @@ log4js.configure({
     userVerification: {
       type: 'dateFile',
       filename: `${LOG_PATH}user_verification.log`
+    },
+    resetPassword: {
+      type: 'dateFile',
+      filename: `${LOG_PATH}reset_password.log`
     }
   },
   categories: {
@@ -147,6 +151,7 @@ log4js.configure({
     cart: { appenders: ['cart'], level: 'info' },
     categoryProduct: { appenders: ['categoryProduct'], level: 'info' },
     courier: { appenders: ['courier'], level: 'info' },
+    resetPassword: { appenders: ['resetPassword'], level: 'info' },
     delivery: { appenders: ['delivery'], level: 'info' },
     district: { appenders: ['district'], level: 'info' },
     fileUpload: { appenders: ['fileUpload'], level: 'info' },
@@ -180,6 +185,7 @@ module.exports = {
   visitor: log4js.getLogger('visitor'),
   userVerification: log4js.getLogger('userVerification'),
   captcha: log4js.getLogger('captcha'),
+  resetPassword: log4js.getLogger('resetPassword'),
   cart: log4js.getLogger('cart'),
   categoryProduct: log4js.getLogger('categoryProduct'),
   courier: log4js.getLogger('courier'),

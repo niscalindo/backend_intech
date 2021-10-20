@@ -55,7 +55,6 @@ exports.find = function(security,field, result){
 }
 
 exports.create = function(newData,security, result){
-    console.log(newData);
     userVerification.create(newData).then(data=>{
         result("success",201,1);
     }).catch(err=>{

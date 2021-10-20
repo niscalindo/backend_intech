@@ -69,6 +69,7 @@ db.further_sub_category_product = require("./further_sub_category_product.model.
 db.product_varian = require("./product_varian.model.js")(sequelize, Sequelize);
 db.tm_store_visitor = require("./tm_store_visitor.model.js")(sequelize, Sequelize);
 db.user_verification = require("./user_verification.model.js")(sequelize, Sequelize);
+db.tr_reset_password = require("./tr_reset_password.model.js")(sequelize, Sequelize);
 db.product.hasMany(db.product_varian,{as: 'varian', foreignKey: 'id_product'});
 db.product.hasMany(db.pictures,{as: 'pictures', foreignKey: 'id_product'});
 db.chat.hasMany(db.detail_chat,{as: 'histories', foreignKey: 'id_chat'});

@@ -153,13 +153,20 @@ exports.checkExisting= function(field, result){
         conditionKey[columnDictionary(key)] = condition;        
     }
     
-    users.count({
+    users.findOne({
+        attributes: ['status', ['id_user','idUser']],
         where: [conditionKey]
     }).then(data=>{
         if(typeof data == 'undefined' || typeof data == null){
             result('not found',404,null);
         }else{
-            result("success",200,data); 
+            security.encrypt(data)
+            .then(function(encryptedData){
+                result("success",200,encryptedData);
+            }).catch(function(error){
+                log.users.error(error);
+                result("Encryption Failed", 1000, null);
+            }); 
         }      
     }).catch(err=>{
         log.users.error(err);

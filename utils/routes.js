@@ -38,6 +38,7 @@ module.exports = function(app){
     var cartController = require('../controller/CartController');
     var visitorController = require('../controller/VisitorController');
     var userVerificationController = require('../controller/UserVerificationController');
+    var resetPasswordController = require('../controller/ResetPasswordController');
     var auth = require('./auth');
     //route dibawah ini harus diupdate. dipisahkan berdasarkan role (admin atau user)
     app.route('/users/admin/login').post(userController.login);
@@ -51,6 +52,9 @@ module.exports = function(app){
     app.route('/users/customer/login').post(usersController.login);
     app.route('/users/customer/register').post(usersController.create);
     app.route('/users/customer/register/check').get(usersController.checkExisting);
+    app.route('/users/customer/forgot-password').post(resetPasswordController.create);
+    app.route('/users/customer/forgot-password').put(resetPasswordController.update);
+    app.route('/users/customer/forgot-password/check').get(resetPasswordController.find);
     app.route('/users/customer/find').get(auth.isAunthenticated,usersController.find);
     app.route('/users/customer').put(auth.isAunthenticated,usersController.update);
     app.route('/users/customer/verification-code').put(usersController.addVerificationCode);
