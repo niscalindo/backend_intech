@@ -33,6 +33,40 @@ exports.login = function(req, res){
         }
     }
 };
+
+exports.createSession = function(req, res){
+    log.users.info("Controller - request from : "+req.connection.remoteAddress);
+    if(typeof req.body.credential === 'undefined' || typeof req.body.credential === null){
+        response.ok("bad request", 401, null, res);
+    }else{
+        try{
+            var param = req.body.credential;
+            let encryptedData = [param.id];
+            security.decrypt(encryptedData)
+                    .then(function(decryptedId){
+                param.id = decryptedId[0];
+                users.createSession(param, function(message, status, data){
+                    if(status == 200 || status == 201) {
+                        if(data == null || data == ""){
+                            response.ok('empty result', status, data, res);
+                        }else{
+                            response.ok(message, status, data, res);
+                        }
+                    }else{
+                        response.ok(message, status, null, res);
+                    }
+                });
+            }).catch(function(error){
+                    log.users.error(error);
+                    response.ok('Internal Server Error',500,null, res);
+            });
+        }catch(exception){
+            log.users.error(exception);
+            response.ok('Internal Server Error',500,null, res);
+        }
+    }
+};
+
 exports.find = function(req, res){
     try{
         log.users.info("Controller - request from : "+req.connection.remoteAddress);

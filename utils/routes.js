@@ -50,6 +50,7 @@ module.exports = function(app){
     //////////////////////////////////////////////////////////////////////////////
     
     app.route('/users/customer/login').post(usersController.login);
+    app.route('/users/customer/session').post(usersController.createSession);
     app.route('/users/customer/register').post(usersController.create);
     app.route('/users/customer/register/check').get(usersController.checkExisting);
     app.route('/users/customer/forgot-password').post(resetPasswordController.create);

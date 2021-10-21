@@ -31,6 +31,11 @@ module.exports = (sequelize, Sequelize)=>{
             allowNull: false,
             field: 'phone_number'
         },
+        rememberToken: {
+            type: Sequelize.STRING(500),
+            allowNull: true,
+            field: 'remember_token'
+        },
         fullName: {
             type: Sequelize.STRING(50),
             allowNull: true,

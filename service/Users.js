@@ -46,6 +46,42 @@ exports.login = function(field, result){
     })
 };
 
+exports.createSession = function(field, result){
+    let op = null;
+    let conditionKey = new Object();
+    for(let [key, value] of Object.entries(field)){
+        let condition = new Object();
+        op = operator.eq;
+        condition[op] = value;
+        conditionKey[columnDictionary(key)] = condition;
+    }
+    users.findOne({
+        attributes:{
+            exclude: ['password','date_created']
+        },
+        where: [conditionKey]
+    }).then(data=>{
+        if(typeof data === 'undefined' || typeof data === null || data === null){
+            result("Not Found", 404, null);
+        }else{
+            security.encrypt(data)
+                    .then(function(encryptedData){
+                security.generateToken(String(encryptedData.id), 'customer')
+                .then(function(token){
+                    encryptedData.dataValues.token = token;
+                    result("success", 200, encryptedData);
+                }).catch(function(error){
+                    log.users.error(error);
+                    result("Encryption Failed", 1000, null);
+                })
+            })
+        }
+    }).catch(err=>{
+        log.users.error(err);
+        result("Internal Server Error", 500, null);
+    })
+};
+
 exports.find = function(field, result){
     let op = null;
     let conditionKey = new Object();
@@ -179,6 +215,8 @@ function columnDictionary(alias){
         return "id_user";        
     }else if(alias === "phoneNumber"){
         return "phone_number";        
+    }else if(alias === "rememberToken"){
+        return "remember_token";        
     }else if(alias === "id_citizen"){
         return "id_citizen";        
     }else if(alias === "serialNumber"){
