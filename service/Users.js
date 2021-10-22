@@ -193,8 +193,8 @@ exports.checkExisting= function(field, result){
         attributes: ['status', ['id_user','idUser']],
         where: [conditionKey]
     }).then(data=>{
-        if(typeof data == 'undefined' || typeof data == null){
-            result('not found',404,null);
+        if(typeof data === 'undefined' || typeof data === null || data == null){
+            result('success',200,null);
         }else{
             security.encrypt(data)
             .then(function(encryptedData){
