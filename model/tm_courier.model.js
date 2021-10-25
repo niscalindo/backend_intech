@@ -34,6 +34,11 @@ module.exports = (sequelize, Sequelize)=>{
             type: Sequelize.STRING(100),
             allowNull: false,
             field: 'code'
+        },
+        courierIcon:{
+            type: Sequelize.STRING(100),
+            allowNull: false,
+            field: 'icon'
         }
     },{timestamps: false});
     return courier;

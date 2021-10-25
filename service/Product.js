@@ -270,7 +270,7 @@ exports.find = function (security, order, orderBy, offset, limit, field,scope, r
                                                 }
                                             },
                                             {
-                                                is_status: {
+                                                status: {
                                                     [operator.eq]: '1'
                                                 }
                                             }
