@@ -58,18 +58,26 @@ exports.create = function(req, res){
                                             if(typeof data[0].dataValues.products[0] === 'object' && typeof data[0].dataValues.products[0].dataValues != 'undefined'){
                                                 log.cart.info("Existing product found");                                                
                                                 let product = new Object();
-                                                product.idCartProduct = newCart.products[0].idProductVarian;
-                                                product.qty = newCart.products[0].qty;
-                                                cart.update(product, function(message,status,data){
-                                                    if(status == 200 || status == 201){
-                                                        if(data == null || data == ""){
-                                                            response.ok('empty result', status, data, res); 
+                                                encryptedData = new Array();
+                                                encryptedData[0]=data[0].dataValues.id;
+                                                security.decrypt(encryptedData)
+                                                .then(function(decryptedData){
+                                                    product.idCartProduct = decryptedData[0];
+                                                    product.qty = newCart.products[0].qty;
+                                                    cart.update(product, function(message,status,data){
+                                                        if(status == 200 || status == 201){
+                                                            if(data == null || data == ""){
+                                                                response.ok('empty result', status, data, res); 
+                                                            }else{
+                                                                response.ok(message, status, data, res);                    
+                                                            }
                                                         }else{
-                                                            response.ok(message, status, data, res);                    
+                                                            response.ok(message, status, null, res);            
                                                         }
-                                                    }else{
-                                                        response.ok(message, status, null, res);            
-                                                    }
+                                                    });
+                                                }).catch(function(err){
+                                                    log.cart.error(err);
+                                                    response.ok('Internal Server Error', 500, null, res); 
                                                 });
                                             }else{
                                                 log.cart.info("Product not found. save new product");
